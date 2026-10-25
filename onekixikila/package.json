@@ -1,0 +1,53 @@
+{
+  "name": "onekixikila",
+  "version": "1.0.0",
+  "description": "Plataforma digital de Kixikila, carteira transacional, grupos e gestão financeira colaborativa para Angola",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:migrate": "node src/database/migration-runner.js",
+    "db:seed": "node src/database/seeds/development-seed.js",
+    "db:seed:permissions": "node src/database/seeds/permissions-seed.js"
+  },
+  "keywords": [
+    "onekixikila",
+    "kixikila",
+    "fintech",
+    "angola",
+    "aoa",
+    "wallet",
+    "ledger",
+    "neon-postgres"
+  ],
+  "author": "OneKixikila Engineering Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.750.0",
+    "@aws-sdk/s3-request-presigner": "3.750.0",
+    "argon2": "0.41.1",
+    "cookie-parser": "1.4.7",
+    "cors": "2.8.5",
+    "dotenv": "16.4.7",
+    "ejs": "3.1.10",
+    "express": "4.21.2",
+    "express-rate-limit": "7.5.0",
+    "helmet": "8.0.0",
+    "jsonwebtoken": "9.0.2",
+    "multer": "1.4.5-lts.1",
+    "pg": "8.13.3",
+    "qrcode": "1.5.4",
+    "socket.io": "4.8.1",
+    "uuid": "11.1.0",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "nodemon": "3.1.9"
+  }
+}

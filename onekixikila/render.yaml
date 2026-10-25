@@ -1,0 +1,123 @@
+services:
+  - type: web
+    name: onekixikila
+    runtime: node
+    plan: starter
+    region: frankfurt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: APP_BASE_URL
+        value: https://onekixikila.onrender.com
+      - key: APP_NAME
+        value: OneKixikila
+      - key: DEFAULT_CURRENCY
+        value: AOA
+      
+      # Base de Dados Neon PostgreSQL
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_SSL
+        value: "true"
+      - key: DATABASE_MAX_CONNECTIONS
+        value: "20"
+      - key: DATABASE_IDLE_TIMEOUT_MS
+        value: "30000"
+      - key: DATABASE_CONNECTION_TIMEOUT_MS
+        value: "10000"
+
+      # Chaves de Segurança e Criptografia
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: REFRESH_TOKEN_SECRET
+        generateValue: true
+      - key: REFRESH_TOKEN_EXPIRES_IN
+        value: 7d
+      - key: DATA_ENCRYPTION_KEY
+        generateValue: true
+
+      # CORS e Rate Limiting
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://onekixikila.onrender.com
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "100"
+      - key: AUTH_RATE_LIMIT_MAX_REQUESTS
+        value: "5"
+      - key: AUTH_RATE_LIMIT_WINDOW_MS
+        value: "900000"
+
+      # Neon Object Storage (S3-compatible)
+      - key: STORAGE_ENDPOINT
+        sync: false
+      - key: STORAGE_REGION
+        sync: false
+      - key: STORAGE_ACCESS_KEY_ID
+        sync: false
+      - key: STORAGE_SECRET_ACCESS_KEY
+        sync: false
+      - key: STORAGE_BUCKET_UPLOADS
+        value: upload
+      - key: STORAGE_BUCKET_ASSETS
+        value: assets
+      - key: STORAGE_BUCKET_DOCUMENTS
+        value: documentos
+
+      # Limites estritos de ficheiros
+      - key: MAX_DOCUMENT_SIZE_BYTES
+        value: "5242880"
+      - key: MAX_AUDIO_SIZE_BYTES
+        value: "10485760"
+      - key: MAX_IMAGE_SIZE_BYTES
+        value: "5242880"
+
+      # Gateways de Pagamento (Segredos a configurar no painel do Render)
+      - key: MULTICAIXA_EXPRESS_API_URL
+        sync: false
+      - key: MULTICAIXA_EXPRESS_CLIENT_ID
+        sync: false
+      - key: MULTICAIXA_EXPRESS_CLIENT_SECRET
+        sync: false
+      - key: MULTICAIXA_EXPRESS_WEBHOOK_SECRET
+        sync: false
+      - key: UNITEL_MONEY_API_URL
+        sync: false
+      - key: UNITEL_MONEY_CLIENT_ID
+        sync: false
+      - key: UNITEL_MONEY_CLIENT_SECRET
+        sync: false
+      - key: UNITEL_MONEY_WEBHOOK_SECRET
+        sync: false
+      - key: E_KWANZA_API_URL
+        sync: false
+      - key: E_KWANZA_API_KEY
+        sync: false
+      - key: E_KWANZA_WEBHOOK_SECRET
+        sync: false
+
+      # Notificações
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        value: nao-responder@onekixikila.ao
+      - key: SMS_GATEWAY_URL
+        sync: false
+      - key: SMS_API_KEY
+        sync: false
+      - key: SMS_SENDER_ID
+        value: OneKixikila
