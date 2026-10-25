@@ -14,65 +14,57 @@
 
   <style>
     :root {
-      --bg-pattern-color: #f1f4f9;
-      --bg-stripe-color: #e4e9f2;
-      --card-bg: #ffffff;
-      --card-border: rgba(255, 255, 255, 0.95);
-      --card-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+      --bg-fallback: #f1f4f9;
       --text-main: #0f172a;
       --text-muted: #64748b;
-      --input-bg: #ffffff;
-      --input-border: #cbd5e1;
+      --input-bg: rgba(255, 255, 255, 0.94);
+      --input-border: rgba(203, 213, 225, 0.9);
       --input-focus-border: #7c3aed;
-      --input-focus-ring: rgba(124, 58, 237, 0.15);
+      --input-focus-ring: rgba(124, 58, 237, 0.18);
       --btn-purple: #7c3aed;
       --btn-purple-hover: #6d28d9;
       --btn-purple-active: #5b21b6;
-      --btn-purple-shadow: 0 8px 20px rgba(124, 58, 237, 0.25);
-      --social-btn-bg: #ffffff;
-      --social-btn-border: #cbd5e1;
-      --social-btn-hover: #f8fafc;
+      --btn-purple-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+      --social-btn-bg: rgba(255, 255, 255, 0.94);
+      --social-btn-border: rgba(203, 213, 225, 0.9);
+      --social-btn-hover: rgba(248, 250, 252, 0.98);
       --social-btn-text: #0f172a;
       --link-color: #7c3aed;
       --link-hover: #6d28d9;
-      --meter-bg: #e2e8f0;
-      --alert-error-bg: #fef2f2;
+      --meter-bg: rgba(226, 232, 240, 0.85);
+      --alert-error-bg: rgba(254, 242, 242, 0.95);
       --alert-error-border: #fecaca;
       --alert-error-text: #991b1b;
-      --alert-success-bg: #f0fdf4;
+      --alert-success-bg: rgba(240, 253, 244, 0.95);
       --alert-success-border: #bbf7d0;
       --alert-success-text: #166534;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg-pattern-color: #0b0f19;
-        --bg-stripe-color: #111827;
-        --card-bg: #151e2e;
-        --card-border: rgba(255, 255, 255, 0.06);
-        --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        --bg-fallback: #0b0f19;
         --text-main: #f8fafc;
         --text-muted: #94a3b8;
-        --input-bg: #0f172a;
-        --input-border: #334155;
+        --input-bg: rgba(15, 23, 42, 0.88);
+        --input-border: rgba(51, 65, 85, 0.9);
         --input-focus-border: #a78bfa;
-        --input-focus-ring: rgba(167, 139, 250, 0.2);
+        --input-focus-ring: rgba(167, 139, 250, 0.22);
         --btn-purple: #8b5cf6;
         --btn-purple-hover: #7c3aed;
         --btn-purple-active: #6d28d9;
-        --btn-purple-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
-        --social-btn-bg: #0f172a;
-        --social-btn-border: #334155;
-        --social-btn-hover: #1e293b;
+        --btn-purple-shadow: 0 8px 24px rgba(139, 92, 246, 0.45);
+        --social-btn-bg: rgba(15, 23, 42, 0.88);
+        --social-btn-border: rgba(51, 65, 85, 0.9);
+        --social-btn-hover: rgba(30, 41, 59, 0.95);
         --social-btn-text: #f8fafc;
         --link-color: #a78bfa;
         --link-hover: #c4b5fd;
-        --meter-bg: #1e293b;
-        --alert-error-bg: rgba(239, 68, 68, 0.15);
-        --alert-error-border: rgba(239, 68, 68, 0.3);
+        --meter-bg: rgba(30, 41, 59, 0.9);
+        --alert-error-bg: rgba(239, 68, 68, 0.18);
+        --alert-error-border: rgba(239, 68, 68, 0.35);
         --alert-error-text: #fca5a5;
-        --alert-success-bg: rgba(34, 197, 94, 0.15);
-        --alert-success-border: rgba(34, 197, 94, 0.3);
+        --alert-success-bg: rgba(34, 197, 94, 0.18);
+        --alert-success-border: rgba(34, 197, 94, 0.35);
         --alert-success-text: #86efac;
       }
     }
@@ -83,29 +75,34 @@
       padding: 0;
     }
 
+    html, body {
+      min-height: 100%;
+    }
+
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg-pattern-color);
-      /* Padrão listrado diagonal idêntico ao design de referência */
-      background-image: repeating-linear-gradient(
-        -45deg,
-        var(--bg-stripe-color),
-        var(--bg-stripe-color) 1.5px,
-        var(--bg-pattern-color) 1.5px,
-        var(--bg-pattern-color) 9px
-      );
+      background-color: var(--bg-fallback);
+      background-image: url('/assets/images/fundo.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       position: relative;
       overflow-x: hidden;
       color: var(--text-main);
       transition: background-color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Imagem de fundo opaca decorativa com textura radial suave */
+    /* Camada escura sutil para garantir contraste do texto sobre a imagem */
     body::before {
       content: "";
       position: fixed;
@@ -113,47 +110,36 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at 50% 25%, rgba(124, 58, 237, 0.06), transparent 70%);
+      background: linear-gradient(
+        180deg,
+        rgba(15, 23, 42, 0.45) 0%,
+        rgba(15, 23, 42, 0.30) 50%,
+        rgba(15, 23, 42, 0.50) 100%
+      );
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Moldura externa do layout */
-    .viewport-outer-frame {
-      width: 100%;
-      max-width: 1100px;
-      padding: 30px;
-      border-radius: 40px;
-      background: rgba(255, 255, 255, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.05);
-      position: relative;
-      z-index: 1;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
     @media (prefers-color-scheme: dark) {
-      .viewport-outer-frame {
-        background: rgba(15, 23, 42, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+      body::before {
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.65) 0%,
+          rgba(0, 0, 0, 0.50) 50%,
+          rgba(0, 0, 0, 0.70) 100%
+        );
       }
     }
 
-    /* Cartão Principal do Formulário */
-    .auth-card {
+    /* Conteúdo principal sem container/card - estampado diretamente */
+    .auth-content {
       width: 100%;
-      max-width: 540px;
-      background-color: var(--card-bg);
-      border-radius: 28px;
-      padding: 44px 40px;
-      box-shadow: var(--card-shadow);
-      border: 1px solid var(--card-border);
+      max-width: 500px;
       position: relative;
-      transition: all 0.3s ease;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
     }
 
     /* Logótipo em Losango Central */
@@ -161,33 +147,36 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 26px;
     }
 
     .brand-logo-diamond {
-      width: 52px;
-      height: 52px;
-      background: transparent;
-      border: 2.5px solid var(--text-main);
-      border-radius: 12px;
+      width: 58px;
+      height: 58px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 14px;
       transform: rotate(45deg);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.20);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .brand-logo-diamond:hover {
-      transform: rotate(45deg) scale(1.05);
+      transform: rotate(45deg) scale(1.06);
       border-color: var(--btn-purple);
+      box-shadow: 0 10px 32px rgba(124, 58, 237, 0.35);
     }
 
     .brand-logo-inner {
-      width: 20px;
-      height: 20px;
-      background-color: var(--text-main);
-      border-radius: 5px;
+      width: 24px;
+      height: 24px;
+      background-color: #ffffff;
+      border-radius: 6px;
       transition: background-color 0.3s ease;
     }
 
@@ -197,43 +186,51 @@
 
     /* Tipografia de Cabeçalho */
     .auth-title {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--text-main);
+      font-size: 1.95rem;
+      font-weight: 800;
+      color: #ffffff;
       text-align: center;
-      margin-bottom: 8px;
-      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.55);
     }
 
     .auth-subtitle {
-      font-size: 0.95rem;
-      color: var(--text-muted);
+      font-size: 0.96rem;
+      color: rgba(255, 255, 255, 0.88);
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
       font-weight: 400;
+      line-height: 1.5;
+      text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
     }
 
     /* Caixas de Alerta */
     .alert-box {
-      padding: 14px 16px;
-      border-radius: 12px;
+      padding: 14px 18px;
+      border-radius: 18px;
       font-size: 0.875rem;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       display: flex;
       align-items: center;
       gap: 12px;
-      line-height: 1.4;
+      line-height: 1.45;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-width: 1px;
+      border-style: solid;
     }
 
     .alert-box.alert-error {
       background-color: var(--alert-error-bg);
-      border: 1px solid var(--alert-error-border);
+      border-color: var(--alert-error-border);
       color: var(--alert-error-text);
     }
 
     .alert-box.alert-success {
       background-color: var(--alert-success-bg);
-      border: 1px solid var(--alert-success-border);
+      border-color: var(--alert-success-border);
       color: var(--alert-success-text);
     }
 
@@ -251,14 +248,17 @@
     .form-row .form-group {
       flex: 1;
       margin-bottom: 18px;
+      min-width: 0;
     }
 
     .form-label {
       display: block;
       font-size: 0.88rem;
       font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 6px;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
     }
 
     .input-wrapper {
@@ -267,51 +267,81 @@
       align-items: center;
     }
 
+    /* Inputs com arestas totalmente arredondadas (pílula) */
     .form-input {
       width: 100%;
-      height: 46px;
-      padding: 0 16px;
-      font-size: 0.92rem;
-      border-radius: 12px;
+      height: 54px;
+      padding: 0 22px;
+      font-size: 0.96rem;
+      border-radius: 9999px;
       border: 1.5px solid var(--input-border);
       background-color: var(--input-bg);
       color: var(--text-main);
       outline: none;
-      transition: all 0.2s ease;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
     }
 
     .form-input::placeholder {
       color: #94a3b8;
+      opacity: 1;
+    }
+
+    .form-input:hover {
+      border-color: rgba(148, 163, 184, 0.9);
     }
 
     .form-input:focus {
       border-color: var(--input-focus-border);
-      box-shadow: 0 0 0 4px var(--input-focus-ring);
+      box-shadow: 0 0 0 5px var(--input-focus-ring), 0 6px 20px rgba(124, 58, 237, 0.18);
+      background-color: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .form-input:focus {
+        background-color: #0f172a;
+      }
+    }
+
+    /* Campo com botão de toggle precisa de padding extra à direita */
+    .form-input.has-toggle {
+      padding-right: 56px;
     }
 
     /* Botão de Alternância de Visibilidade */
     .password-toggle-btn {
       position: absolute;
-      right: 14px;
-      background: none;
+      right: 8px;
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      background: transparent;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 1.15rem;
-      padding: 6px;
+      font-size: 1.1rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: color 0.2s;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .password-toggle-btn:hover {
       color: var(--text-main);
+      background-color: rgba(148, 163, 184, 0.18);
+    }
+
+    .password-toggle-btn:focus-visible {
+      outline: 2px solid var(--input-focus-border);
+      outline-offset: 2px;
     }
 
     /* Medidor de Força da Palavra-passe */
     .password-strength-container {
-      margin-top: 6px;
+      margin-top: 10px;
+      padding: 0 6px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -319,358 +349,510 @@
 
     .password-strength-bar {
       flex-grow: 1;
-      height: 4px;
+      height: 6px;
       background-color: var(--meter-bg);
-      border-radius: 2px;
+      border-radius: 9999px;
       overflow: hidden;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .password-strength-fill {
       height: 100%;
       width: 0%;
+      border-radius: 9999px;
       transition: width 0.3s ease, background-color 0.3s ease;
     }
 
     .strength-label {
       font-size: 0.75rem;
-      color: var(--text-muted);
-      min-width: 45px;
+      color: rgba(255, 255, 255, 0.92);
+      min-width: 52px;
       text-align: right;
-      font-weight: 500;
+      font-weight: 600;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
     }
 
     /* Checkbox de Termos e Políticas */
     .terms-row {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
+      gap: 11px;
       margin-top: 6px;
-      margin-bottom: 22px;
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.45;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.5;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
     }
 
     .terms-checkbox {
-      width: 17px;
-      height: 17px;
+      width: 18px;
+      height: 18px;
       margin-top: 2px;
-      border-radius: 4px;
+      border-radius: 6px;
       accent-color: var(--btn-purple);
       cursor: pointer;
       flex-shrink: 0;
     }
 
     .terms-link {
-      color: var(--link-color);
+      color: #ffffff;
       text-decoration: underline;
-      font-weight: 500;
-      transition: color 0.2s;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 3px;
+      font-weight: 600;
+      transition: color 0.2s ease, opacity 0.2s ease;
     }
 
     .terms-link:hover {
       color: var(--link-hover);
+      opacity: 0.9;
     }
 
-    /* Botão Roxo Primário */
+    /* Botão Roxo Primário — pílula */
     .btn-submit-purple {
       width: 100%;
-      height: 48px;
-      background-color: var(--btn-purple);
+      height: 54px;
+      background: linear-gradient(135deg, var(--btn-purple) 0%, var(--btn-purple-hover) 100%);
       color: #ffffff;
       border: none;
-      border-radius: 12px;
+      border-radius: 9999px;
       font-size: 1rem;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       cursor: pointer;
       box-shadow: var(--btn-purple-shadow);
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit-purple::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
     }
 
     .btn-submit-purple:hover {
-      background-color: var(--btn-purple-hover);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(124, 58, 237, 0.45);
+      filter: brightness(1.05);
+    }
+
+    .btn-submit-purple:hover::after {
+      opacity: 1;
     }
 
     .btn-submit-purple:active {
-      background-color: var(--btn-purple-active);
       transform: translateY(0);
+      filter: brightness(0.98);
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+    }
+
+    .btn-submit-purple:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 3px;
     }
 
     .btn-submit-purple:disabled {
-      opacity: 0.7;
+      opacity: 0.65;
       cursor: not-allowed;
       transform: none;
+      filter: grayscale(0.2);
     }
 
-    /* Botão Secundário Social */
+    /* Botão Secundário Social — pílula */
     .btn-social-auth {
       width: 100%;
-      height: 48px;
-      margin-top: 12px;
+      height: 54px;
+      margin-top: 14px;
       background-color: var(--social-btn-bg);
       color: var(--social-btn-text);
       border: 1.5px solid var(--social-btn-border);
-      border-radius: 12px;
+      border-radius: 9999px;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      transition: all 0.2s ease;
+      gap: 12px;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
     }
 
     .btn-social-auth:hover {
       background-color: var(--social-btn-hover);
-      border-color: #94a3b8;
+      border-color: rgba(148, 163, 184, 0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-social-auth:active {
+      transform: translateY(0);
+    }
+
+    .btn-social-auth:focus-visible {
+      outline: 3px solid var(--input-focus-ring);
+      outline-offset: 2px;
     }
 
     .btn-social-auth svg {
-      width: 19px;
-      height: 19px;
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
     }
 
     /* Rodapé com Link de Início de Sessão */
     .auth-footer {
-      margin-top: 24px;
+      margin-top: 28px;
       text-align: center;
-      font-size: 0.9rem;
-      color: var(--text-muted);
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.88);
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+      line-height: 1.5;
     }
 
     .auth-footer-link {
-      color: var(--text-main);
+      color: #ffffff;
       text-decoration: underline;
-      font-weight: 600;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 3px;
+      font-weight: 700;
       margin-left: 4px;
-      transition: color 0.2s;
+      transition: color 0.2s ease, opacity 0.2s ease;
     }
 
     .auth-footer-link:hover {
       color: var(--link-hover);
+      opacity: 0.9;
     }
 
-    /* Responsividade */
+    /* Responsividade para tablets */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      .auth-content {
+        max-width: 460px;
+      }
+      .auth-title {
+        font-size: 1.75rem;
+      }
+    }
+
+    /* Responsividade para mobile */
     @media (max-width: 640px) {
       body {
-        padding: 12px;
+        padding: 18px 16px;
+        background-attachment: scroll;
       }
-      .viewport-outer-frame {
-        padding: 10px;
-        border-radius: 24px;
+      .auth-content {
+        max-width: 100%;
       }
-      .auth-card {
-        padding: 30px 20px;
-        border-radius: 20px;
+      .brand-logo-diamond {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+      }
+      .brand-logo-inner {
+        width: 21px;
+        height: 21px;
+        border-radius: 5px;
+      }
+      .auth-title {
+        font-size: 1.5rem;
+      }
+      .auth-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 24px;
       }
       .form-row {
         flex-direction: column;
         gap: 0;
       }
+      .form-row .form-group {
+        margin-bottom: 18px;
+      }
+      .form-input {
+        height: 50px;
+        font-size: 0.94rem;
+        padding: 0 20px;
+      }
+      .form-input.has-toggle {
+        padding-right: 52px;
+      }
+      .password-toggle-btn {
+        width: 38px;
+        height: 38px;
+        right: 6px;
+      }
+      .btn-submit-purple,
+      .btn-social-auth {
+        height: 50px;
+        font-size: 0.95rem;
+      }
+      .auth-footer {
+        margin-top: 24px;
+        font-size: 0.88rem;
+      }
+    }
+
+    /* Mobile muito pequeno */
+    @media (max-width: 380px) {
+      body {
+        padding: 14px 12px;
+      }
       .auth-title {
-        font-size: 1.45rem;
+        font-size: 1.35rem;
       }
       .auth-subtitle {
-        font-size: 0.86rem;
-        margin-bottom: 22px;
+        font-size: 0.85rem;
+      }
+      .form-input,
+      .btn-submit-purple,
+      .btn-social-auth {
+        height: 48px;
+      }
+      .form-label {
+        font-size: 0.84rem;
+      }
+      .terms-row {
+        font-size: 0.8rem;
+      }
+      .form-options-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+
+    /* Ajuste para telas altas e estreitas em modo paisagem mobile */
+    @media (max-height: 700px) and (orientation: landscape) {
+      body {
+        justify-content: flex-start;
+        padding-top: 24px;
+        padding-bottom: 24px;
+      }
+      .brand-logo-container {
+        margin-bottom: 16px;
+      }
+      .auth-subtitle {
+        margin-bottom: 20px;
+      }
+      .auth-footer {
+        margin-top: 18px;
+      }
+    }
+
+    /* Preferência por movimento reduzido */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Moldura visual inspirada na referência -->
-  <main class="viewport-outer-frame">
-    <div class="auth-card">
+  <!-- Conteúdo estampado diretamente na tela, sem container ou card -->
+  <div class="auth-content">
+    
+    <!-- Logótipo em Losango Minimalista -->
+    <div class="brand-logo-container">
+      <div class="brand-logo-diamond" aria-label="OneKixikila Logo">
+        <div class="brand-logo-inner"></div>
+      </div>
+    </div>
+
+    <!-- Títulos de Criação de Conta -->
+    <h1 class="auth-title">Crie a sua conta</h1>
+    <p class="auth-subtitle">Junte-se à OneKixikila e gerencie os seus grupos de poupança.</p>
+
+    <!-- Mensagens de Alerta do Servidor -->
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert-box alert-error" role="alert">
+        <i class="bi bi-exclamation-circle-fill fs-5"></i>
+        <div><%= error %></div>
+      </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert-box alert-success" role="status">
+        <i class="bi bi-check-circle-fill fs-5"></i>
+        <div><%= success %></div>
+      </div>
+    <% } %>
+
+    <!-- Formulário de Registo (Consumido pelo auth.js e pela rota /api/v1/auth/register) -->
+    <form id="register-form" method="POST" action="/api/v1/auth/register" novalidate>
       
-      <!-- Logótipo em Losango Minimalista -->
-      <div class="brand-logo-container">
-        <div class="brand-logo-diamond" aria-label="OneKixikila Logo">
-          <div class="brand-logo-inner"></div>
+      <!-- Proteção CSRF obrigatória -->
+      <% if (typeof csrfToken !== 'undefined') { %>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <% } %>
+
+      <!-- Campo 1: Nome Completo -->
+      <div class="form-group">
+        <label for="register-name" class="form-label">Nome Completo</label>
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="register-name" 
+            name="fullName" 
+            class="form-input" 
+            placeholder="Ex.: Manuel Domingos Kiala" 
+            required 
+            autocomplete="name"
+            autofocus
+          >
         </div>
       </div>
 
-      <!-- Títulos de Criação de Conta -->
-      <h1 class="auth-title">Create your account</h1>
-      <p class="auth-subtitle">Join OneKixikila and manage your savings groups.</p>
-
-      <!-- Mensagens de Alerta do Servidor -->
-      <% if (typeof error !== 'undefined' && error) { %>
-        <div class="alert-box alert-error" role="alert">
-          <i class="bi bi-exclamation-circle-fill fs-5"></i>
-          <div><%= error %></div>
-        </div>
-      <% } %>
-
-      <% if (typeof success !== 'undefined' && success) { %>
-        <div class="alert-box alert-success" role="status">
-          <i class="bi bi-check-circle-fill fs-5"></i>
-          <div><%= success %></div>
-        </div>
-      <% } %>
-
-      <!-- Formulário de Registo (Consumido pelo auth.js e pela rota /api/v1/auth/register) -->
-      <form id="register-form" method="POST" action="/api/v1/auth/register" novalidate>
-        
-        <!-- Proteção CSRF obrigatória -->
-        <% if (typeof csrfToken !== 'undefined') { %>
-          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <% } %>
-
-        <!-- Campo 1: Nome Completo -->
+      <!-- Linha Dupla: Telemóvel e E-mail -->
+      <div class="form-row">
+        <!-- Campo 2: Telemóvel Nacional de Angola -->
         <div class="form-group">
-          <label for="register-name" class="form-label">Full Name</label>
+          <label for="register-phone" class="form-label">Telemóvel (Angola)</label>
           <div class="input-wrapper">
             <input 
-              type="text" 
-              id="register-name" 
-              name="fullName" 
+              type="tel" 
+              id="register-phone" 
+              name="phoneNumber" 
               class="form-input" 
-              placeholder="e.g. Manuel Domingos Kiala" 
+              placeholder="923 000 000" 
               required 
-              autocomplete="name"
-              autofocus
+              autocomplete="tel"
             >
           </div>
         </div>
 
-        <!-- Linha Dupla: Telemóvel e E-mail -->
-        <div class="form-row">
-          <!-- Campo 2: Telemóvel Nacional de Angola -->
-          <div class="form-group">
-            <label for="register-phone" class="form-label">Phone Number (Angola)</label>
-            <div class="input-wrapper">
-              <input 
-                type="tel" 
-                id="register-phone" 
-                name="phoneNumber" 
-                class="form-input" 
-                placeholder="923 000 000" 
-                required 
-                autocomplete="tel"
-              >
-            </div>
+        <!-- Campo 3: E-mail -->
+        <div class="form-group">
+          <label for="register-email" class="form-label">E-mail</label>
+          <div class="input-wrapper">
+            <input 
+              type="email" 
+              id="register-email" 
+              name="email" 
+              class="form-input" 
+              placeholder="nome@email.com" 
+              required 
+              autocomplete="email"
+            >
           </div>
+        </div>
+      </div>
 
-          <!-- Campo 3: E-mail -->
-          <div class="form-group">
-            <label for="register-email" class="form-label">Email</label>
-            <div class="input-wrapper">
-              <input 
-                type="email" 
-                id="register-email" 
-                name="email" 
-                class="form-input" 
-                placeholder="name@email.com" 
-                required 
-                autocomplete="email"
-              >
+      <!-- Linha Dupla: Palavra-passe e Confirmação -->
+      <div class="form-row">
+        <!-- Campo 4: Palavra-passe com medidor -->
+        <div class="form-group">
+          <label for="register-password" class="form-label">Palavra-passe</label>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="register-password" 
+              name="password" 
+              class="form-input has-toggle" 
+              placeholder="••••••••••••" 
+              required 
+              autocomplete="new-password"
+              data-strength-input
+              data-strength-meter="#password-meter-box"
+            >
+            <button 
+              type="button" 
+              class="password-toggle-btn" 
+              data-toggle-password="#register-password" 
+              title="Mostrar ou ocultar palavra-passe"
+              aria-label="Alternar visibilidade da palavra-passe"
+            >
+              <i class="bi bi-eye-slash"></i>
+            </button>
+          </div>
+          <!-- Medidor visual de força -->
+          <div id="password-meter-box" class="password-strength-container">
+            <div class="password-strength-bar">
+              <div class="password-strength-fill progress-bar"></div>
             </div>
+            <span class="strength-label"></span>
           </div>
         </div>
 
-        <!-- Linha Dupla: Palavra-passe e Confirmação -->
-        <div class="form-row">
-          <!-- Campo 4: Palavra-passe com medidor -->
-          <div class="form-group">
-            <label for="register-password" class="form-label">Password</label>
-            <div class="input-wrapper">
-              <input 
-                type="password" 
-                id="register-password" 
-                name="password" 
-                class="form-input" 
-                placeholder="••••••••••••" 
-                required 
-                autocomplete="new-password"
-                data-strength-input
-                data-strength-meter="#password-meter-box"
-              >
-              <button 
-                type="button" 
-                class="password-toggle-btn" 
-                data-toggle-password="#register-password" 
-                title="Mostrar ou ocultar palavra-passe"
-                aria-label="Alternar visibilidade da palavra-passe"
-              >
-                <i class="bi bi-eye-slash"></i>
-              </button>
-            </div>
-            <!-- Medidor visual de força -->
-            <div id="password-meter-box" class="password-strength-container">
-              <div class="password-strength-bar">
-                <div class="password-strength-fill progress-bar"></div>
-              </div>
-              <span class="strength-label"></span>
-            </div>
-          </div>
-
-          <!-- Campo 5: Confirmação de Palavra-passe -->
-          <div class="form-group">
-            <label for="register-confirm-password" class="form-label">Confirm Password</label>
-            <div class="input-wrapper">
-              <input 
-                type="password" 
-                id="register-confirm-password" 
-                name="confirmPassword" 
-                class="form-input" 
-                placeholder="••••••••••••" 
-                required 
-                autocomplete="new-password"
-              >
-              <button 
-                type="button" 
-                class="password-toggle-btn" 
-                data-toggle-password="#register-confirm-password" 
-                title="Mostrar ou ocultar confirmação"
-                aria-label="Alternar visibilidade da confirmação"
-              >
-                <i class="bi bi-eye-slash"></i>
-              </button>
-            </div>
+        <!-- Campo 5: Confirmação de Palavra-passe -->
+        <div class="form-group">
+          <label for="register-confirm-password" class="form-label">Confirmar Palavra-passe</label>
+          <div class="input-wrapper">
+            <input 
+              type="password" 
+              id="register-confirm-password" 
+              name="confirmPassword" 
+              class="form-input has-toggle" 
+              placeholder="••••••••••••" 
+              required 
+              autocomplete="new-password"
+            >
+            <button 
+              type="button" 
+              class="password-toggle-btn" 
+              data-toggle-password="#register-confirm-password" 
+              title="Mostrar ou ocultar confirmação"
+              aria-label="Alternar visibilidade da confirmação"
+            >
+              <i class="bi bi-eye-slash"></i>
+            </button>
           </div>
         </div>
+      </div>
 
-        <!-- Termos de Serviço e Privacidade -->
-        <div class="terms-row">
-          <input type="checkbox" id="terms-checkbox" name="termsAccepted" class="terms-checkbox" value="true" required>
-          <label for="terms-checkbox">
-            I agree to the <a href="/terms" target="_blank" class="terms-link">Terms of Service</a> and <a href="/privacy" target="_blank" class="terms-link">Privacy Policy</a> of OneKixikila.
-          </label>
-        </div>
+      <!-- Termos de Serviço e Privacidade -->
+      <div class="terms-row">
+        <input type="checkbox" id="terms-checkbox" name="termsAccepted" class="terms-checkbox" value="true" required>
+        <label for="terms-checkbox">
+          Concordo com os <a href="/terms" target="_blank" class="terms-link">Termos de Serviço</a> e a <a href="/privacy" target="_blank" class="terms-link">Política de Privacidade</a> da OneKixikila.
+        </label>
+      </div>
 
-        <!-- Botão Roxo Primário de Submissão -->
-        <button type="submit" id="register-submit-btn" class="btn-submit-purple" data-loading-text="A registar conta...">
-          <span>Create account</span>
-        </button>
+      <!-- Botão Roxo Primário de Submissão -->
+      <button type="submit" id="register-submit-btn" class="btn-submit-purple" data-loading-text="A criar conta...">
+        <span>Criar Conta</span>
+      </button>
 
-        <!-- Botão Secundário Social / Google -->
-        <button type="button" class="btn-social-auth" id="btn-google-signup" onclick="handleSocialAuthNotice()">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
-          <span>Sign up with Google</span>
-        </button>
+      <!-- Botão Secundário Social / Google -->
+      <button type="button" class="btn-social-auth" id="btn-google-signup" onclick="handleSocialAuthNotice()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span>Registar com o Google</span>
+      </button>
 
-      </form>
+    </form>
 
-      <!-- Rodapé com Link para Iniciar Sessão -->
-      <footer class="auth-footer">
-        <span>Already have an account?</span>
-        <a href="/login" class="auth-footer-link">Log in</a>
-      </footer>
+    <!-- Rodapé com Link para Iniciar Sessão -->
+    <footer class="auth-footer">
+      <span>Já tem uma conta?</span>
+      <a href="/login" class="auth-footer-link">Iniciar sessão</a>
+    </footer>
 
-    </div>
-  </main>
+  </div>
 
   <!-- Scripts clientes integrados do ecossistema -->
   <script src="/js/sweet-alert.js"></script>
