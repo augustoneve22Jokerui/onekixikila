@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Criar Conta — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+  <!-- Bootstrap Icons para ícones de visibilidade, validação e segurança -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    :root {
+      --bg-pattern-color: #f1f4f9;
+      --bg-stripe-color: #e4e9f2;
+      --card-bg: #ffffff;
+      --card-border: rgba(255, 255, 255, 0.95);
+      --card-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --input-focus-border: #7c3aed;
+      --input-focus-ring: rgba(124, 58, 237, 0.15);
+      --btn-purple: #7c3aed;
+      --btn-purple-hover: #6d28d9;
+      --btn-purple-active: #5b21b6;
+      --btn-purple-shadow: 0 8px 20px rgba(124, 58, 237, 0.25);
+      --social-btn-bg: #ffffff;
+      --social-btn-border: #cbd5e1;
+      --social-btn-hover: #f8fafc;
+      --social-btn-text: #0f172a;
+      --link-color: #7c3aed;
+      --link-hover: #6d28d9;
+      --meter-bg: #e2e8f0;
+      --alert-error-bg: #fef2f2;
+      --alert-error-border: #fecaca;
+      --alert-error-text: #991b1b;
+      --alert-success-bg: #f0fdf4;
+      --alert-success-border: #bbf7d0;
+      --alert-success-text: #166534;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-pattern-color: #0b0f19;
+        --bg-stripe-color: #111827;
+        --card-bg: #151e2e;
+        --card-border: rgba(255, 255, 255, 0.06);
+        --card-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --input-bg: #0f172a;
+        --input-border: #334155;
+        --input-focus-border: #a78bfa;
+        --input-focus-ring: rgba(167, 139, 250, 0.2);
+        --btn-purple: #8b5cf6;
+        --btn-purple-hover: #7c3aed;
+        --btn-purple-active: #6d28d9;
+        --btn-purple-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+        --social-btn-bg: #0f172a;
+        --social-btn-border: #334155;
+        --social-btn-hover: #1e293b;
+        --social-btn-text: #f8fafc;
+        --link-color: #a78bfa;
+        --link-hover: #c4b5fd;
+        --meter-bg: #1e293b;
+        --alert-error-bg: rgba(239, 68, 68, 0.15);
+        --alert-error-border: rgba(239, 68, 68, 0.3);
+        --alert-error-text: #fca5a5;
+        --alert-success-bg: rgba(34, 197, 94, 0.15);
+        --alert-success-border: rgba(34, 197, 94, 0.3);
+        --alert-success-text: #86efac;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-pattern-color);
+      /* Padrão listrado diagonal idêntico ao design de referência */
+      background-image: repeating-linear-gradient(
+        -45deg,
+        var(--bg-stripe-color),
+        var(--bg-stripe-color) 1.5px,
+        var(--bg-pattern-color) 1.5px,
+        var(--bg-pattern-color) 9px
+      );
+      position: relative;
+      overflow-x: hidden;
+      color: var(--text-main);
+      transition: background-color 0.3s ease;
+    }
+
+    /* Imagem de fundo opaca decorativa com textura radial suave */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 25%, rgba(124, 58, 237, 0.06), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Moldura externa do layout */
+    .viewport-outer-frame {
+      width: 100%;
+      max-width: 1100px;
+      padding: 30px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 30px 80px rgba(15, 23, 42, 0.05);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .viewport-outer-frame {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    /* Cartão Principal do Formulário */
+    .auth-card {
+      width: 100%;
+      max-width: 540px;
+      background-color: var(--card-bg);
+      border-radius: 28px;
+      padding: 44px 40px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--card-border);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    /* Logótipo em Losango Central */
+    .brand-logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .brand-logo-diamond {
+      width: 52px;
+      height: 52px;
+      background: transparent;
+      border: 2.5px solid var(--text-main);
+      border-radius: 12px;
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .brand-logo-diamond:hover {
+      transform: rotate(45deg) scale(1.05);
+      border-color: var(--btn-purple);
+    }
+
+    .brand-logo-inner {
+      width: 20px;
+      height: 20px;
+      background-color: var(--text-main);
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    .brand-logo-diamond:hover .brand-logo-inner {
+      background-color: var(--btn-purple);
+    }
+
+    /* Tipografia de Cabeçalho */
+    .auth-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .auth-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 28px;
+      font-weight: 400;
+    }
+
+    /* Caixas de Alerta */
+    .alert-box {
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      line-height: 1.4;
+    }
+
+    .alert-box.alert-error {
+      background-color: var(--alert-error-bg);
+      border: 1px solid var(--alert-error-border);
+      color: var(--alert-error-text);
+    }
+
+    .alert-box.alert-success {
+      background-color: var(--alert-success-bg);
+      border: 1px solid var(--alert-success-border);
+      color: var(--alert-success-text);
+    }
+
+    /* Grupos de Formulário */
+    .form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 14px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 46px;
+      padding: 0 16px;
+      font-size: 0.92rem;
+      border-radius: 12px;
+      border: 1.5px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .form-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .form-input:focus {
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 4px var(--input-focus-ring);
+    }
+
+    /* Botão de Alternância de Visibilidade */
+    .password-toggle-btn {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.15rem;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .password-toggle-btn:hover {
+      color: var(--text-main);
+    }
+
+    /* Medidor de Força da Palavra-passe */
+    .password-strength-container {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .password-strength-bar {
+      flex-grow: 1;
+      height: 4px;
+      background-color: var(--meter-bg);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .password-strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .strength-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      min-width: 45px;
+      text-align: right;
+      font-weight: 500;
+    }
+
+    /* Checkbox de Termos e Políticas */
+    .terms-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 6px;
+      margin-bottom: 22px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .terms-checkbox {
+      width: 17px;
+      height: 17px;
+      margin-top: 2px;
+      border-radius: 4px;
+      accent-color: var(--btn-purple);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .terms-link {
+      color: var(--link-color);
+      text-decoration: underline;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .terms-link:hover {
+      color: var(--link-hover);
+    }
+
+    /* Botão Roxo Primário */
+    .btn-submit-purple {
+      width: 100%;
+      height: 48px;
+      background-color: var(--btn-purple);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--btn-purple-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-submit-purple:hover {
+      background-color: var(--btn-purple-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit-purple:active {
+      background-color: var(--btn-purple-active);
+      transform: translateY(0);
+    }
+
+    .btn-submit-purple:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Botão Secundário Social */
+    .btn-social-auth {
+      width: 100%;
+      height: 48px;
+      margin-top: 12px;
+      background-color: var(--social-btn-bg);
+      color: var(--social-btn-text);
+      border: 1.5px solid var(--social-btn-border);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-social-auth:hover {
+      background-color: var(--social-btn-hover);
+      border-color: #94a3b8;
+    }
+
+    .btn-social-auth svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    /* Rodapé com Link de Início de Sessão */
+    .auth-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .auth-footer-link {
+      color: var(--text-main);
+      text-decoration: underline;
+      font-weight: 600;
+      margin-left: 4px;
+      transition: color 0.2s;
+    }
+
+    .auth-footer-link:hover {
+      color: var(--link-hover);
+    }
+
+    /* Responsividade */
+    @media (max-width: 640px) {
+      body {
+        padding: 12px;
+      }
+      .viewport-outer-frame {
+        padding: 10px;
+        border-radius: 24px;
+      }
+      .auth-card {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      .auth-title {
+        font-size: 1.45rem;
+      }
+      .auth-subtitle {
+        font-size: 0.86rem;
+        margin-bottom: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Moldura visual inspirada na referência -->
+  <main class="viewport-outer-frame">
+    <div class="auth-card">
+      
+      <!-- Logótipo em Losango Minimalista -->
+      <div class="brand-logo-container">
+        <div class="brand-logo-diamond" aria-label="OneKixikila Logo">
+          <div class="brand-logo-inner"></div>
+        </div>
+      </div>
+
+      <!-- Títulos de Criação de Conta -->
+      <h1 class="auth-title">Create your account</h1>
+      <p class="auth-subtitle">Join OneKixikila and manage your savings groups.</p>
+
+      <!-- Mensagens de Alerta do Servidor -->
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="alert-box alert-error" role="alert">
+          <i class="bi bi-exclamation-circle-fill fs-5"></i>
+          <div><%= error %></div>
+        </div>
+      <% } %>
+
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div class="alert-box alert-success" role="status">
+          <i class="bi bi-check-circle-fill fs-5"></i>
+          <div><%= success %></div>
+        </div>
+      <% } %>
+
+      <!-- Formulário de Registo (Consumido pelo auth.js e pela rota /api/v1/auth/register) -->
+      <form id="register-form" method="POST" action="/api/v1/auth/register" novalidate>
+        
+        <!-- Proteção CSRF obrigatória -->
+        <% if (typeof csrfToken !== 'undefined') { %>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <% } %>
+
+        <!-- Campo 1: Nome Completo -->
+        <div class="form-group">
+          <label for="register-name" class="form-label">Full Name</label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="register-name" 
+              name="fullName" 
+              class="form-input" 
+              placeholder="e.g. Manuel Domingos Kiala" 
+              required 
+              autocomplete="name"
+              autofocus
+            >
+          </div>
+        </div>
+
+        <!-- Linha Dupla: Telemóvel e E-mail -->
+        <div class="form-row">
+          <!-- Campo 2: Telemóvel Nacional de Angola -->
+          <div class="form-group">
+            <label for="register-phone" class="form-label">Phone Number (Angola)</label>
+            <div class="input-wrapper">
+              <input 
+                type="tel" 
+                id="register-phone" 
+                name="phoneNumber" 
+                class="form-input" 
+                placeholder="923 000 000" 
+                required 
+                autocomplete="tel"
+              >
+            </div>
+          </div>
+
+          <!-- Campo 3: E-mail -->
+          <div class="form-group">
+            <label for="register-email" class="form-label">Email</label>
+            <div class="input-wrapper">
+              <input 
+                type="email" 
+                id="register-email" 
+                name="email" 
+                class="form-input" 
+                placeholder="name@email.com" 
+                required 
+                autocomplete="email"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Linha Dupla: Palavra-passe e Confirmação -->
+        <div class="form-row">
+          <!-- Campo 4: Palavra-passe com medidor -->
+          <div class="form-group">
+            <label for="register-password" class="form-label">Password</label>
+            <div class="input-wrapper">
+              <input 
+                type="password" 
+                id="register-password" 
+                name="password" 
+                class="form-input" 
+                placeholder="••••••••••••" 
+                required 
+                autocomplete="new-password"
+                data-strength-input
+                data-strength-meter="#password-meter-box"
+              >
+              <button 
+                type="button" 
+                class="password-toggle-btn" 
+                data-toggle-password="#register-password" 
+                title="Mostrar ou ocultar palavra-passe"
+                aria-label="Alternar visibilidade da palavra-passe"
+              >
+                <i class="bi bi-eye-slash"></i>
+              </button>
+            </div>
+            <!-- Medidor visual de força -->
+            <div id="password-meter-box" class="password-strength-container">
+              <div class="password-strength-bar">
+                <div class="password-strength-fill progress-bar"></div>
+              </div>
+              <span class="strength-label"></span>
+            </div>
+          </div>
+
+          <!-- Campo 5: Confirmação de Palavra-passe -->
+          <div class="form-group">
+            <label for="register-confirm-password" class="form-label">Confirm Password</label>
+            <div class="input-wrapper">
+              <input 
+                type="password" 
+                id="register-confirm-password" 
+                name="confirmPassword" 
+                class="form-input" 
+                placeholder="••••••••••••" 
+                required 
+                autocomplete="new-password"
+              >
+              <button 
+                type="button" 
+                class="password-toggle-btn" 
+                data-toggle-password="#register-confirm-password" 
+                title="Mostrar ou ocultar confirmação"
+                aria-label="Alternar visibilidade da confirmação"
+              >
+                <i class="bi bi-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Termos de Serviço e Privacidade -->
+        <div class="terms-row">
+          <input type="checkbox" id="terms-checkbox" name="termsAccepted" class="terms-checkbox" value="true" required>
+          <label for="terms-checkbox">
+            I agree to the <a href="/terms" target="_blank" class="terms-link">Terms of Service</a> and <a href="/privacy" target="_blank" class="terms-link">Privacy Policy</a> of OneKixikila.
+          </label>
+        </div>
+
+        <!-- Botão Roxo Primário de Submissão -->
+        <button type="submit" id="register-submit-btn" class="btn-submit-purple" data-loading-text="A registar conta...">
+          <span>Create account</span>
+        </button>
+
+        <!-- Botão Secundário Social / Google -->
+        <button type="button" class="btn-social-auth" id="btn-google-signup" onclick="handleSocialAuthNotice()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign up with Google</span>
+        </button>
+
+      </form>
+
+      <!-- Rodapé com Link para Iniciar Sessão -->
+      <footer class="auth-footer">
+        <span>Already have an account?</span>
+        <a href="/login" class="auth-footer-link">Log in</a>
+      </footer>
+
+    </div>
+  </main>
+
+  <!-- Scripts clientes integrados do ecossistema -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/auth.js"></script>
+
+  <script>
+    function handleSocialAuthNotice() {
+      if (window.Alerts && typeof window.Alerts.info === 'function') {
+        window.Alerts.info(
+          'Registo com Google',
+          'Para garantir a conformidade com as regras financeiras de Angola, crie a sua conta fornecendo o seu número de telemóvel nacional e e-mail.'
+        );
+      } else {
+        alert('Por favor, crie a sua conta fornecendo o seu telemóvel e e-mail para validar a sua identidade.');
+      }
+    }
+  </script>
+</body>
+</html>
