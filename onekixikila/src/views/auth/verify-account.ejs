@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Verificar Conta — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    :root {
+      --bg-fallback: #f1f4f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --input-bg: rgba(255, 255, 255, 0.94);
+      --input-border: rgba(203, 213, 225, 0.9);
+      --input-focus-border: #7c3aed;
+      --input-focus-ring: rgba(124, 58, 237, 0.18);
+      --btn-purple: #7c3aed;
+      --btn-purple-hover: #6d28d9;
+      --btn-purple-active: #5b21b6;
+      --btn-purple-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+      --link-hover: #6d28d9;
+      --alert-error-bg: rgba(254, 242, 242, 0.95);
+      --alert-error-border: #fecaca;
+      --alert-error-text: #991b1b;
+      --alert-success-bg: rgba(240, 253, 244, 0.95);
+      --alert-success-border: #bbf7d0;
+      --alert-success-text: #166534;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-fallback: #0b0f19;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --input-bg: rgba(15, 23, 42, 0.88);
+        --input-border: rgba(51, 65, 85, 0.9);
+        --input-focus-border: #a78bfa;
+        --input-focus-ring: rgba(167, 139, 250, 0.22);
+        --btn-purple: #8b5cf6;
+        --btn-purple-hover: #7c3aed;
+        --btn-purple-active: #6d28d9;
+        --btn-purple-shadow: 0 8px 24px rgba(139, 92, 246, 0.45);
+        --link-hover: #c4b5fd;
+        --alert-error-bg: rgba(239, 68, 68, 0.18);
+        --alert-error-border: rgba(239, 68, 68, 0.35);
+        --alert-error-text: #fca5a5;
+        --alert-success-bg: rgba(34, 197, 94, 0.18);
+        --alert-success-border: rgba(34, 197, 94, 0.35);
+        --alert-success-text: #86efac;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-fallback);
+      background-image: url('/assets/images/fundo.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      position: relative;
+      overflow-x: hidden;
+      color: var(--text-main);
+      transition: background-color 0.3s ease;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.30) 50%, rgba(15, 23, 42, 0.50) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body::before {
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.50) 50%, rgba(0, 0, 0, 0.70) 100%);
+      }
+    }
+
+    .auth-content {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+    }
+
+    .brand-logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .brand-logo-diamond {
+      width: 58px;
+      height: 58px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 2.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 14px;
+      transform: rotate(45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.20);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .brand-logo-diamond:hover {
+      transform: rotate(45deg) scale(1.06);
+      border-color: var(--btn-purple);
+      box-shadow: 0 10px 32px rgba(124, 58, 237, 0.35);
+    }
+
+    .brand-logo-inner {
+      width: 24px;
+      height: 24px;
+      background-color: #ffffff;
+      border-radius: 6px;
+      transition: background-color 0.3s ease;
+    }
+
+    .brand-logo-diamond:hover .brand-logo-inner {
+      background-color: var(--btn-purple);
+    }
+
+    .auth-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.55);
+    }
+
+    .auth-subtitle {
+      font-size: 0.98rem;
+      color: rgba(255, 255, 255, 0.88);
+      text-align: center;
+      margin-bottom: 34px;
+      font-weight: 400;
+      line-height: 1.5;
+      text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .alert-box {
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 0.875rem;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      line-height: 1.45;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .alert-box.alert-error {
+      background-color: var(--alert-error-bg);
+      border-color: var(--alert-error-border);
+      color: var(--alert-error-text);
+    }
+
+    .alert-box.alert-success {
+      background-color: var(--alert-success-bg);
+      border-color: var(--alert-success-border);
+      color: var(--alert-success-text);
+    }
+
+    .form-group { margin-bottom: 18px; text-align: left; }
+
+    .form-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+
+    .form-input {
+      width: 100%;
+      height: 54px;
+      padding: 0 22px;
+      font-size: 0.98rem;
+      border-radius: 9999px;
+      border: 1.5px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    }
+
+    .form-input::placeholder { color: #94a3b8; opacity: 1; }
+    .form-input:hover { border-color: rgba(148, 163, 184, 0.9); }
+
+    .form-input:focus {
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 5px var(--input-focus-ring), 0 6px 20px rgba(124, 58, 237, 0.18);
+      background-color: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .form-input:focus { background-color: #0f172a; }
+    }
+
+    .form-input.otp-input {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5em;
+      padding-left: 0.5em;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    .btn-submit-purple {
+      width: 100%;
+      height: 54px;
+      background: linear-gradient(135deg, var(--btn-purple) 0%, var(--btn-purple-hover) 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 9999px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      box-shadow: var(--btn-purple-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit-purple::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+
+    .btn-submit-purple:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(124, 58, 237, 0.45);
+      filter: brightness(1.05);
+    }
+
+    .btn-submit-purple:hover::after { opacity: 1; }
+
+    .btn-submit-purple:active {
+      transform: translateY(0);
+      filter: brightness(0.98);
+      box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+    }
+
+    .btn-submit-purple:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.8);
+      outline-offset: 3px;
+    }
+
+    .btn-submit-purple:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      filter: grayscale(0.2);
+    }
+
+    .btn-resend {
+      width: 100%;
+      height: 48px;
+      margin-top: 14px;
+      background-color: rgba(255, 255, 255, 0.94);
+      color: #0f172a;
+      border: 1.5px solid rgba(203, 213, 225, 0.9);
+      border-radius: 9999px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .btn-resend:hover:not(:disabled) {
+      background-color: #f8fafc;
+      border-color: rgba(148, 163, 184, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .btn-resend:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .btn-resend {
+        background-color: rgba(15, 23, 42, 0.88);
+        color: #f8fafc;
+        border-color: rgba(51, 65, 85, 0.9);
+      }
+      .btn-resend:hover:not(:disabled) {
+        background-color: rgba(30, 41, 59, 0.95);
+      }
+    }
+
+    .otp-countdown {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .auth-footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.92rem;
+      color: rgba(255, 255, 255, 0.88);
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+      line-height: 1.5;
+    }
+
+    .auth-footer-link {
+      color: #ffffff;
+      text-decoration: underline;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 3px;
+      font-weight: 700;
+      margin-left: 4px;
+      transition: color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .auth-footer-link:hover { color: var(--link-hover); opacity: 0.9; }
+
+    .spinner-border-sm {
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      display: inline-block;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      body { padding: 18px 16px; background-attachment: scroll; }
+      .auth-content { max-width: 100%; }
+      .brand-logo-diamond { width: 52px; height: 52px; border-radius: 12px; }
+      .brand-logo-inner { width: 21px; height: 21px; border-radius: 5px; }
+      .auth-title { font-size: 1.55rem; }
+      .auth-subtitle { font-size: 0.9rem; margin-bottom: 26px; }
+      .form-input { height: 50px; font-size: 0.95rem; padding: 0 20px; }
+      .form-input.otp-input { font-size: 1.35rem; }
+      .btn-submit-purple, .btn-resend { height: 48px; font-size: 0.95rem; }
+      .auth-footer { margin-top: 26px; font-size: 0.88rem; }
+    }
+
+    @media (max-width: 380px) {
+      body { padding: 14px 12px; }
+      .auth-title { font-size: 1.35rem; }
+      .auth-subtitle { font-size: 0.85rem; }
+      .form-label { font-size: 0.84rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-content">
+
+    <div class="brand-logo-container">
+      <div class="brand-logo-diamond" aria-label="OneKixikila Logo">
+        <div class="brand-logo-inner"></div>
+      </div>
+    </div>
+
+    <h1 class="auth-title">Verificar Conta</h1>
+    <p class="auth-subtitle">Insira o código de 6 dígitos enviado para o seu <%= typeof type !== 'undefined' && type === 'EMAIL' ? 'e-mail' : 'telemóvel' %>.</p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert-box alert-error" role="alert">
+        <i class="bi bi-exclamation-circle-fill fs-5"></i>
+        <div><%= error %></div>
+      </div>
+    <% } %>
+
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert-box alert-success" role="status">
+        <i class="bi bi-check-circle-fill fs-5"></i>
+        <div><%= success %></div>
+      </div>
+    <% } %>
+
+    <form id="verify-otp-form" method="POST" action="/api/v1/auth/verify-otp" novalidate>
+      <% if (typeof csrfToken !== 'undefined') { %>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <% } %>
+
+      <input type="hidden" name="type" value="<%= typeof type !== 'undefined' ? type : 'PHONE' %>">
+      <input type="hidden" name="identifier" value="<%= typeof identifier !== 'undefined' ? identifier : '' %>">
+
+      <div class="form-group">
+        <label for="otp-code-input" class="form-label">Código de Verificação</label>
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="otp-code-input"
+            name="code"
+            class="form-input otp-input"
+            placeholder="000000"
+            inputmode="numeric"
+            pattern="[0-9]{4,8}"
+            maxlength="8"
+            autocomplete="one-time-code"
+            required
+            autofocus
+          >
+        </div>
+      </div>
+
+      <button type="submit" id="verify-otp-submit-btn" class="btn-submit-purple" data-loading-text="A verificar...">
+        <span>Verificar Conta</span>
+      </button>
+
+      <button type="button" id="resend-otp-btn" class="btn-resend">
+        <i class="bi bi-arrow-clockwise"></i>
+        <span>Reenviar Código</span>
+        <span id="otp-countdown" class="otp-countdown"></span>
+      </button>
+
+    </form>
+
+    <footer class="auth-footer">
+      <span>Já verificou a sua conta?</span>
+      <a href="/login" class="auth-footer-link">Iniciar Sessão</a>
+    </footer>
+
+  </div>
+
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/auth.js"></script>
+
+</body>
+</html>
