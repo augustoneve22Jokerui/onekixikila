@@ -1,0 +1,353 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": "OneKixikila",
+  "version": "1.0.0",
+  "description": "Mapa canónico de rotas web, endpoints de API REST e metadados de navegação da plataforma OneKixikila",
+  "updatedAt": "2026-10-25T18:00:00.000Z",
+  "routes": {
+    "web": [
+      {
+        "path": "/",
+        "name": "home",
+        "title": "Página Inicial — OneKixikila",
+        "layout": "layouts/auth",
+        "authRequired": false,
+        "description": "Ponto de entrada público da plataforma com redirecionamento para o dashboard quando autenticado"
+      },
+      {
+        "path": "/login",
+        "name": "auth.login",
+        "title": "Iniciar Sessão — OneKixikila",
+        "layout": "layouts/auth",
+        "authRequired": false,
+        "description": "Formulário de autenticação por e-mail ou número de telemóvel angolano"
+      },
+      {
+        "path": "/register",
+        "name": "auth.register",
+        "title": "Criar Conta — OneKixikila",
+        "layout": "layouts/auth",
+        "authRequired": false,
+        "description": "Formulário de criação de nova conta de utilizador com consentimento dos termos"
+      },
+      {
+        "path": "/verify-account",
+        "name": "auth.verify_account",
+        "title": "Verificar Conta — OneKixikila",
+        "layout": "layouts/auth",
+        "authRequired": false,
+        "description": "Submissão de código numérico OTP recebido por SMS ou e-mail"
+      },
+      {
+        "path": "/forgot-password",
+        "name": "auth.forgot_password",
+        "title": "Recuperar Palavra-passe — OneKixikila",
+        "layout": "layouts/auth",
+        "authRequired": false,
+        "description": "Solicitação de instruções para redefinição de palavra-passe"
+      },
+      {
+        "path": "/reset-password",
+        "name": "auth.reset_password",
+        "title": "Nova Palavra-passe — OneKixikila",
+        "layout": "layouts/auth",
+        "authRequired": false,
+        "description": "Formulário de definição de nova palavra-passe com token seguro de utilização única"
+      },
+      {
+        "path": "/change-password",
+        "name": "auth.change_password",
+        "title": "Alterar Palavra-passe — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Alteração autenticada da palavra-passe com encerramento de outras sessões"
+      },
+      {
+        "path": "/dashboard",
+        "name": "dashboard.index",
+        "title": "O Meu Painel — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Painel principal do utilizador com visão geral de saldos, grupos e quotas a vencer"
+      },
+      {
+        "path": "/profile",
+        "name": "dashboard.profile",
+        "title": "O Meu Perfil — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Gestão cadastral, nome preferencial, província, município e preferências"
+      },
+      {
+        "path": "/notifications",
+        "name": "dashboard.notifications",
+        "title": "Notificações — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Central de avisos multicanal e histórico de alertas da plataforma"
+      },
+      {
+        "path": "/sessions",
+        "name": "dashboard.sessions",
+        "title": "Dispositivos e Sessões — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Visualização e revogação de conexões ativas e terminais reconhecidos"
+      },
+      {
+        "path": "/groups",
+        "name": "groups.index",
+        "title": "Grupos de Kixikila — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Exploração do catálogo de grupos públicos e lista de grupos em que participa"
+      },
+      {
+        "path": "/groups/create",
+        "name": "groups.create",
+        "title": "Criar Grupo de Kixikila — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Fundação de um novo grupo de Kixikila com regulamento e localização territorial"
+      },
+      {
+        "path": "/groups/:groupId",
+        "name": "groups.details",
+        "title": "Detalhes do Grupo — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Informações completas, regulamento e estado das rotações do grupo"
+      },
+      {
+        "path": "/groups/:groupId/members",
+        "name": "groups.members",
+        "title": "Membros do Grupo — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Lista de participantes, vagas, turnos e cargos internos do grupo"
+      },
+      {
+        "path": "/groups/:groupId/rules",
+        "name": "groups.rules",
+        "title": "Regras do Grupo — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Regulamento formal, período de tolerância, multas de mora e termos operacionais"
+      },
+      {
+        "path": "/groups/:groupId/schedule",
+        "name": "groups.schedule",
+        "title": "Calendário de Rotação — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Cronograma de rodadas de quotas e previsão de datas de contemplação do bolo"
+      },
+      {
+        "path": "/groups/:groupId/invitations",
+        "name": "groups.invitations",
+        "title": "Convites do Grupo — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Emissão de convites protegidos e Códigos QR para partilha segura"
+      },
+      {
+        "path": "/groups/:groupId/chat",
+        "name": "groups.chat",
+        "title": "Chat do Grupo — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Canal privado de comunicação com texto, áudio até 120s e documentos até 5 MB"
+      },
+      {
+        "path": "/wallet",
+        "name": "wallet.index",
+        "title": "A Minha Carteira — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Saldos contabilístico, disponível e retido em Kwanzas (AOA)"
+      },
+      {
+        "path": "/wallet/statement",
+        "name": "wallet.statement",
+        "title": "Extrato Financeiro — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Extrato consolidado de lançamentos em partidas dobradas e histórico de movimentações"
+      },
+      {
+        "path": "/wallet/deposit",
+        "name": "wallet.deposit",
+        "title": "Depositar Fundos — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Fluxo de carregamento via Multicaixa Express, Unitel Money ou e-Kwanza"
+      },
+      {
+        "path": "/wallet/transfer",
+        "name": "wallet.transfer",
+        "title": "Transferir Valores — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Transferência peer-to-peer imediata entre carteiras de membros da plataforma"
+      },
+      {
+        "path": "/wallet/withdrawal",
+        "name": "wallet.withdrawal",
+        "title": "Levantar Fundos — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Solicitação de levantamento com reserva cautelar para IBAN ou conta móvel"
+      },
+      {
+        "path": "/wallet/receipts",
+        "name": "wallet.receipts",
+        "title": "Recibos e Comprovativos — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Consulta e impressão de comprovativos e recibos oficiais de transações"
+      },
+      {
+        "path": "/identity",
+        "name": "identity.index",
+        "title": "Verificação de Identidade — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Painel de verificação de identidade e nível cadastral KYC"
+      },
+      {
+        "path": "/identity/upload",
+        "name": "identity.upload",
+        "title": "Submeter Documentos — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Formulário protegido para envio de Bilhete de Identidade e fotografia facial"
+      },
+      {
+        "path": "/identity/status",
+        "name": "identity.status",
+        "title": "Estado da Verificação — OneKixikila",
+        "layout": "layouts/main",
+        "authRequired": true,
+        "description": "Acompanhamento do parecer e deliberação da auditoria de conformidade"
+      },
+      {
+        "path": "/admin",
+        "name": "admin.dashboard",
+        "title": "Painel Administrativo — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR", "FINANCIAL_OPERATOR", "SUPPORT_AGENT"],
+        "description": "Visão executiva com indicadores gerenciais em tempo real"
+      },
+      {
+        "path": "/admin/users",
+        "name": "admin.users",
+        "title": "Gestão de Utilizadores — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR", "SUPPORT_AGENT"],
+        "description": "Governança de contas, alteração de papéis e aplicação de sanções disciplinares"
+      },
+      {
+        "path": "/admin/groups",
+        "name": "admin.groups",
+        "title": "Supervisão de Grupos — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR"],
+        "description": "Auditoria de grupos de Kixikila, suspensões preventivas e intervenções de liderança"
+      },
+      {
+        "path": "/admin/identity-review",
+        "name": "admin.identity_review",
+        "title": "Revisão de Identidade — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR"],
+        "description": "Esteira de análise e homologação de documentos de identidade oficial"
+      },
+      {
+        "path": "/admin/payments",
+        "name": "admin.payments",
+        "title": "Gestão de Pagamentos — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR", "FINANCIAL_OPERATOR"],
+        "description": "Supervisão de liquidações, gateways, estornos e lotes de conciliação financeira"
+      },
+      {
+        "path": "/admin/disputes",
+        "name": "admin.disputes",
+        "title": "Resolução de Disputas — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR"],
+        "description": "Instrução probatória e parecer de arbitragem em litígios entre participantes"
+      },
+      {
+        "path": "/admin/reports",
+        "name": "admin.reports",
+        "title": "Relatórios Analíticos — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR", "FINANCIAL_OPERATOR"],
+        "description": "Séries temporais, adimplência de quotas e desempenho de gateways"
+      },
+      {
+        "path": "/admin/audit",
+        "name": "admin.audit",
+        "title": "Auditoria Institucional — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR"],
+        "description": "Consulta à trilha de eventos imutáveis de auditoria forense do sistema"
+      },
+      {
+        "path": "/admin/settings",
+        "name": "admin.settings",
+        "title": "Configurações do Sistema — OneKixikila",
+        "layout": "layouts/admin",
+        "authRequired": true,
+        "allowedRoles": ["ADMIN", "AUDITOR", "FINANCIAL_OPERATOR"],
+        "description": "Matriz de limites prudenciais KYC e tabela canónica de tarifas da plataforma"
+      }
+    ],
+    "api": [
+      { "method": "GET", "path": "/api/v1/health", "description": "Sonda de prontidão e conectividade de base de dados" },
+      { "method": "GET", "path": "/api/v1/health/liveness", "description": "Sonda rápida de vivacidade do processo Node.js" },
+      { "method": "POST", "path": "/api/v1/auth/register", "description": "Criação de nova conta de utilizador" },
+      { "method": "POST", "path": "/api/v1/auth/login", "description": "Autenticação por credenciais com emissão de tokens" },
+      { "method": "POST", "path": "/api/v1/auth/verify-otp", "description": "Validação de conta/contacto por código OTP" },
+      { "method": "POST", "path": "/api/v1/auth/forgot-password", "description": "Solicitação de instruções de recuperação de conta" },
+      { "method": "POST", "path": "/api/v1/auth/reset-password", "description": "Redefinição de palavra-passe com token" },
+      { "method": "POST", "path": "/api/v1/auth/refresh-token", "description": "Renovação de Access Token e rotação de Refresh Token" },
+      { "method": "POST", "path": "/api/v1/auth/logout", "description": "Revogação formal de sessão e invalidação de tokens" },
+      { "method": "GET", "path": "/api/v1/auth/me", "description": "Consulta dos dados do utilizador autenticado" },
+      { "method": "GET", "path": "/api/v1/users/profile", "description": "Consulta detalhada do perfil próprio" },
+      { "method": "PUT", "path": "/api/v1/users/profile", "description": "Atualização cadastral do perfil de utilizador" },
+      { "method": "GET", "path": "/api/v1/groups", "description": "Catálogo paginado de grupos públicos de Kixikila" },
+      { "method": "POST", "path": "/api/v1/groups", "description": "Criação de novo grupo de Kixikila" },
+      { "method": "GET", "path": "/api/v1/groups/:groupId", "description": "Ficha detalhada do grupo" },
+      { "method": "POST", "path": "/api/v1/groups/:groupId/join", "description": "Solicitação de participação num grupo" },
+      { "method": "POST", "path": "/api/v1/groups/:groupId/activate", "description": "Ativação formal do ciclo operacional do grupo" },
+      { "method": "GET", "path": "/api/v1/groups/:groupId/chat/messages", "description": "Histórico cronológico de mensagens do chat" },
+      { "method": "POST", "path": "/api/v1/chat/groups/:groupId/messages/text", "description": "Envio de mensagem de texto no chat" },
+      { "method": "POST", "path": "/api/v1/chat/groups/:groupId/messages/audio", "description": "Envio de nota de voz até 120s" },
+      { "method": "POST", "path": "/api/v1/chat/groups/:groupId/messages/document", "description": "Envio de documento anexo até 5 MB" },
+      { "method": "GET", "path": "/api/v1/wallet", "description": "Consulta de saldos em AOA da carteira interna" },
+      { "method": "GET", "path": "/api/v1/wallet/:walletId/statement", "description": "Extrato de lançamentos contábeis da carteira" },
+      { "method": "POST", "path": "/api/v1/wallet/deposits", "description": "Inicialização de depósito via gateway angolano" },
+      { "method": "POST", "path": "/api/v1/wallet/withdrawals", "description": "Solicitação de levantamento com reserva de saldo" },
+      { "method": "POST", "path": "/api/v1/wallet/transfers", "description": "Transferência peer-to-peer entre membros" },
+      { "method": "POST", "path": "/api/v1/wallet/payouts/execute", "description": "Desembolso do montante da Kixikila ao beneficiário" },
+      { "method": "POST", "path": "/api/v1/payments/webhooks/multicaixa-express", "description": "Webhook da rede Multicaixa Express" },
+      { "method": "POST", "path": "/api/v1/payments/webhooks/unitel-money", "description": "Webhook da carteira Unitel Money" },
+      { "method": "POST", "path": "/api/v1/payments/webhooks/e-kwanza", "description": "Webhook do serviço e-Kwanza" },
+      { "method": "POST", "path": "/api/v1/payments/qr/generate", "description": "Emissão de Código QR dinâmico de cobrança" },
+      { "method": "POST", "path": "/api/v1/payments/qr/pay", "description": "Liquidação presencial de Código QR com carteira" },
+      { "method": "POST", "path": "/api/v1/identity/submit", "description": "Submissão de Bilhete de Identidade e foto facial KYC" },
+      { "method": "GET", "path": "/api/v1/notifications", "description": "Consulta paginada de notificações recebidas" },
+      { "method": "GET", "path": "/api/v1/notifications/unread-count", "description": "Total de notificações não lidas" }
+    ]
+  }
+}
