@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Meus Grupos — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Sidebar + Top Bar: arredondados. Cards centrais: quadrados.
+       Cores 100% roxo.
+       Escala MAIOR (igual ao Perfil / Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.06);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+      --ok-content-max-width: 1280px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL — ARREDONDADA
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL & TOP BAR — ALINHADOS AO EIXO DO CONTEÚDO
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* Navbar Superior — Centralizada ao conteúdo (max-width 1280px) */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 0 auto 26px auto;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      padding: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+      flex-shrink: 1;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO — ARREDONDADO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 28px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+    .ok-page-title-main .user-highlight {
+      background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-purple-soft);
+      border: 1px solid var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 10px var(--ok-purple-vibrant);
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+    }
+
+    .ok-hero-actions {
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .ok-btn-outline {
+      height: 48px; padding: 0 20px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      color: var(--ok-text-primary);
+      font-size: 0.88rem; font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-outline:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-btn-primary {
+      height: 48px; padding: 0 24px;
+      border-radius: var(--ok-radius-pill);
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff; border: none;
+      font-size: 0.88rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 22px rgba(124, 58, 237, 0.4);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(124, 58, 237, 0.6);
+      color: #ffffff;
+    }
+
+    /* =========================================================================
+       KPIS — QUADRADOS
+       ========================================================================= */
+    .ok-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 30px auto;
+    }
+
+    .ok-kpi-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 1.4rem 1.5rem;
+      box-shadow: 0 10px 30px var(--ok-shadow-card);
+      display: flex; flex-direction: column; justify-content: space-between;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ok-kpi-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--ok-purple-border);
+    }
+
+    .ok-kpi-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .ok-kpi-icon-box {
+      width: 44px; height: 44px;
+      border-radius: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-kpi-icon-box svg { width: 20px; height: 20px; }
+
+    .ok-kpi-label {
+      font-size: 0.76rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin: 0;
+    }
+    .ok-kpi-value {
+      font-size: 1.65rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--ok-text-primary);
+      margin: 6px 0 2px 0;
+      line-height: 1.15;
+    }
+    .ok-kpi-sub {
+      font-size: 0.8rem; color: var(--ok-text-muted);
+      margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* =========================================================================
+       TOOLBAR DE FILTROS — ARREDONDADA (é chrome, não conteúdo)
+       ========================================================================= */
+    .ok-groups-toolbar {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 24px auto;
+      display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between;
+      gap: 16px;
+    }
+
+    .ok-tab-bar {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      padding: 5px;
+    }
+    .ok-tab {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 18px;
+      border-radius: var(--ok-radius-pill);
+      border: none;
+      background: transparent;
+      color: var(--ok-text-muted);
+      font-size: 0.86rem; font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-tab:hover { color: var(--ok-text-primary); }
+    .ok-tab.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+    }
+    .ok-tab-count {
+      min-width: 22px; height: 22px; padding: 0 6px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-muted);
+      font-size: 0.72rem; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .ok-tab.active .ok-tab-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+    }
+
+    .ok-toolbar-right {
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-inline {
+      position: relative;
+      width: 290px; max-width: 100%;
+    }
+    .ok-search-inline input {
+      width: 100%; height: 46px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 16px 0 44px;
+      font-size: 0.88rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-inline input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 3px var(--ok-purple-soft);
+    }
+    .ok-search-inline .search-icon {
+      position: absolute; left: 15px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+
+    .ok-view-toggle {
+      display: flex; align-items: center; gap: 4px;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      padding: 4px;
+    }
+    .ok-view-toggle-btn {
+      width: 38px; height: 38px; border-radius: var(--ok-radius-pill);
+      border: none; background: transparent;
+      color: var(--ok-text-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .ok-view-toggle-btn svg { width: 17px; height: 17px; }
+    .ok-view-toggle-btn:hover { color: var(--ok-text-primary); }
+    .ok-view-toggle-btn.active {
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+    }
+
+    /* =========================================================================
+       GRELHA & CARDS — QUADRADOS
+       ========================================================================= */
+    .ok-groups-layout-wrapper {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .ok-groups-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .ok-group-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 1.7rem;
+      box-shadow: 0 10px 32px var(--ok-shadow-card);
+      display: flex; flex-direction: column; justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .ok-group-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--ok-purple-border);
+      box-shadow: 0 18px 40px var(--ok-shadow-card), 0 0 30px -5px rgba(139, 92, 246, 0.25);
+    }
+
+    .ok-group-card-accent-line {
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%);
+    }
+
+    .ok-group-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .ok-group-avatar-wrap {
+      width: 54px; height: 54px;
+      border-radius: 0;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      color: #ffffff;
+      font-size: 1.15rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.3);
+    }
+    .ok-group-titles { flex: 1; min-width: 0; }
+    .ok-group-title {
+      font-size: 1.08rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ok-group-sub {
+      font-size: 0.8rem; color: var(--ok-text-muted);
+      margin: 2px 0 0 0;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .ok-real-status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: 0;
+      font-size: 0.76rem; font-weight: 700;
+      width: fit-content;
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-status-bullet { width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
+
+    .ok-progress-block {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .ok-progress-meta {
+      display: flex; justify-content: space-between;
+      font-size: 0.8rem; color: var(--ok-text-muted);
+    }
+    .ok-progress-meta strong {
+      color: var(--ok-text-primary);
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .ok-progress-track {
+      height: 8px;
+      border-radius: 0;
+      background: var(--ok-meter-bg);
+      overflow: hidden;
+    }
+    .ok-progress-fill {
+      height: 100%;
+      border-radius: 0;
+      background: linear-gradient(90deg, var(--ok-purple-vibrant), #6d28d9);
+      transition: width 0.35s ease;
+    }
+
+    .ok-group-metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 12px 0;
+      border-top: 1px solid var(--ok-border-subtle);
+      border-bottom: 1px solid var(--ok-border-subtle);
+    }
+    .ok-metric-col { display: flex; flex-direction: column; }
+    .ok-metric-label {
+      font-size: 0.7rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .ok-metric-value {
+      font-size: 0.98rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      font-family: 'Space Grotesk', sans-serif;
+      margin-top: 2px;
+    }
+
+    .ok-group-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px;
+    }
+    .ok-group-count-text {
+      font-size: 0.8rem; color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-card-btn-action {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      border-radius: 0;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      color: var(--ok-text-primary);
+      font-size: 0.82rem; font-weight: 700;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-group-card:hover .ok-card-btn-action {
+      background: var(--ok-purple-vibrant);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Vista Lista — quadrada */
+    .ok-groups-list-container {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .ok-group-list-row {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 16px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-group-list-row:hover {
+      background: var(--ok-stream-hover);
+      border-color: var(--ok-purple-border);
+      transform: translateX(4px);
+    }
+
+    .ok-group-card.not-member,
+    .ok-group-list-row.not-member {
+      cursor: default;
+    }
+    .ok-card-btn-action:disabled {
+      cursor: not-allowed;
+      opacity: 0.72;
+      box-shadow: none;
+    }
+    .ok-membership-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--ok-text-muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+    .ok-pending-requests {
+      margin-top: 14px;
+      padding: 13px 14px;
+      border: 1px solid var(--ok-purple-border);
+      background: var(--ok-purple-soft);
+    }
+    .ok-pending-requests summary {
+      color: var(--ok-text-primary);
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+    .ok-pending-request-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-top: 12px;
+      margin-top: 12px;
+      border-top: 1px solid var(--ok-border-subtle);
+    }
+    .ok-pending-request-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .ok-pending-request-actions button {
+      border: 1px solid var(--ok-border-subtle);
+      padding: 6px 10px;
+      background: var(--ok-bg-surface);
+      color: var(--ok-text-primary);
+      font: inherit;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .ok-pending-request-actions button[data-action="approve-request"] {
+      border-color: transparent;
+      background: var(--ok-purple-primary);
+      color: #fff;
+    }
+    .ok-pending-request-actions button:disabled { opacity: 0.6; cursor: wait; }
+    @media (max-width: 640px) {
+      .ok-pending-request-item { align-items: flex-start; flex-direction: column; }
+      .ok-pending-request-actions { width: 100%; }
+      .ok-pending-request-actions button { flex: 1; }
+    }
+
+    /* Empty state — quadrado */
+    .ok-empty-state-box {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 3.5rem 2rem;
+      text-align: center;
+      color: var(--ok-text-muted);
+    }
+    .ok-empty-state-box svg {
+      opacity: 0.35; margin-bottom: 1rem;
+    }
+    .ok-empty-state-box h5 {
+      font-size: 1.2rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin-bottom: 6px;
+    }
+    .ok-empty-state-box p {
+      font-size: 0.92rem; max-width: 440px; margin: 0 auto 1.5rem auto;
+      line-height: 1.5;
+    }
+
+    .ok-skeleton-block {
+      background: linear-gradient(90deg, var(--ok-pill-bg) 25%, var(--ok-meter-bg) 50%, var(--ok-pill-bg) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+      border-radius: 0;
+      height: 310px;
+    }
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* =========================================================================
+       MODAL DE CRIAÇÃO — QUADRADO
+       ========================================================================= */
+    .ok-modal .modal-content {
+      background: var(--ok-bg-surface);
+      color: var(--ok-text-primary);
+      border-radius: 0;
+      border: 1px solid var(--ok-purple-border);
+      box-shadow: 0 20px 60px var(--ok-shadow-card);
+      backdrop-filter: blur(20px);
+    }
+    .ok-modal .modal-header {
+      border-bottom: 1px solid var(--ok-border-subtle);
+      padding: 1.5rem 1.8rem;
+    }
+    .ok-modal .modal-title {
+      font-size: 1.25rem; font-weight: 800;
+      display: flex; align-items: center; gap: 10px;
+      color: var(--ok-text-primary);
+    }
+    .ok-modal .btn-close { filter: invert(1); }
+    html[data-theme="light"] .ok-modal .btn-close { filter: none; }
+    .ok-modal .modal-body { padding: 1.8rem; }
+    .ok-modal .modal-footer {
+      border-top: 1px solid var(--ok-border-subtle);
+      padding: 1.2rem 1.8rem;
+      gap: 10px;
+    }
+
+    .ok-form-group { margin-bottom: 1.2rem; }
+    .ok-form-label {
+      display: block; font-size: 0.84rem; font-weight: 700;
+      color: var(--ok-text-primary); margin-bottom: 6px;
+    }
+    .ok-form-label .required { color: #f43f5e; margin-left: 2px; }
+
+    .ok-form-input,
+    .ok-form-select,
+    .ok-form-textarea {
+      width: 100%;
+      padding: 0 1.2rem;
+      font-size: 0.92rem;
+      background: var(--ok-input-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .ok-form-input,
+    .ok-form-select { height: 48px; }
+    .ok-form-select option {
+      background-color: #111118;
+      color: #ffffff;
+    }
+    html[data-theme="light"] .ok-form-select option {
+      background-color: #ffffff;
+      color: #0f172a;
+    }
+    .ok-form-textarea {
+      padding: 0.9rem 1.2rem;
+      min-height: 90px;
+      resize: vertical;
+    }
+    .ok-form-input:focus,
+    .ok-form-select:focus,
+    .ok-form-textarea:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 3px var(--ok-purple-soft);
+    }
+    .ok-form-hint {
+      font-size: 0.74rem; color: var(--ok-text-muted);
+      margin-top: 5px;
+    }
+    .ok-form-error {
+      font-size: 0.76rem; color: #f43f5e;
+      margin-top: 5px;
+      display: none; align-items: center; gap: 5px;
+    }
+    .ok-form-error.show { display: flex; }
+
+    .ok-modal-summary-box {
+      background: var(--ok-purple-soft);
+      border: 1px solid var(--ok-purple-border);
+      border-radius: 0;
+      padding: 1.1rem 1.3rem;
+      display: flex; gap: 12px;
+      font-size: 0.86rem; line-height: 1.5;
+      color: var(--ok-text-primary);
+    }
+
+    /* =========================================================================
+       RESPONSIVIDADE
+       ========================================================================= */
+    @media (max-width: 1280px) {
+      .ok-groups-grid { grid-template-columns: repeat(2, 1fr); }
+      .ok-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.7rem; }
+      .ok-search-capsule { width: 100%; }
+      .ok-top-nav { gap: 10px; }
+    }
+    @media (max-width: 680px) {
+      .ok-groups-grid { grid-template-columns: 1fr; }
+      .ok-stats-grid { grid-template-columns: 1fr; }
+      .ok-groups-toolbar { flex-direction: column; align-items: stretch; }
+      .ok-toolbar-right { justify-content: space-between; }
+      .ok-search-inline { width: 100%; }
+      .ok-top-nav { flex-wrap: wrap; height: auto; padding: 10px 0; }
+      .ok-nav-actions { margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link active" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior — Centralizada ao conteúdo (max-width 1280px) -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar grupos, membros, quotas..." id="global-search-input" autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" style="font-size: 0.92rem; line-height: 1.15;" id="ok-nav-fullname"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" style="font-size: 0.76rem;" id="ok-nav-role"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Poupança Coletiva,
+          <span class="user-highlight">Kixikila Digital</span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Rotação Ativa
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          Acompanhe todos os seus grupos de poupança rotativa, rondas, quotas e datas de contemplação do bolo.
+        </p>
+      </div>
+
+      <div class="ok-hero-actions">
+        <button type="button" class="ok-btn-outline" id="btn-refresh-groups">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M16 21h5v-5"></path></svg>
+          Atualizar
+        </button>
+        <!-- Redireciona para a verdadeira tela de criação -->
+        <a href="/groups/create" class="ok-btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Criar Grupo
+        </a>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="ok-stats-grid">
+      <div class="ok-kpi-card">
+        <div class="ok-kpi-top">
+          <span class="ok-kpi-label">Grupos Existentes</span>
+          <div class="ok-kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </div>
+        </div>
+        <div>
+          <div class="ok-kpi-value" id="stat-active-groups">0</div>
+          <p class="ok-kpi-sub" id="stat-active-groups-sub">0 ativos • 0 em formação</p>
+        </div>
+      </div>
+
+      <div class="ok-kpi-card">
+        <div class="ok-kpi-top">
+          <span class="ok-kpi-label">Volume Total em Quotas</span>
+          <div class="ok-kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          </div>
+        </div>
+        <div>
+          <div class="ok-kpi-value" id="stat-total-saved">0 Kz</div>
+          <p class="ok-kpi-sub">Soma de quotas dos grupos</p>
+        </div>
+      </div>
+
+      <div class="ok-kpi-card">
+        <div class="ok-kpi-top">
+          <span class="ok-kpi-label">Membros em Rotação</span>
+          <div class="ok-kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+          </div>
+        </div>
+        <div>
+          <div class="ok-kpi-value" id="stat-next-contribution">0</div>
+          <p class="ok-kpi-sub" id="stat-next-contribution-sub">Total de participantes</p>
+        </div>
+      </div>
+
+      <div class="ok-kpi-card">
+        <div class="ok-kpi-top">
+          <span class="ok-kpi-label">Bolo Médio Estimado</span>
+          <div class="ok-kpi-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+          </div>
+        </div>
+        <div>
+          <div class="ok-kpi-value" id="stat-next-payout">0 Kz</div>
+          <p class="ok-kpi-sub" id="stat-next-payout-sub">Por rodada de kixikila</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toolbar de filtros & pesquisa -->
+    <section class="ok-groups-toolbar">
+      <div class="ok-tab-bar">
+        <button type="button" class="ok-tab active" data-filter="all">
+          Todos <span class="ok-tab-count" id="count-all">0</span>
+        </button>
+        <button type="button" class="ok-tab" data-filter="active">
+          Ativos <span class="ok-tab-count" id="count-active">0</span>
+        </button>
+        <button type="button" class="ok-tab" data-filter="pending">
+          Em Formação <span class="ok-tab-count" id="count-pending">0</span>
+        </button>
+        <button type="button" class="ok-tab" data-filter="completed">
+          Concluídos <span class="ok-tab-count" id="count-completed">0</span>
+        </button>
+      </div>
+
+      <div class="ok-toolbar-right">
+        <div class="ok-search-inline">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input type="search" placeholder="Filtrar por nome ou descrição..." id="groups-search" autocomplete="off">
+        </div>
+
+        <div class="ok-view-toggle">
+          <button type="button" class="ok-view-toggle-btn active" data-view="grid" title="Vista Grelha" aria-label="Grelha">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+          </button>
+          <button type="button" class="ok-view-toggle-btn" data-view="list" title="Vista Lista" aria-label="Lista">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contentor de Grupos -->
+    <section class="ok-groups-layout-wrapper">
+      <div id="groups-container">
+        <div class="ok-groups-grid">
+          <div class="ok-skeleton-block"></div>
+          <div class="ok-skeleton-block"></div>
+          <div class="ok-skeleton-block"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         HELPERS DE AVATAR (replicados do Perfil para consistência total)
+         ==================================================================== */
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForSave(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          return trimmed;
+        }
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const normalized = resolveAvatarUrlForSave(rawUrl);
+        if (!normalized) return null;
+        if (normalized === DEFAULT_AVATAR) return null;
+        return normalized;
+      }
+
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      function pickAvatarField(obj) {
+        if (!obj) return null;
+        return obj.avatarUrl || obj.avatar_url || obj.avatar || null;
+      }
+
+      /**
+       * Busca o perfil do utilizador e atualiza o avatar do navbar com a foto real.
+       * Replica o comportamento do Perfil (fetch /users/profile → resolveAvatarUrlForRender → applyAvatarToImg).
+       * Silencioso em caso de erro: o EJS já renderizou um fallback inicial.
+       */
+      async function hydrateNavbarAvatar() {
+        const navAvatar = document.getElementById('ok-nav-avatar');
+        const navName = document.getElementById('ok-nav-fullname');
+        const navRole = document.getElementById('ok-nav-role');
+        if (!navAvatar || !window.apiClient) return;
+
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          if (!raw) return;
+
+          const avatarField = pickAvatarField(raw);
+          const normalizedAvatar = resolveAvatarUrlForRender(avatarField);
+          applyAvatarToImg(navAvatar, normalizedAvatar);
+
+          const fullName = raw.fullName || raw.full_name || '';
+          const role = raw.role || 'Utilizador';
+          if (navName && fullName) navName.textContent = String(fullName).split(' ')[0];
+          if (navRole) navRole.textContent = role;
+        } catch (err) {
+          // Silencioso: EJS já tem fallback. Apenas loga em modo debug.
+          console.warn('[NAV:AVATAR_HYDRATE_WARN]', err && err.message ? err.message : err);
+        }
+      }
+
+      function initAvatarFallback() {
+        const img = document.getElementById('ok-nav-avatar');
+        if (!img) return;
+        // Garante que o handler de fallback está ligado já no load inicial
+        // (antes mesmo do hydrateNavbarAvatar completar).
+        applyAvatarToImg(img, resolveAvatarUrlForRender(img.getAttribute('src')));
+      }
+
+      /* ====================================================================
+         NORMALIZAÇÃO DUAL-FORMAT (camelCase + snake_case)
+         ==================================================================== */
+      function pick(obj, camel, snake, fallback) {
+        if (!obj) return fallback;
+        if (obj[camel] !== undefined && obj[camel] !== null && obj[camel] !== '') return obj[camel];
+        if (obj[snake] !== undefined && obj[snake] !== null && obj[snake] !== '') return obj[snake];
+        return fallback;
+      }
+
+      function normalizeGroup(raw) {
+        if (!raw) return null;
+        return {
+          ...raw,
+          id: pick(raw, 'id', 'id', null),
+          name: pick(raw, 'name', 'name', ''),
+          slug: pick(raw, 'slug', 'slug', ''),
+          description: pick(raw, 'description', 'description', ''),
+          status: pick(raw, 'status', 'status', 'FORMATION'),
+          frequency: pick(raw, 'frequency', 'frequency', pick(raw, 'cycle', 'cycle', 'MONTHLY')),
+          cycle: pick(raw, 'cycle', 'cycle', pick(raw, 'frequency', 'frequency', 'MONTHLY')),
+          contributionAmount: Number(pick(raw, 'contributionAmount', 'contribution_amount', 0)),
+          activeMembersCount: Number(pick(raw, 'activeMembersCount', 'active_members_count', pick(raw, 'membersCount', 'members_count', 1))),
+          membersCount: Number(pick(raw, 'membersCount', 'members_count', pick(raw, 'activeMembersCount', 'active_members_count', 1))),
+          maxMembers: Number(pick(raw, 'maxMembers', 'max_members', 12)),
+          minMembers: Number(pick(raw, 'minMembers', 'min_members', 3)),
+          currentCycle: Number(pick(raw, 'currentCycle', 'current_cycle', 1)),
+          startDate: pick(raw, 'startDate', 'start_date', null),
+          isPrivate: Boolean(pick(raw, 'isPrivate', 'is_private', false)),
+          leaderName: pick(raw, 'leaderName', 'leader_name', ''),
+          members: Array.isArray(raw.members) ? raw.members : []
+        };
+      }
+
+      /* ====================================================================
+         ESTADO
+         ==================================================================== */
+      const state = {
+        groups: [],
+        filteredGroups: [],
+        currentFilter: 'all',
+        currentSearch: '',
+        currentView: 'grid',
+        loading: false,
+        membershipCheckFailed: false
+      };
+      const CURRENT_USER_ROLE = <%- JSON.stringify(typeof user !== 'undefined' && user ? String(user.role || '') : '') %>;
+
+
+      const STATUS_MAP = {
+        ACTIVE:    { label: 'Ativo',       class: 'active' },
+        FORMATION: { label: 'Em Formação', class: 'pending' },
+        DRAFT:     { label: 'Rascunho',    class: 'pending' },
+        PENDING:   { label: 'Pendente',    class: 'pending' },
+        COMPLETED: { label: 'Concluído',   class: 'completed' },
+        PAUSED:    { label: 'Pausado',     class: 'paused' },
+        SUSPENDED: { label: 'Suspenso',    class: 'paused' },
+        CANCELLED: { label: 'Cancelado',   class: 'completed' }
+      };
+
+      const CYCLE_LABELS = {
+        DAILY: 'Diário',
+        WEEKLY: 'Semanal',
+        BIWEEKLY: 'Quinzenal',
+        MONTHLY: 'Mensal'
+      };
+
+      const GROUP_PALETTES = [
+        'linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%)',
+        'linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%)',
+        'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+        'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)',
+        'linear-gradient(135deg, #7c3aed 0%, #2e1065 100%)'
+      ];
+
+      function formatMoney(value) {
+        const num = Number(value) || 0;
+        return num.toLocaleString('pt-AO') + ' Kz';
+      }
+
+      function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        const div = document.createElement('div');
+        div.textContent = String(str);
+        return div.innerHTML;
+      }
+
+      function getInitials(name) {
+        if (!name) return 'K';
+        return String(name).split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+      }
+
+      function showNotice(message, type = 'info') {
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          window.Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: type,
+            title: message,
+            showConfirmButton: false,
+            timer: 4200,
+            timerProgressBar: true
+          });
+        } else if (type === 'error') {
+          window.alert(message);
+        }
+      }
+
+      function responseMessage(response, fallback) {
+        return response && (response.message || (response.data && response.data.message)) || fallback;
+      }
+
+      /* ====================================================================
+         CARREGAR DADOS
+         ==================================================================== */
+      async function loadGroups(options = {}) {
+        if (state.loading || !window.apiClient) return;
+        state.loading = true;
+        state.membershipCheckFailed = false;
+
+        const container = document.getElementById('groups-container');
+        if (container && !options.silent) {
+          container.innerHTML = `
+            <div class="ok-groups-grid">
+              <div class="ok-skeleton-block"></div>
+              <div class="ok-skeleton-block"></div>
+              <div class="ok-skeleton-block"></div>
+            </div>`;
+        }
+
+        try {
+          const timestamp = Date.now();
+          const [groupsResult, membershipsResult] = await Promise.allSettled([
+            window.apiClient.get(`/groups?limit=100&_t=${timestamp}`, {
+              headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', Pragma: 'no-cache' }
+            }),
+            window.apiClient.get(`/groups/my-memberships?_t=${timestamp}`, {
+              headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', Pragma: 'no-cache' }
+            })
+          ]);
+
+          if (groupsResult.status !== 'fulfilled') throw groupsResult.reason;
+          const response = groupsResult.value;
+          let rawGroups = [];
+          if (response && Array.isArray(response.data)) rawGroups = response.data;
+          else if (response && response.data && Array.isArray(response.data.groups)) rawGroups = response.data.groups;
+          else if (response && response.data && Array.isArray(response.data.data)) rawGroups = response.data.data;
+          else if (response && Array.isArray(response.groups)) rawGroups = response.groups;
+          else if (Array.isArray(response)) rawGroups = response;
+
+          let memberships = [];
+          if (membershipsResult.status === 'fulfilled') {
+            const membershipResponse = membershipsResult.value;
+            const membershipCandidates = [
+              membershipResponse && membershipResponse.data && membershipResponse.data.memberships,
+              membershipResponse && membershipResponse.data && membershipResponse.data.data && membershipResponse.data.data.memberships,
+              membershipResponse && membershipResponse.memberships,
+              membershipResponse && membershipResponse.data,
+              membershipResponse
+            ];
+            const membershipList = membershipCandidates.find(Array.isArray);
+            if (membershipList) {
+              memberships = membershipList;
+            } else {
+              state.membershipCheckFailed = true;
+              console.warn('[GROUPS:MEMBERSHIP_CHECK_WARN]', 'Resposta de memberships inválida; acesso mantido bloqueado por segurança.');
+            }
+          } else {
+            state.membershipCheckFailed = true;
+            console.warn('[GROUPS:MEMBERSHIP_CHECK_WARN]', membershipsResult.reason?.message || membershipsResult.reason);
+          }
+
+          const membershipByGroup = new Map();
+          memberships.forEach((membership) => {
+            const groupId = membership.group_id || membership.groupId;
+            if (groupId) membershipByGroup.set(String(groupId), membership);
+          });
+
+          const groupById = new Map();
+          rawGroups.map(normalizeGroup).filter(Boolean).forEach((group) => {
+            if (group.id) groupById.set(String(group.id), group);
+          });
+
+          // O endpoint de descoberta só devolve grupos públicos; acrescentamos os grupos
+          // privados do próprio utilizador a partir da lista autorizada de memberships.
+          memberships.forEach((membership) => {
+            const groupId = membership.group_id || membership.groupId;
+            if (!groupId || groupById.has(String(groupId))) return;
+            groupById.set(String(groupId), normalizeGroup({
+              id: groupId,
+              name: membership.group_name || membership.groupName || 'Grupo',
+              slug: membership.group_slug || membership.groupSlug || '',
+              status: membership.group_status || membership.groupStatus || 'FORMATION',
+              frequency: membership.frequency || 'MONTHLY',
+              contribution_amount: membership.contribution_amount || membership.contributionAmount || 0,
+              currency: membership.currency || 'AOA',
+              is_private: true
+            }));
+          });
+
+          state.groups = Array.from(groupById.values()).map((group) => {
+            const membership = membershipByGroup.get(String(group.id));
+            const membershipStatus = membership
+              ? String(membership.membership_status || membership.status || '').toUpperCase()
+              : '';
+            const membershipRole = String(membership && membership.role || '').toUpperCase();
+            const isLeaderRecord = Boolean(membership && (
+              membership.is_leader === true ||
+              String(membership.is_leader).toLowerCase() === 'true' ||
+              ['LEADER', 'PRIMARY_LEADER'].includes(membershipRole)
+            ));
+            const isActiveMember = membershipStatus === 'ACTIVE';
+            const isActiveLeader = isActiveMember && isLeaderRecord;
+            return {
+              ...group,
+              membershipStatus: membershipStatus || null,
+              isCurrentUserMember: isActiveMember,
+              isCurrentUserLeader: isActiveLeader,
+              canManageMembershipRequests: Boolean(
+                !state.membershipCheckFailed && (
+                  (isActiveMember && (isLeaderRecord || membershipRole === 'VICE_LEADER')) ||
+                  CURRENT_USER_ROLE === 'ADMIN'
+                )
+              ),
+              pendingRequests: []
+            };
+          });
+
+          const groupsForReview = state.groups.filter((group) => group.canManageMembershipRequests);
+          const pendingResults = await Promise.allSettled(groupsForReview.map((group) =>
+            window.apiClient.get(`/groups/${encodeURIComponent(group.id)}/members?status=PENDING_APPROVAL`)
+          ));
+          pendingResults.forEach((result, index) => {
+            if (result.status !== 'fulfilled') {
+              console.warn('[GROUPS:PENDING_REQUESTS_WARN]', result.reason?.message || result.reason);
+              return;
+            }
+            const payload = result.value && result.value.data;
+            const members = payload && Array.isArray(payload.members) ? payload.members : [];
+            groupsForReview[index].pendingRequests = members.filter((member) =>
+              String(member.status || '').toUpperCase() === 'PENDING_APPROVAL'
+            );
+          });
+
+          applyFilters();
+          updateStats();
+        } catch (error) {
+          console.warn('[GROUPS:LOAD_WARN]', error && error.message ? error.message : error);
+          state.groups = [];
+          applyFilters();
+          updateStats();
+          showNotice('Não foi possível carregar os grupos. Verifique a ligação e tente novamente.', 'error');
+        } finally {
+          state.loading = false;
+        }
+      }
+
+      /* ====================================================================
+         KPIS
+         ==================================================================== */
+      function updateStats() {
+        const groups = state.groups;
+
+        const counts = { all: groups.length, active: 0, pending: 0, completed: 0, paused: 0 };
+        let totalVolume = 0;
+        let totalMembers = 0;
+        let totalPools = 0;
+
+        groups.forEach(g => {
+          const s = String(g.status || '').toUpperCase();
+          if (s === 'ACTIVE') counts.active++;
+          else if (s === 'FORMATION' || s === 'PENDING' || s === 'DRAFT') counts.pending++;
+          else if (s === 'COMPLETED') counts.completed++;
+          else if (s === 'PAUSED' || s === 'SUSPENDED' || s === 'CANCELLED') counts.paused++;
+
+          const quota = Number(g.contributionAmount || 0);
+          const members = Number(g.activeMembersCount || 1);
+          totalVolume += quota;
+          totalMembers += members;
+          totalPools += (quota * members);
+        });
+
+        const setTxt = (id, txt) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = txt;
+        };
+
+        setTxt('count-all', counts.all);
+        setTxt('count-active', counts.active);
+        setTxt('count-pending', counts.pending);
+        setTxt('count-completed', counts.completed);
+
+        setTxt('stat-active-groups', counts.all);
+        setTxt('stat-active-groups-sub', `${counts.active} ativo(s) • ${counts.pending} em formação`);
+
+        setTxt('stat-total-saved', formatMoney(totalVolume));
+
+        setTxt('stat-next-contribution', totalMembers);
+        setTxt('stat-next-contribution-sub', `${counts.all} grupo(s) cadastrado(s)`);
+
+        const avgPool = counts.all > 0 ? Math.round(totalPools / counts.all) : 0;
+        setTxt('stat-next-payout', formatMoney(avgPool));
+        setTxt('stat-next-payout-sub', 'Valor médio por rodada');
+      }
+
+      /* ====================================================================
+         FILTRAGEM E RENDER
+         ==================================================================== */
+      function applyFilters() {
+        let result = state.groups;
+
+        if (state.currentFilter !== 'all') {
+          const filterTarget = state.currentFilter.toUpperCase();
+          if (filterTarget === 'PENDING') {
+            result = result.filter(g => {
+              const s = String(g.status || '').toUpperCase();
+              return s === 'PENDING' || s === 'FORMATION' || s === 'DRAFT';
+            });
+          } else if (filterTarget === 'ACTIVE') {
+            result = result.filter(g => String(g.status || '').toUpperCase() === 'ACTIVE');
+          } else if (filterTarget === 'COMPLETED') {
+            result = result.filter(g => String(g.status || '').toUpperCase() === 'COMPLETED');
+          }
+        }
+
+        if (state.currentSearch) {
+          const q = state.currentSearch.toLowerCase();
+          result = result.filter(g =>
+            (g.name || '').toLowerCase().includes(q) ||
+            (g.description || '').toLowerCase().includes(q)
+          );
+        }
+
+        state.filteredGroups = result;
+        renderGroups();
+      }
+
+      function renderGroups() {
+        const container = document.getElementById('groups-container');
+        if (!container) return;
+        const groups = state.filteredGroups;
+
+        if (groups.length === 0) {
+          container.innerHTML = renderEmptyState();
+          return;
+        }
+
+        if (state.currentView === 'list') {
+          container.innerHTML = renderListView(groups);
+        } else {
+          container.innerHTML = `<div class="ok-groups-grid">${groups.map((group, index) => renderGroupCard(group, index)).join('')}</div>`;
+        }
+
+        container.querySelectorAll('[data-group-id][data-can-open="true"]').forEach((card) => {
+          card.addEventListener('click', (event) => {
+            if (event.target.closest('[data-stop-propagation], [data-action]')) return;
+            const groupId = card.getAttribute('data-group-id');
+            if (groupId) window.location.assign(`/groups/${encodeURIComponent(groupId)}`);
+          });
+        });
+
+        container.querySelectorAll('[data-action="open-group"]').forEach((button) => {
+          button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const groupId = button.getAttribute('data-group-id');
+            if (groupId) window.location.assign(`/groups/${encodeURIComponent(groupId)}`);
+          });
+        });
+
+        container.querySelectorAll('[data-action="request-join"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            await requestJoinGroup(button);
+          });
+        });
+
+        container.querySelectorAll('[data-action="approve-request"], [data-action="reject-request"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            await decideJoinRequest(button);
+          });
+        });
+      }
+
+      async function requestJoinGroup(button) {
+        const groupId = button.getAttribute('data-group-id');
+        if (!groupId || button.disabled || state.membershipCheckFailed) return;
+
+        const originalText = button.textContent.trim();
+        button.disabled = true;
+        button.textContent = 'A enviar…';
+
+        try {
+          const response = await window.apiClient.post(`/groups/${encodeURIComponent(groupId)}/join`, {});
+          const data = response && response.data ? response.data : {};
+          const membershipStatus = String(data.status || '').toUpperCase();
+          const group = state.groups.find((item) => String(item.id) === String(groupId));
+
+          if (group && membershipStatus) {
+            group.membershipStatus = membershipStatus;
+            group.isCurrentUserMember = membershipStatus === 'ACTIVE';
+          }
+
+          showNotice(
+            responseMessage(response, membershipStatus === 'ACTIVE'
+              ? 'A adesão foi confirmada. Já pode aceder ao grupo.'
+              : 'Pedido enviado à liderança do grupo.'),
+            'success'
+          );
+          applyFilters();
+          updateStats();
+        } catch (error) {
+          button.disabled = false;
+          button.textContent = originalText;
+          showNotice(error && error.message ? error.message : 'Não foi possível enviar o pedido de adesão.', 'error');
+        }
+      }
+
+      async function decideJoinRequest(button) {
+        const membershipId = button.getAttribute('data-membership-id');
+        const action = button.getAttribute('data-action');
+        if (!membershipId || button.disabled || !['approve-request', 'reject-request'].includes(action)) return;
+
+        const isApprove = action === 'approve-request';
+        let confirmed = true;
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          const result = await window.Swal.fire({
+            icon: isApprove ? 'question' : 'warning',
+            title: isApprove ? 'Aprovar pedido de adesão?' : 'Rejeitar pedido de adesão?',
+            text: isApprove
+              ? 'O utilizador passará a membro ativo do grupo.'
+              : 'O pedido será encerrado e o utilizador terá de submeter um novo pedido.',
+            showCancelButton: true,
+            confirmButtonText: isApprove ? 'Aprovar' : 'Rejeitar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: isApprove ? '#6d28d9' : '#b42318'
+          });
+          confirmed = Boolean(result.isConfirmed);
+        } else {
+          confirmed = window.confirm(isApprove ? 'Aprovar este pedido?' : 'Rejeitar este pedido?');
+        }
+        if (!confirmed) return;
+
+        button.disabled = true;
+        try {
+          const endpoint = `/groups/memberships/${encodeURIComponent(membershipId)}/${isApprove ? 'approve' : 'reject'}`;
+          const response = await window.apiClient.post(endpoint, isApprove ? {} : { reason: 'REJECTED_BY_LEADER' });
+          showNotice(responseMessage(response, isApprove ? 'Pedido aprovado.' : 'Pedido rejeitado.'), 'success');
+          await loadGroups({ silent: true });
+        } catch (error) {
+          button.disabled = false;
+          showNotice(error && error.message ? error.message : 'Não foi possível processar o pedido.', 'error');
+        }
+      }
+
+      function renderEmptyState() {
+        const isFiltered = state.currentFilter !== 'all' || state.currentSearch;
+        if (isFiltered) {
+          return `
+            <div class="ok-empty-state-box">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <h5>Nenhum grupo localizado</h5>
+              <p>Não encontramos grupos com os filtros ou termos pesquisados no momento.</p>
+              <button type="button" class="ok-btn-outline" id="btn-clear-filters">
+                Limpar Filtros
+              </button>
+            </div>
+          `;
+        }
+        return `
+          <div class="ok-empty-state-box">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <h5>Ainda não faz parte de nenhuma Kixikila</h5>
+            <p>Junte familiares, colegas ou amigos para alcançar objetivos financeiros mútuos de forma transparente e colaborativa.</p>
+            <a href="/groups/create" class="ok-btn-primary">
+              Criar o Primeiro Grupo
+            </a>
+          </div>
+        `;
+      }
+
+      function renderGroupAction(group) {
+        const id = escapeHtml(group.id || '');
+        if (state.membershipCheckFailed) {
+          return `<button type="button" class="ok-card-btn-action" disabled aria-disabled="true">A validar acesso</button>`;
+        }
+        if (group.isCurrentUserMember) {
+          return `<button type="button" class="ok-card-btn-action" data-action="open-group" data-stop-propagation data-group-id="${id}">
+            Aceder ao grupo
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>`;
+        }
+        if (group.membershipStatus === 'PENDING_APPROVAL') {
+          return `<button type="button" class="ok-card-btn-action" disabled aria-disabled="true">Pedido enviado</button>
+            <span class="ok-membership-note" role="status">A aguardar decisão da liderança.</span>`;
+        }
+        if (group.membershipStatus === 'SUSPENDED') {
+          return `<button type="button" class="ok-card-btn-action" disabled aria-disabled="true">Adesão suspensa</button>`;
+        }
+        if (group.isPrivate) {
+          return `<button type="button" class="ok-card-btn-action" disabled aria-disabled="true">Acesso por convite</button>`;
+        }
+        const status = String(group.status || '').toUpperCase();
+        const atCapacity = Number(group.activeMembersCount || 0) >= Number(group.maxMembers || 0);
+        if (!['FORMATION', 'ACTIVE'].includes(status) || atCapacity) {
+          return `<button type="button" class="ok-card-btn-action" disabled aria-disabled="true">${atCapacity ? 'Grupo completo' : 'Adesões encerradas'}</button>`;
+        }
+        return `<button type="button" class="ok-card-btn-action" data-action="request-join" data-stop-propagation data-group-id="${id}">
+          Pedir adesão
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>`;
+      }
+
+      function renderPendingRequests(group) {
+        const requests = Array.isArray(group.pendingRequests) ? group.pendingRequests : [];
+        if (!group.canManageMembershipRequests || requests.length === 0) return '';
+        const groupId = escapeHtml(group.id || '');
+        return `
+          <details class="ok-pending-requests" data-stop-propagation>
+            <summary>${requests.length} pedido${requests.length === 1 ? '' : 's'} de adesão para analisar</summary>
+            ${requests.map((request) => {
+              const membershipId = escapeHtml(request.membership_id || request.membershipId || '');
+              const personName = escapeHtml(request.preferred_name || request.full_name || request.fullName || 'Utilizador');
+              return `
+                <div class="ok-pending-request-item">
+                  <span><strong>${personName}</strong><br><small class="text-muted">Solicitação pendente</small></span>
+                  <span class="ok-pending-request-actions">
+                    <button type="button" data-action="approve-request" data-stop-propagation data-group-id="${groupId}" data-membership-id="${membershipId}">Aprovar</button>
+                    <button type="button" data-action="reject-request" data-stop-propagation data-group-id="${groupId}" data-membership-id="${membershipId}">Rejeitar</button>
+                  </span>
+                </div>`;
+            }).join('')}
+          </details>`;
+      }
+
+      function renderGroupCard(group, index) {
+        const rawStatus = String(group.status || 'FORMATION').toUpperCase();
+        const status = STATUS_MAP[rawStatus] || STATUS_MAP.FORMATION;
+        const bgGrad = GROUP_PALETTES[index % GROUP_PALETTES.length];
+
+        const members = Number(group.activeMembersCount || group.membersCount || 1);
+        const maxMembers = Number(group.maxMembers || 12);
+        const progressPct = maxMembers > 0 ? Math.min(100, Math.round((members / maxMembers) * 100)) : 0;
+        const contributionAmount = Number(group.contributionAmount || 0);
+
+        const rawFrequency = group.frequency || group.cycle || 'MONTHLY';
+        const cycle = CYCLE_LABELS[rawFrequency] || 'Mensal';
+
+        return `
+          <div class="ok-group-card status-${status.class} ${group.isCurrentUserMember ? '' : 'not-member'}" data-group-id="${escapeHtml(group.id || '')}" data-can-open="${group.isCurrentUserMember ? 'true' : 'false'}">
+            <div class="ok-group-card-accent-line"></div>
+
+            <div class="ok-group-header">
+              <div class="d-flex align-items-center gap-3" style="min-width: 0;">
+                <div class="ok-group-avatar-wrap" style="background: ${bgGrad};">
+                  ${escapeHtml(getInitials(group.name || '?'))}
+                </div>
+                <div class="ok-group-titles">
+                  <h4 class="ok-group-title">${escapeHtml(group.name || 'Grupo Sem Nome')}</h4>
+                  ${group.isCurrentUserLeader ? '<span class="badge rounded-pill" style="display:inline-flex;margin-top:5px;background:rgba(124,58,237,.12);color:#7c3aed;border:1px solid rgba(124,58,237,.24);font-size:.68rem;font-weight:800;padding:4px 9px;">Líder fundador</span>' : ''}
+                  <p class="ok-group-sub">
+                    ${escapeHtml(cycle)}
+                  </p>
+                </div>
+              </div>
+
+              <span class="ok-real-status-pill ${status.class}">
+                <span class="ok-status-bullet"></span>
+                ${status.label}
+              </span>
+            </div>
+
+            <div class="ok-progress-block">
+              <div class="ok-progress-meta">
+                <span>Lotação de Membros</span>
+                <strong>${members} / ${maxMembers}</strong>
+              </div>
+              <div class="ok-progress-track">
+                <div class="ok-progress-fill" style="width: ${progressPct}%;"></div>
+              </div>
+            </div>
+
+            <div class="ok-group-metrics-grid">
+              <div class="ok-metric-col">
+                <span class="ok-metric-label">Quota por Membro</span>
+                <span class="ok-metric-value">${formatMoney(contributionAmount)}</span>
+              </div>
+              <div class="ok-metric-col">
+                <span class="ok-metric-label">Bolo da Rodada</span>
+                <span class="ok-metric-value" style="color: var(--ok-purple-vibrant);">${formatMoney(contributionAmount * members)}</span>
+              </div>
+            </div>
+
+            ${renderPendingRequests(group)}
+            <div class="ok-group-card-footer">
+              <span class="ok-group-count-text">
+                ${members} participante${members !== 1 ? 's' : ''}
+              </span>
+              ${renderGroupAction(group)}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderListView(groups) {
+        const rows = groups.map((group, index) => {
+          const rawStatus = String(group.status || 'FORMATION').toUpperCase();
+          const status = STATUS_MAP[rawStatus] || STATUS_MAP.FORMATION;
+          const bgGrad = GROUP_PALETTES[index % GROUP_PALETTES.length];
+          const members = Number(group.activeMembersCount || group.membersCount || 1);
+          const maxMembers = Number(group.maxMembers || 12);
+          const contributionAmount = Number(group.contributionAmount || 0);
+          const rawFrequency = group.frequency || group.cycle || 'MONTHLY';
+          const cycle = CYCLE_LABELS[rawFrequency] || 'Mensal';
+          const canOpen = Boolean(group.isCurrentUserMember);
+
+          return `
+            <div class="ok-group-list-row ${canOpen ? '' : 'not-member'}" data-group-id="${escapeHtml(group.id || '')}" data-can-open="${canOpen ? 'true' : 'false'}">
+              <div class="d-flex align-items-center gap-3" style="min-width: 0;">
+                <div class="ok-group-avatar-wrap" style="width: 44px; height: 44px; font-size: 0.95rem; background: ${bgGrad};">
+                  ${escapeHtml(getInitials(group.name || '?'))}
+                </div>
+                <div style="min-width: 0;">
+                  <h5 class="ok-group-title" style="font-size: 0.98rem;">${escapeHtml(group.name || 'Grupo Sem Nome')}</h5>
+                  ${group.isCurrentUserLeader ? '<span class="badge rounded-pill" style="display:inline-flex;margin-top:4px;background:rgba(124,58,237,.12);color:#7c3aed;border:1px solid rgba(124,58,237,.24);font-size:.66rem;font-weight:800;padding:4px 9px;">Líder fundador</span>' : ''}
+                  <p class="ok-group-sub">
+                    ${members} / ${maxMembers} membros • Quota: ${formatMoney(contributionAmount)} • ${cycle}
+                  </p>
+                  ${renderPendingRequests(group)}
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-3 flex-wrap">
+                <span class="ok-real-status-pill ${status.class}">
+                  <span class="ok-status-bullet"></span>
+                  ${status.label}
+                </span>
+                ${renderGroupAction(group)}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `<div class="ok-groups-list-container">${rows}</div>`;
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') {
+                window.apiClient.clearSession();
+              }
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+            const input = document.getElementById('global-search-input');
+            if (input) { e.preventDefault(); input.focus(); }
+          }
+        });
+      }
+
+      /* ====================================================================
+         INICIALIZAÇÃO
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', async function () {
+        initThemeToggle();
+        initAvatarFallback();
+        // Hidrata o avatar do navbar com a foto real do backend (igual ao Perfil).
+        hydrateNavbarAvatar();
+        setupGlobalActions();
+
+        document.querySelectorAll('.ok-tab').forEach(tab => {
+          tab.addEventListener('click', function () {
+            document.querySelectorAll('.ok-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            state.currentFilter = tab.getAttribute('data-filter') || 'all';
+            applyFilters();
+          });
+        });
+
+        const searchInput = document.getElementById('groups-search');
+        if (searchInput) {
+          let searchTimeout;
+          searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            const value = this.value;
+            searchTimeout = setTimeout(() => {
+              state.currentSearch = value.trim();
+              applyFilters();
+            }, 250);
+          });
+        }
+
+        document.querySelectorAll('.ok-view-toggle-btn').forEach(btn => {
+          btn.addEventListener('click', function () {
+            document.querySelectorAll('.ok-view-toggle-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.currentView = btn.getAttribute('data-view') || 'grid';
+            renderGroups();
+          });
+        });
+
+        const refreshBtn = document.getElementById('btn-refresh-groups');
+        if (refreshBtn) refreshBtn.addEventListener('click', loadGroups);
+
+        // Delegação para o botão "Limpar Filtros"
+        const groupsContainer = document.getElementById('groups-container');
+        if (groupsContainer) {
+          groupsContainer.addEventListener('click', function (e) {
+            const clearBtn = e.target.closest('#btn-clear-filters');
+            if (clearBtn) {
+              const search = document.getElementById('groups-search');
+              if (search) search.value = '';
+              state.currentSearch = '';
+              const allTab = document.querySelector('.ok-tab[data-filter="all"]');
+              if (allTab) allTab.click();
+            }
+          });
+        }
+
+        await loadGroups();
+        window.setInterval(() => {
+          if (document.visibilityState === 'visible') loadGroups({ silent: true });
+        }, 45000);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<%
+  /**
+   * Partial de Mensagens Flash do Servidor
+   * Exibe alertas de sucesso, erro, aviso e informação enviados pelos controladores
+   * via res.locals ou variáveis EJS. Utiliza ícones Bootstrap e classes do design system.
+   */
+  const flashTypes = [
+    { key: 'success', icon: 'bi-check-circle-fill', className: 'ok-flash-success' },
+    { key: 'error', icon: 'bi-exclamation-circle-fill', className: 'ok-flash-error' },
+    { key: 'warning', icon: 'bi-exclamation-triangle-fill', className: 'ok-flash-warning' },
+    { key: 'info', icon: 'bi-info-circle-fill', className: 'ok-flash-info' }
+  ];
+
+  const hasFlashMessages = flashTypes.some(function (t) {
+    return typeof locals !== 'undefined' && locals[t.key];
+  });
+%>
+
+<% if (hasFlashMessages) { %>
+  <div class="ok-flash-container" role="region" aria-live="polite" aria-atomic="true">
+
+    <% flashTypes.forEach(function (type) { %>
+      <% if (typeof locals !== 'undefined' && locals[type.key]) { %>
+        <div class="ok-flash-item <%= type.className %> fade-in" role="<%= type.key === 'error' ? 'alert' : 'status' %>" data-flash-type="<%= type.key %>">
+          
+          <div class="ok-flash-icon">
+            <i class="bi <%= type.icon %>"></i>
+          </div>
+
+          <div class="ok-flash-content">
+            <p class="ok-flash-text"><%= locals[type.key] %></p>
+          </div>
+
+          <button 
+            type="button" 
+            class="ok-flash-close" 
+            aria-label="Fechar notificação"
+            data-flash-dismiss
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      <% } %>
+    <% }); %>
+
+  </div>
+<% } %>
+
+<style>
+  .ok-flash-container {
+    position: fixed;
+    top: 88px;
+    right: 24px;
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 420px;
+    width: calc(100% - 48px);
+    pointer-events: none;
+  }
+
+  .ok-flash-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--ok-border-radius-md);
+    background-color: var(--ok-bg-card);
+    border: 1px solid var(--ok-border-color);
+    box-shadow: var(--ok-shadow-lg);
+    pointer-events: auto;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* Barra lateral colorida por tipo */
+  .ok-flash-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+  }
+
+  /* Variações por tipo */
+  .ok-flash-success::before { background-color: #10b981; }
+  .ok-flash-error::before { background-color: #ef4444; }
+  .ok-flash-warning::before { background-color: #f59e0b; }
+  .ok-flash-info::before { background-color: #3b82f6; }
+
+  .ok-flash-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .ok-flash-success .ok-flash-icon {
+    background-color: #dcfce7;
+    color: #166534;
+  }
+
+  .ok-flash-error .ok-flash-icon {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+
+  .ok-flash-warning .ok-flash-icon {
+    background-color: #fef3c7;
+    color: #92400e;
+  }
+
+  .ok-flash-info .ok-flash-icon {
+    background-color: #dbeafe;
+    color: #1e40af;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ok-flash-success .ok-flash-icon {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+    }
+    .ok-flash-error .ok-flash-icon {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+    }
+    .ok-flash-warning .ok-flash-icon {
+      background-color: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+    }
+    .ok-flash-info .ok-flash-icon {
+      background-color: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+    }
+  }
+
+  .ok-flash-content {
+    flex: 1;
+    min-width: 0;
+    padding-top: 4px;
+  }
+
+  .ok-flash-text {
+    font-size: 0.88rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--ok-text-main);
+    margin: 0;
+    word-break: break-word;
+  }
+
+  .ok-flash-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: var(--ok-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .ok-flash-close:hover {
+    background-color: var(--ok-bg-body);
+    color: var(--ok-text-main);
+  }
+
+  /* Animação de saída */
+  .ok-flash-item.is-dismissing {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  /* Responsividade */
+  @media (max-width: 640px) {
+    .ok-flash-container {
+      top: 76px;
+      right: 12px;
+      left: 12px;
+      width: auto;
+      max-width: none;
+    }
+
+    .ok-flash-item {
+      padding: 12px 14px;
+    }
+
+    .ok-flash-text {
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ok-flash-item,
+    .ok-flash-item.is-dismissing {
+      transition: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const flashItems = document.querySelectorAll('.ok-flash-item');
+
+      function dismissFlash(item) {
+        if (!item) return;
+        item.classList.add('is-dismissing');
+        setTimeout(function () {
+          if (item.parentNode) {
+            item.parentNode.removeChild(item);
+          }
+          // Remove o container se estiver vazio
+          const container = document.querySelector('.ok-flash-container');
+          if (container && container.children.length === 0) {
+            container.remove();
+          }
+        }, 260);
+      }
+
+      flashItems.forEach(function (item) {
+        // Botão de fechar manual
+        const closeBtn = item.querySelector('[data-flash-dismiss]');
+        if (closeBtn) {
+          closeBtn.addEventListener('click', function () {
+            dismissFlash(item);
+          });
+        }
+
+        // Auto-dismiss após 6 segundos para sucesso e info
+        const type = item.getAttribute('data-flash-type');
+        if (type === 'success' || type === 'info') {
+          setTimeout(function () {
+            dismissFlash(item);
+          }, 6000);
+        }
+      });
+    });
+  })();
+</script>

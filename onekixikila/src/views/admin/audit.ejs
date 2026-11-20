@@ -1,0 +1,1783 @@
+<%- include('../partials/head') %>
+<% const adminUser = (typeof user !== 'undefined' && user) ? user : {}; const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador'; const adminRoleForPage = String(adminUser.role || '').toUpperCase(); %>
+<style>
+  /* =========================================================================
+     ONEKIXIKILA ADMIN — TRILHA DE AUDITORIA (design unificado com dashboard)
+     Coerente com o dashboard do membro: roxo, Space Grotesk, rail slim tech.
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+    --ok-bg-sidebar: #08080e;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+    --ok-shadow-navbar: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-card: 18px;
+    --ok-radius-pill: 9999px;
+    --ok-radius-md: 12px;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1440px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+    --ok-bg-sidebar: #ffffff;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.25);
+    --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.10);
+    --ok-border-strong: rgba(15, 23, 42, 0.18);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.08);
+    --ok-shadow-card: rgba(15, 23, 42, 0.10);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+      --ok-bg-sidebar: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+      --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-border-strong: rgba(15, 23, 42, 0.18);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body.admin-body {
+    background-color: var(--ok-bg-canvas) !important;
+    color: var(--ok-text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(5, 5, 8, 0) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(244, 245, 249, 0) 70%);
+  }
+
+  /* =========================================================================
+     RAIL SIDEBAR — mantém todos os links e badges admin
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+    overflow-y: auto; overflow-x: hidden;
+  }
+  .ok-rail-sidebar::-webkit-scrollbar { width: 0; }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    flex-shrink: 0;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+  .ok-brand-emblem:hover { transform: translateY(-2px); }
+  .ok-brand-emblem svg { width: 24px; height: 24px; stroke: #ffffff; }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  .ok-rail-group-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ok-text-muted);
+    margin: 10px 0 2px 0;
+    text-align: center;
+    width: 100%;
+    opacity: 0.7;
+  }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: transparent;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+  }
+  .ok-rail-link.active svg { stroke: #ffffff; }
+  .ok-rail-link .ok-badge-dot {
+    position: absolute; top: 8px; right: 8px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background-color: #ef4444;
+    border: 2px solid var(--ok-bg-surface);
+  }
+  .ok-rail-link .ok-badge-count {
+    position: absolute;
+    top: 4px; right: 4px;
+    min-width: 16px; height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #f43f5e;
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--ok-bg-surface);
+    line-height: 1;
+  }
+  .ok-rail-link .ok-badge-count.badge-warn { background: #f59e0b; color: #1a1a1a; }
+  .ok-rail-link .ok-badge-count.badge-info { background: #06b6d4; color: #052029; }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+    padding-top: 14px;
+    margin-top: 8px;
+    border-top: 1px solid var(--ok-border-subtle);
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 36px);
+    padding: 20px 32px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-profile-pill:hover { border-color: var(--ok-purple-border); }
+
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    border: 2px solid var(--ok-purple-border);
+    flex-shrink: 0;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .ok-status-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .ok-clock {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.78rem;
+    color: var(--ok-text-muted);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+  .ok-page-title-main {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .ok-eyebrow {
+    color: var(--ok-purple-vibrant);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    color: #f43f5e;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-live-beacon.beacon-cyan {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: rgba(6, 182, 212, 0.3);
+    color: #06b6d4;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: currentColor;
+    box-shadow: 0 0 8px currentColor;
+    animation: okPulseDot 1.6s infinite;
+  }
+  @keyframes okPulseDot {
+    0%   { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+  }
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* =========================================================================
+     SESSÃO 1: 4 CARDS CHAPADOS (KPIs de auditoria)
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 28px auto;
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+    width: 100%;
+  }
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+  }
+  .ok-flat-card-box.theme-white { background-color: #ffffff; color: #0f172a; }
+  .ok-flat-card-box.theme-lime { background-color: #bef264; color: #0f172a; }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: #ffffff; color: #0f172a;
+    border-left: 1px solid rgba(0,0,0,0.08);
+  }
+  .ok-flat-card-box.theme-purple { background-color: #7c3aed; color: #ffffff; }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: #0f172a; }
+  .theme-purple .ok-flat-icon-container svg { stroke: #ffffff; }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .theme-purple .ok-flat-trend { background: rgba(255,255,255,0.15); color: #ffffff; }
+
+  /* =========================================================================
+     SESSÃO 2: GRID (aside KPI + módulo filtros)
+     ========================================================================= */
+  .ok-canvas-asides-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    max-width: var(--ok-content-max);
+    margin: 0 auto 30px auto;
+    align-items: start;
+    width: 100%;
+  }
+
+  .ok-balance-vault-card {
+    background: linear-gradient(160deg, var(--ok-bg-surface) 0%, var(--ok-bg-canvas) 100%);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card), 0 0 30px rgba(124, 58, 237, 0.15);
+    color: var(--ok-text-primary);
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .ok-vault-wave-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.18) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .ok-vault-badge-cluster {
+    display: flex; align-items: center; gap: 8px;
+    position: relative; z-index: 1;
+    flex-wrap: wrap;
+  }
+  .ok-token-emblem {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok-vault-balance-display {
+    margin: 22px 0 16px 0;
+    position: relative; z-index: 1;
+  }
+  .ok-vault-caption {
+    font-size: 0.72rem; font-weight: 700;
+    color: var(--ok-text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+  }
+  .ok-vault-sum {
+    font-size: 1.85rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.03em;
+    margin-top: 6px;
+    color: var(--ok-purple-vibrant);
+  }
+  .ok-vault-action-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: relative; z-index: 1;
+    margin-top: 16px;
+  }
+  .ok-vault-btn {
+    height: 44px; border-radius: var(--ok-radius-pill);
+    font-size: 0.82rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0 14px;
+  }
+  .ok-vault-btn.primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.45);
+  }
+  .ok-vault-btn.primary:hover { transform: translateY(-2px); color: #ffffff; }
+  .ok-vault-btn.ghost {
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border: 1px solid var(--ok-border-subtle);
+  }
+  .ok-vault-btn.ghost:hover { background: var(--ok-pill-bg-hover); color: var(--ok-purple-vibrant); }
+  .ok-vault-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Módulo direito (filtros) */
+  .ok-config-module-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    display: flex; flex-direction: column; justify-content: flex-start;
+    gap: 16px;
+  }
+  .ok-chart-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 4px; flex-wrap: wrap; gap: 12px;
+  }
+  .ok-chart-tagline { display: flex; align-items: center; gap: 12px; }
+  .ok-chart-tag-emblem {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: var(--ok-purple-soft); color: var(--ok-purple-vibrant);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok-chart-title { font-size: 1.02rem; font-weight: 800; color: var(--ok-text-primary); margin: 0; font-family: 'Space Grotesk', sans-serif; }
+  .ok-chart-sub { font-size: 0.75rem; color: var(--ok-text-muted); }
+
+  /* =========================================================================
+     BOTÕES E PILLS
+     ========================================================================= */
+  .admin-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: var(--ok-radius-pill);
+    border: 1px solid var(--ok-border-subtle);
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .admin-btn-pill:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    background: var(--ok-pill-bg-hover);
+    transform: translateY(-1px);
+  }
+  .admin-btn-pill-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: var(--ok-radius-pill);
+    border: 1px solid var(--ok-border-subtle);
+    background: transparent;
+    color: var(--ok-text-primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .admin-btn-pill-outline:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-1px);
+  }
+  .admin-btn-pill-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: var(--ok-radius-pill);
+    border: none;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+  }
+  .admin-btn-pill-primary:hover {
+    transform: translateY(-2px);
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgba(139, 92, 246, 0.5);
+  }
+  .admin-btn-pill-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+  /* =========================================================================
+     FILTROS (aud-filter) — inputs no estilo ok
+     ========================================================================= */
+  .aud-filter { padding: 0; background: transparent; border: none; box-shadow: none; }
+  .aud-filter .form-select,
+  .aud-filter .form-control,
+  .aud-modal .form-control {
+    background: var(--ok-input-bg) !important;
+    border: 1px solid var(--ok-border-subtle) !important;
+    color: var(--ok-text-primary) !important;
+    min-height: 42px;
+    border-radius: 12px;
+    font-size: 0.84rem;
+    padding: 0.5rem 0.85rem;
+    transition: all 0.2s ease;
+  }
+  .aud-filter .form-control:focus,
+  .aud-filter .form-select:focus,
+  .aud-modal .form-control:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+  }
+  .aud-filter .form-label {
+    color: var(--ok-text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+  }
+  .aud-filter .form-select option { background: var(--ok-bg-elevated); color: var(--ok-text-primary); }
+
+  .aud-filter .btn-primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
+  }
+  .aud-filter .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.5); }
+  .aud-filter .btn-outline-light {
+    border: 1px solid var(--ok-border-subtle);
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+  }
+  .aud-filter .btn-outline-light:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    background: var(--ok-pill-bg-hover);
+  }
+
+  /* =========================================================================
+     TABELA DE AUDITORIA
+     ========================================================================= */
+  .admin-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-card);
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+  .admin-card:hover { border-color: var(--ok-border-strong); }
+
+  .admin-table-header {
+    padding: 1.1rem 1.35rem;
+    border-bottom: 1px solid var(--ok-border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .admin-table-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.01em;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .admin-table-sub {
+    font-size: 0.78rem;
+    color: var(--ok-text-muted);
+    margin: 0;
+  }
+
+  .aud-table-wrap { overflow: auto; }
+  .aud-table { min-width: 1000px; }
+  .aud-table thead th {
+    color: var(--ok-text-muted);
+    background: rgba(255,255,255,.025);
+    border-bottom: 1px solid var(--ok-border-subtle);
+    font-size: .65rem;
+    font-weight: 800;
+    letter-spacing: .095em;
+    padding: .95rem .8rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  html[data-theme="light"] .aud-table thead th { background: rgba(15, 23, 42, 0.03); }
+  .aud-table tbody td {
+    border-bottom: 1px solid rgba(255,255,255,.055);
+    color: var(--ok-text-secondary);
+    padding: .85rem .8rem;
+    vertical-align: middle;
+  }
+  html[data-theme="light"] .aud-table tbody td { border-bottom-color: rgba(15, 23, 42, 0.06); }
+  .aud-table tbody tr:last-child td { border-bottom: 0; }
+  .aud-table tbody tr:hover { background: var(--ok-stream-hover); }
+
+  .aud-code {
+    color: var(--ok-text-primary);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .75rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+  .aud-muted { color: var(--ok-text-muted); font-size: .7rem; overflow-wrap: anywhere; }
+  .aud-badge {
+    border: 1px solid rgba(139, 92, 246, .25);
+    border-radius: 999px;
+    color: #ddd6fe;
+    display: inline-flex;
+    font-size: .63rem;
+    font-weight: 800;
+    letter-spacing: .025em;
+    padding: .3rem .52rem;
+    white-space: nowrap;
+  }
+  html[data-theme="light"] .aud-badge { color: #6d28d9; }
+  .aud-badge-action { background: rgba(124, 58, 237, .12); }
+  .aud-badge-resource {
+    background: rgba(6, 182, 212, .08);
+    border-color: rgba(6, 182, 212, .2);
+    color: #a5f3fc;
+  }
+  html[data-theme="light"] .aud-badge-resource { color: #0e7490; }
+
+  .aud-btn-icon {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--ok-border-subtle);
+    background: var(--ok-pill-bg);
+    color: var(--ok-purple-vibrant);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .aud-btn-icon:hover {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    transform: translateY(-1px);
+  }
+
+  .aud-footer {
+    align-items: center;
+    border-top: 1px solid var(--ok-border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+  }
+  .aud-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .aud-pagination button {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 9px;
+    color: var(--ok-text-secondary);
+    min-width: 36px;
+    padding: .4rem .65rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .aud-pagination button:hover:not(:disabled),
+  .aud-pagination button.is-current {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    color: var(--ok-text-primary);
+  }
+  .aud-pagination button.is-current {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+  }
+  .aud-pagination button:disabled { cursor: not-allowed; opacity: .4; }
+
+  /* =========================================================================
+     ESTADOS E AVISOS
+     ========================================================================= */
+  .aud-state {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-card);
+    color: var(--ok-text-muted);
+    padding: 2.4rem 1rem;
+    text-align: center;
+  }
+  .aud-state i { color: var(--ok-purple-vibrant); display: block; font-size: 1.6rem; margin-bottom: .6rem; }
+
+  .aud-warning {
+    background: rgba(245,158,11,.06);
+    border: 1px solid rgba(245,158,11,.2);
+    border-radius: 12px;
+    color: #fde68a;
+    font-size: .77rem;
+    line-height: 1.55;
+    padding: .85rem 1rem;
+  }
+  html[data-theme="light"] .aud-warning { color: #92400e; }
+
+  .aud-note {
+    background: rgba(6,182,212,.06);
+    border: 1px solid rgba(6,182,212,.18);
+    border-radius: 12px;
+    color: #b6e7ee;
+    font-size: .77rem;
+    line-height: 1.55;
+    padding: .85rem 1rem;
+  }
+  html[data-theme="light"] .aud-note { color: #0e7490; }
+
+  /* =========================================================================
+     MODAL
+     ========================================================================= */
+  .aud-modal .modal-content {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-strong);
+    border-radius: 18px;
+    color: var(--ok-text-primary);
+  }
+  .aud-modal .modal-header,
+  .aud-modal .modal-footer { border-color: var(--ok-border-subtle); }
+  .aud-modal .modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+  }
+  .aud-modal .btn-close-white { filter: var(--ok-bg-canvas) === #050508 ? invert(1) : none; }
+  html[data-theme="light"] .aud-modal .btn-close-white { filter: invert(0.5); }
+
+  .aud-detail {
+    background: rgba(255,255,255,.025);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 12px;
+    height: 100%;
+    padding: .8rem .9rem;
+  }
+  html[data-theme="light"] .aud-detail { background: var(--ok-pill-bg); }
+  .aud-detail-label {
+    color: var(--ok-text-muted);
+    display: block;
+    font-size: .65rem;
+    font-weight: 750;
+    letter-spacing: .06em;
+    margin-bottom: .28rem;
+    text-transform: uppercase;
+  }
+  .aud-detail-value {
+    color: var(--ok-text-primary);
+    font-size: .8rem;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .aud-json {
+    background: var(--ok-bg-canvas);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 11px;
+    color: #c4b5fd;
+    font-size: .72rem;
+    max-height: 270px;
+    overflow: auto;
+    padding: .85rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  html[data-theme="light"] .aud-json { color: #6d28d9; background: #f8f5ff; }
+  .aud-json-empty { color: var(--ok-text-muted); font-size: .75rem; }
+
+  /* =========================================================================
+     FOOTER
+     ========================================================================= */
+  .admin-footer {
+    border-top: 1px solid var(--ok-border-subtle);
+    background: var(--ok-bg-surface);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    color: var(--ok-text-muted);
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 1;
+    margin-top: 2rem;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+    .ok-canvas-asides-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+  }
+  @media (max-width: 767px) {
+    .aud-page-heading { align-items: flex-start; flex-direction: column; }
+    .aud-top-actions { width: 100%; }
+    .aud-top-actions .btn { flex: 1; }
+    .aud-footer { align-items: flex-start; flex-direction: column; }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+  }
+</style>
+<body class="admin-body d-flex flex-column min-vh-100" data-admin-role="<%= adminRoleForPage %>">
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       RAIL SIDEBAR ADMINISTRATIVO
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="admin-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila Admin Engine">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        <polyline points="9 12 11 14 15 10"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <div class="ok-rail-group-label">Visão</div>
+      <a href="/admin" class="ok-rail-link" title="Dashboard Admin">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+      </a>
+
+      <div class="ok-rail-group-label">Risco</div>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="m9 12 2 2 4-4"></path></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão KYC">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span class="ok-badge-count d-none" data-badge-mirror="sidebar-badge-kyc" id="rail-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span class="ok-badge-count badge-warn d-none" data-badge-mirror="sidebar-badge-disputes" id="rail-badge-disputes">0</span>
+      </a>
+
+      <div class="ok-rail-group-label">Tesouro</div>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos & Saídas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+        <span class="ok-badge-count badge-info d-none" data-badge-mirror="sidebar-badge-withdrawals" id="rail-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios Financeiros">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+      </a>
+      <a href="/admin/audit" class="ok-rail-link active" title="Auditoria Forense" aria-current="page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <div class="ok-rail-group-label">Config</div>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas & Limites">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/dashboard" class="ok-rail-link" title="Painel do Membro">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <a href="/logout" class="ok-rail-link text-danger" title="Terminar Sessão">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior -->
+    <header class="ok-top-nav">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="ok-search-capsule">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input type="search" id="global-admin-search" placeholder="Pesquisar eventos, atores, recursos..." autocomplete="off">
+          <kbd class="shortcut-hint">Ctrl K</kbd>
+        </div>
+        <div class="d-none d-md-flex align-items-center gap-2">
+          <span class="ok-status-pill">
+            <span class="dot"></span> Sistema Operacional
+          </span>
+          <span id="admin-utc-clock" class="ok-clock">--:--:-- UTC</span>
+        </div>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/admin/settings" class="ok-action-circle" title="Configurações">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </a>
+
+        <div class="dropdown">
+          <a href="#" class="ok-profile-pill dropdown-toggle" id="dropdownUserAdmin" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="ok-profile-avatar-nav"><%= String(adminUserName).trim().charAt(0).toUpperCase() || 'A' %></div>
+            <div class="d-flex flex-column text-start">
+              <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1; color: var(--ok-text-primary);"><%= user ? user.fullName || 'Administrador' : 'Admin' %></span>
+              <span class="text-muted" style="font-size: 0.7rem; color: var(--ok-text-muted);">Acesso Restrito</span>
+            </div>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownUserAdmin" style="background: var(--ok-bg-elevated); border: 1px solid var(--ok-border-subtle) !important; border-radius: 14px; padding: 0.5rem;">
+            <li><h6 class="dropdown-header text-uppercase small text-muted" style="letter-spacing: 0.08em; font-size: 0.65rem;">Acesso Restrito</h6></li>
+            <li><a class="dropdown-item small rounded-3" href="/admin/settings"><i class="bi bi-sliders me-2"></i>Configurações</a></li>
+            <li><a class="dropdown-item small rounded-3" href="/admin/audit"><i class="bi bi-journal-text me-2"></i>Trilha de Auditoria</a></li>
+            <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+            <li><a class="dropdown-item small rounded-3 text-danger" href="/logout"><i class="bi bi-power me-2"></i>Terminar Sessão</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <div class="ok-eyebrow">Administração · Conformidade e rastreabilidade</div>
+        <h1 class="ok-page-title-main">
+          Trilha de auditoria
+          <span class="ok-live-beacon beacon-cyan">
+            <span class="ok-pulse-dot"></span>
+            Append-only
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          <%= new Date().toLocaleDateString('pt-AO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %> &bull; Eventos institucionais imutáveis · Acesso exclusivo ADMIN e AUDITOR.
+        </p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="admin-btn-pill-outline" id="aud-refresh">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          Atualizar
+        </button>
+        <button type="button" class="admin-btn-pill-primary" id="aud-export" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Exportar página CSV
+        </button>
+      </div>
+    </section>
+
+    <!-- Nota append-only -->
+    <div class="aud-note mb-4">
+      <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>
+      Eventos de auditoria são <strong>append-only</strong>: esta interface não permite editar nem eliminar registos. O CSV contém apenas a página atualmente carregada.
+    </div>
+
+    <!-- Alerta dinâmico -->
+    <div id="aud-alert" class="alert d-none mb-4" role="alert" aria-live="polite"></div>
+
+    <!-- SESSÃO 1: 4 CARDS KPI -->
+    <div class="ok-flat-quad-strip" aria-label="Resumo da página atual">
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="6" width="32" height="36" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="14" y1="16" x2="34" y2="16" stroke="currentColor"/>
+              <line x1="14" y1="24" x2="34" y2="24" stroke="currentColor"/>
+              <line x1="14" y1="32" x2="26" y2="32" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Eventos nesta página</h5>
+          <p class="ok-flat-desc">Registos devolvidos pela consulta atual.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="aud-stat-events">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            Página atual
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="6" stroke="currentColor"/>
+              <circle cx="32" cy="18" r="6" stroke="currentColor"/>
+              <path d="M8 40C8 32 13 26 18 26C21 26 24 28 26 30" stroke="currentColor"/>
+              <path d="M24 30C26 28 29 26 32 26C37 26 40 32 40 40" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Atores distintos</h5>
+          <p class="ok-flat-desc">Utilizadores únicos que geraram eventos.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="aud-stat-actors">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Identificados
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M26 6L10 28H22L20 42L36 20H24L26 6Z" stroke="currentColor" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Ações distintas</h5>
+          <p class="ok-flat-desc">Tipos de ação registados na página.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="aud-stat-actions">—</span>
+          <div class="ok-flat-trend">Diversidade</div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="10" width="14" height="14" stroke="currentColor" stroke-linecap="square"/>
+              <rect x="28" y="10" width="14" height="14" stroke="currentColor" stroke-linecap="square"/>
+              <rect x="6" y="30" width="14" height="10" stroke="currentColor" stroke-linecap="square"/>
+              <rect x="28" y="30" width="14" height="10" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Recursos distintos</h5>
+          <p class="ok-flat-desc">Entidades afetadas na página.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="aud-stat-resources">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            Únicos
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSÃO 2: VAULT (resumo) + MÓDULO FILTROS -->
+    <div class="ok-canvas-asides-grid">
+
+      <!-- Vault: resumo do operador -->
+      <div class="ok-balance-vault-card">
+        <div class="ok-vault-wave-bg"></div>
+
+        <div>
+          <div class="ok-vault-badge-cluster">
+            <div class="ok-token-emblem" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <span class="fw-bold" style="font-size: 0.78rem; color: var(--ok-text-primary);">Sessão de Auditoria</span>
+            <span class="badge ms-auto" style="background: rgba(6,182,212,0.15); color: #06b6d4; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 999px;" id="admin-access-badge"><%= adminRoleForPage || 'AUDITOR' %></span>
+          </div>
+
+          <div class="ok-vault-balance-display">
+            <span class="ok-vault-caption">
+              Operador
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <div class="ok-vault-sum" style="font-size: 1.35rem;"><%= adminUserName %></div>
+            <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Modo de acesso:</span>
+              <strong style="color: var(--ok-text-primary);">Somente leitura</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Total na página:</span>
+              <strong style="color: var(--ok-purple-vibrant);" id="vault-total">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="ok-vault-action-row">
+          <button type="button" class="ok-vault-btn primary" id="aud-refresh-vault">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Recarregar
+          </button>
+          <a href="/admin" class="ok-vault-btn ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            Dashboard
+          </a>
+        </div>
+      </div>
+
+      <!-- Módulo direito: filtros -->
+      <div class="ok-config-module-card">
+        <div class="ok-chart-header">
+          <div class="ok-chart-tagline">
+            <div class="ok-chart-tag-emblem">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            </div>
+            <div>
+              <h5 class="ok-chart-title">Filtrar registos</h5>
+              <span class="ok-chart-sub">Combine ação, recurso, ator e intervalo de datas</span>
+            </div>
+          </div>
+          <span class="aud-eyebrow" id="aud-total-label"></span>
+        </div>
+
+        <section class="aud-filter" aria-labelledby="aud-filter-title">
+          <form id="aud-filter-form" class="row g-2 align-items-end">
+            <div class="col-12 col-md-2">
+              <label for="aud-action" class="form-label">Ação</label>
+              <select id="aud-action" class="form-select">
+                <option value="">Todas</option>
+                <option>CREATE</option><option>UPDATE</option><option>DELETE</option>
+                <option>LOGIN</option><option>LOGOUT</option>
+                <option>PASSWORD_CHANGE</option><option>ROLE_CHANGE</option><option>STATUS_CHANGE</option>
+                <option>KYC_REVIEW</option><option>FINANCIAL_TRANSACTION</option>
+                <option>EXPORT_DATA</option><option>ADMIN_ACTION</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-2">
+              <label for="aud-resource" class="form-label">Tipo de recurso</label>
+              <select id="aud-resource" class="form-select">
+                <option value="">Todos</option>
+                <option>USER</option><option>USER_PROFILE</option><option>USER_DEVICE</option><option>SESSION</option>
+                <option>GROUP</option><option>GROUP_RULES</option><option>GROUP_LOCATION</option><option>GROUP_MEMBERSHIP</option>
+                <option>GROUP_INVITATION</option><option>LEADERSHIP_ASSIGNMENT</option><option>GROUP_SCHEDULE</option>
+                <option>CONTRIBUTION_OBLIGATION</option><option>CONTRIBUTION</option><option>ROTATION_PLAN</option>
+                <option>ROTATION_PAYOUT</option><option>ROTATION_SWAP</option><option>WALLET</option>
+                <option>LEDGER_TRANSACTION</option><option>DEPOSIT</option><option>WITHDRAWAL</option>
+                <option>INTERNAL_TRANSFER</option><option>PAYMENT_REQUEST</option><option>QR_TOKEN</option>
+                <option>FEE</option><option>LIMIT_RULE</option><option>DISPUTE</option><option>RISK_EVENT</option>
+                <option>NOTIFICATION</option><option>CHAT_MESSAGE</option><option>CHAT_REPORT</option>
+                <option>DOCUMENT</option><option>VERIFICATION_DOCUMENT</option><option>STORAGE_FILE</option>
+                <option>STORAGE_OBJECT</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-3">
+              <label for="aud-actor" class="form-label">ID do ator (UUID)</label>
+              <input id="aud-actor" class="form-control" type="text" maxlength="36" placeholder="00000000-0000-0000-0000-000000000000" autocomplete="off">
+            </div>
+            <div class="col-6 col-md-1">
+              <label for="aud-start" class="form-label">De</label>
+              <input id="aud-start" class="form-control" type="date">
+            </div>
+            <div class="col-6 col-md-1">
+              <label for="aud-end" class="form-label">Até</label>
+              <input id="aud-end" class="form-control" type="date">
+            </div>
+            <div class="col-6 col-md-1">
+              <label for="aud-limit" class="form-label">Por pág.</label>
+              <select id="aud-limit" class="form-select">
+                <option>20</option><option>50</option><option>100</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-2 d-flex gap-2">
+              <button type="submit" class="btn btn-primary flex-grow-1">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="margin-right:4px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                Aplicar
+              </button>
+              <button type="reset" class="btn btn-outline-light" title="Limpar filtros" aria-label="Limpar filtros">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+    </div>
+
+    <!-- Loading e erro -->
+    <div id="aud-loading" class="admin-card aud-state mb-4" role="status" aria-live="polite">
+      <span class="spinner-border spinner-border-sm text-primary me-2" aria-hidden="true"></span>
+      A carregar a trilha de auditoria…
+    </div>
+    <div id="aud-error" class="admin-card aud-state d-none mb-4" role="alert"></div>
+
+    <!-- SESSÃO 3: TABELA DE EVENTOS -->
+    <section class="admin-card mb-4 d-none" id="aud-table-card" aria-labelledby="aud-table-title">
+      <div class="admin-table-header">
+        <div>
+          <h2 class="admin-table-title" id="aud-table-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <polyline points="9 15 11 17 15 13"></polyline>
+            </svg>
+            Eventos institucionais
+          </h2>
+          <p class="admin-table-sub mb-0">Ordenação mais recente primeiro; use filtros e paginação para explorar a trilha.</p>
+        </div>
+        <span class="aud-eyebrow" id="aud-total-label-2"></span>
+      </div>
+      <div class="aud-table-wrap">
+        <table class="table table-admin aud-table mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4">Data e hora</th>
+              <th>Ator</th>
+              <th>Ação</th>
+              <th>Recurso</th>
+              <th>ID do recurso</th>
+              <th>IP</th>
+              <th class="text-end pe-4">Detalhe</th>
+            </tr>
+          </thead>
+          <tbody id="aud-table-body"></tbody>
+        </table>
+      </div>
+      <div class="aud-footer">
+        <span class="small text-muted" id="aud-page-info">—</span>
+        <ul class="aud-pagination" id="aud-pagination" aria-label="Paginação dos registos"></ul>
+      </div>
+    </section>
+
+    <!-- Aviso -->
+    <div class="aud-warning mb-4">
+      <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
+      Metadados e valores anteriores/novos podem conter informação operacional sensível. Consulte-os apenas quando necessário para a auditoria e não partilhe exportações fora dos canais autorizados.
+    </div>
+
+  </div>
+
+  <footer class="admin-footer">
+    <div class="container-fluid">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Trilha de auditoria institucional imutável.</span>
+    </div>
+  </footer>
+
+  <!-- Modal de detalhe -->
+  <div class="modal fade aud-modal" id="modal-aud-detail" tabindex="-1" aria-labelledby="modalAudDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="modalAudDetailLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Detalhe do evento de auditoria
+          </h2>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body" id="aud-detail-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/sweet-alert') %>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function(){
+      'use strict';
+      const role = String(document.body.dataset.adminRole || '').toUpperCase(),
+            canView = ['ADMIN','AUDITOR'].includes(role),
+            el = {
+              loading: document.getElementById('aud-loading'),
+              error: document.getElementById('aud-error'),
+              card: document.getElementById('aud-table-card'),
+              body: document.getElementById('aud-table-body'),
+              pagination: document.getElementById('aud-pagination'),
+              alert: document.getElementById('aud-alert')
+            };
+      let page = 1, pages = 1, pageSize = 20, events = [], seq = 0;
+
+      function esc(v) { return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]) }
+      function errMsg(e,f) { return e && typeof e.message === 'string' && e.message.trim() ? e.message : f }
+      function showAlert(t,type) { el.alert.className='alert alert-'+(type||'danger')+' mb-4'; el.alert.textContent=String(t||'Ocorreu um erro.'); el.alert.classList.remove('d-none'); }
+      function clearAlert() { el.alert.classList.add('d-none'); el.alert.textContent=''; }
+      function dateTime(v) { if(!v)return'—'; const d=new Date(v); return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat('pt-PT',{dateStyle:'medium',timeStyle:'medium'}).format(d); }
+      function uuidValid(s) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s); }
+      function nextDay(s) { const d=new Date(s+'T00:00:00Z'); d.setUTCDate(d.getUTCDate()+1); return d.toISOString().slice(0,10); }
+      function parseJson(v) { if(v==null||v==='')return null; if(typeof v==='string'){try{return JSON.parse(v)}catch(_){return v}} return v; }
+      function pretty(v) { const x=parseJson(v); return x==null?'—':typeof x==='string'?x:JSON.stringify(x,null,2); }
+
+      function requestParams(requestPage) {
+        const q = new URLSearchParams({page:String(requestPage),limit:String(pageSize)}),
+              action = document.getElementById('aud-action').value,
+              resource = document.getElementById('aud-resource').value,
+              actor = document.getElementById('aud-actor').value.trim(),
+              start = document.getElementById('aud-start').value,
+              end = document.getElementById('aud-end').value;
+        if(actor && !uuidValid(actor)) throw new Error('O ID do ator deve ser um UUID válido.');
+        if(start && end && start > end) throw new Error('A data inicial não pode ser posterior à data final.');
+        if(action) q.set('action', action);
+        if(resource) q.set('resourceType', resource);
+        if(actor) q.set('actorUserId', actor);
+        if(start) q.set('startDate', start);
+        if(end) q.set('endDate', nextDay(end));
+        return q;
+      }
+
+      function updateStats(data, p) {
+        const total = Number(p && (p.totalItems ?? p.totalCount));
+        document.getElementById('aud-stat-events').textContent = String(data.length);
+        document.getElementById('aud-stat-actors').textContent = String(new Set(data.map(x => x.actor_user_id).filter(Boolean)).size);
+        document.getElementById('aud-stat-actions').textContent = String(new Set(data.map(x => x.action).filter(Boolean)).size);
+        document.getElementById('aud-stat-resources').textContent = String(new Set(data.map(x => x.resource_type).filter(Boolean)).size);
+        const totalLabel = (Number.isFinite(total) ? new Intl.NumberFormat('pt-PT').format(total) : data.length) + ' evento(s)';
+        const lbl1 = document.getElementById('aud-total-label');
+        if (lbl1) lbl1.textContent = totalLabel;
+        const lbl2 = document.getElementById('aud-total-label-2');
+        if (lbl2) lbl2.textContent = totalLabel;
+        const vaultTotal = document.getElementById('vault-total');
+        if (vaultTotal) vaultTotal.textContent = totalLabel;
+      }
+
+      function renderRows(data) {
+        if (!data.length) {
+          el.body.innerHTML = '<tr><td colspan="7"><div class="aud-state m-3"><i class="bi bi-journal" aria-hidden="true"></i><strong class="d-block text-white mb-1">Nenhum evento encontrado</strong><span>Altere os filtros ou tente novamente mais tarde.</span></div></td></tr>';
+          return;
+        }
+        el.body.innerHTML = data.map((e, i) =>
+          '<tr><td class="ps-4"><div class="text-white small fw-semibold" style="color:var(--ok-text-primary)!important;">' + esc(dateTime(e.created_at)) + '</div><div class="aud-muted">Evento ' + esc(e.id||'—') + '</div></td><td><div class="text-white small fw-semibold" style="color:var(--ok-text-primary)!important;">' + esc(e.actor_name||'Ator não identificado') + '</div><div class="aud-muted">' + esc(e.actor_email||e.actor_user_id||'Sistema') + '</div><span class="aud-badge mt-1">' + esc(e.actor_role||'—') + '</span></td><td><span class="aud-badge aud-badge-action">' + esc(e.action||'—') + '</span></td><td><span class="aud-badge aud-badge-resource">' + esc(e.resource_type||'—') + '</span></td><td><span class="aud-code">' + esc(e.resource_id||'—') + '</span></td><td><span class="aud-muted">' + esc(e.ip_address||'—') + '</span></td><td class="text-end pe-4"><button type="button" class="btn btn-sm aud-btn-icon" data-aud-index="' + i + '" aria-label="Ver evento ' + esc(e.id||'') + '" title="Consultar evento"><i class="bi bi-eye" aria-hidden="true"></i></button></td></tr>'
+        ).join('');
+      }
+
+      function renderPages(meta) {
+        const total = Number(meta && (meta.totalItems ?? meta.totalCount)),
+              cur = Number(meta && (meta.currentPage ?? meta.page)),
+              tp = Number(meta && (meta.totalPages ?? meta.total_pages)),
+              lim = Number(meta && (meta.pageSize ?? meta.limit));
+        if (Number.isFinite(cur) && cur > 0) page = cur;
+        if (Number.isFinite(lim) && lim > 0) pageSize = lim;
+        pages = Number.isFinite(tp) && tp > 0 ? tp : 1;
+        const start = Number.isFinite(total) && total > 0 ? (page-1)*pageSize+1 : 0,
+              last = Number.isFinite(total) && total > 0 ? Math.min(page*pageSize, total) : events.length;
+        document.getElementById('aud-page-info').textContent = Number.isFinite(total)
+          ? 'A mostrar ' + start + '–' + last + ' de ' + new Intl.NumberFormat('pt-PT').format(total) + ' · Página ' + page + ' de ' + pages
+          : 'Página ' + page + ' · ' + events.length + ' evento(s)';
+        const nums = Array.from(new Set([1, pages, page-1, page, page+1].filter(n => n>=1 && n<=pages))).sort((a,b)=>a-b);
+        let html = '<li><button type="button" data-aud-page="' + (page-1) + '" ' + (page<=1?'disabled':'') + ' aria-label="Página anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></button></li>', prev = 0;
+        nums.forEach(n => {
+          if (prev && n - prev > 1) html += '<li class="text-muted px-1 align-self-center" aria-hidden="true">…</li>';
+          html += '<li><button type="button" data-aud-page="' + n + '" class="' + (page===n?'is-current':'') + '" ' + (page===n?'aria-current="page"':'') + '>' + n + '</button></li>';
+          prev = n;
+        });
+        html += '<li><button type="button" data-aud-page="' + (page+1) + '" ' + (page>=pages?'disabled':'') + ' aria-label="Página seguinte"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></li>';
+        el.pagination.innerHTML = html;
+      }
+
+      async function loadAudit(requestPage) {
+        if (!canView) {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-shield-lock" aria-hidden="true"></i><strong class="d-block text-white mb-2">Acesso restrito</strong><span>A trilha de auditoria institucional está limitada a ADMIN e AUDITOR.</span>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-plug" aria-hidden="true"></i><strong class="d-block text-white mb-2">Cliente da API indisponível</strong><span>Não é seguro apresentar dados de auditoria sem o cliente autenticado.</span><div class="mt-3"><button type="button" class="btn btn-sm btn-outline-light" id="aud-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        page = requestPage || 1;
+        clearAlert();
+        el.error.classList.add('d-none');
+        el.card.classList.add('d-none');
+        el.loading.classList.remove('d-none');
+        events = [];
+        document.getElementById('aud-export').disabled = true;
+        const current = ++seq;
+        let q;
+        try {
+          pageSize = Number(document.getElementById('aud-limit').value) || 20;
+          q = requestParams(page);
+        } catch (e) {
+          el.loading.classList.add('d-none');
+          showAlert(e.message, 'warning');
+          return;
+        }
+        try {
+          const response = await window.apiClient.get('/admin/audit-logs?' + q.toString());
+          if (current !== seq) return;
+          if (!response || response.success === false || !Array.isArray(response.data)) throw new Error('A API não devolveu uma lista de eventos válida.');
+          events = response.data;
+          renderRows(events);
+          updateStats(events, response.pagination || {});
+          renderPages(response.pagination || {});
+          el.loading.classList.add('d-none');
+          el.card.classList.remove('d-none');
+          document.getElementById('aud-export').disabled = events.length === 0;
+        } catch (e) {
+          if (current !== seq) return;
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-exclamation-triangle" aria-hidden="true"></i><strong class="d-block text-white mb-2">Não foi possível carregar os registos</strong><span>' + esc(errMsg(e, 'Falha de comunicação com o servidor.')) + '</span><div class="mt-3"><button type="button" class="btn btn-sm btn-outline-light" id="aud-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+        }
+      }
+
+      function detailField(label, value) {
+        return '<div class="col-12 col-md-6"><div class="aud-detail"><span class="aud-detail-label">' + esc(label) + '</span><span class="aud-detail-value">' + esc(value==null||value===''?'—':value) + '</span></div></div>';
+      }
+      function jsonBlock(label, value) {
+        const p = pretty(value);
+        return '<div class="col-12"><div class="aud-detail"><span class="aud-detail-label">' + esc(label) + '</span>' + (p==='—'?'<div class="aud-json-empty">Sem valores registados.</div>':'<pre class="aud-json mb-0">' + esc(p) + '</pre>') + '</div></div>';
+      }
+
+      function openDetail(e) {
+        if (!window.bootstrap || !window.bootstrap.Modal) return showAlert('Os componentes da interface não foram inicializados.', 'warning');
+        const modal = window.bootstrap.Modal.getOrCreateInstance(document.getElementById('modal-aud-detail'));
+        document.getElementById('aud-detail-body').innerHTML =
+          '<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3"><div><div class="h5 fw-bold font-monospace mb-1" style="color:var(--ok-text-primary);">' + esc(e.id||'Evento') + '</div><span class="aud-badge aud-badge-action">' + esc(e.action||'—') + '</span> <span class="aud-badge aud-badge-resource">' + esc(e.resource_type||'—') + '</span></div><span class="small text-muted">' + esc(dateTime(e.created_at)) + '</span></div>' +
+          '<div class="row g-2 mb-3">' +
+            detailField('Ator', e.actor_name) +
+            detailField('E-mail do ator', e.actor_email) +
+            detailField('Papel do ator', e.actor_role) +
+            detailField('ID do ator', e.actor_user_id) +
+            detailField('Endereço IP', e.ip_address) +
+            detailField('ID do recurso', e.resource_id) +
+            detailField('ID de correlação da requisição', e.request_id) +
+          '</div>' +
+          '<div class="row g-2">' +
+            jsonBlock('Estado anterior (old_values)', e.old_values) +
+            jsonBlock('Novo estado (new_values)', e.new_values) +
+            jsonBlock('Metadados', e.metadata) +
+          '</div>' +
+          '<div class="aud-warning mt-3"><i class="bi bi-lock me-2" aria-hidden="true"></i>Registo somente leitura; os eventos de auditoria não podem ser alterados nem eliminados.</div>';
+        modal.show();
+      }
+
+      function csvCell(v) {
+        let s = v==null ? '' : typeof v==='object' ? JSON.stringify(v) : String(v);
+        if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      function exportPage() {
+        if (!events.length) return;
+        const head = ['id','created_at','actor_name','actor_email','actor_user_id','actor_role','ip_address','action','resource_type','resource_id','request_id','old_values','new_values','metadata'];
+        const rows = [head, ...events.map(e => head.map(k => e[k]))];
+        const csv = '\uFEFF' + rows.map(r => r.map(csvCell).join(';')).join('\r\n'),
+              url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})),
+              a = document.createElement('a');
+        a.href = url;
+        a.download = 'onekixikila-auditoria-pagina-' + page + '-' + new Date().toISOString().slice(0,10) + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      document.getElementById('aud-filter-form').addEventListener('submit', ev => { ev.preventDefault(); loadAudit(1); });
+      document.getElementById('aud-filter-form').addEventListener('reset', () => { window.setTimeout(() => loadAudit(1), 0); });
+      document.getElementById('aud-refresh').addEventListener('click', () => loadAudit(page));
+      const refreshVault = document.getElementById('aud-refresh-vault');
+      if (refreshVault) refreshVault.addEventListener('click', () => loadAudit(page));
+      document.getElementById('aud-export').addEventListener('click', exportPage);
+      el.pagination.addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-aud-page]');
+        if (!b || b.disabled) return;
+        const p = Number(b.dataset.audPage);
+        if (Number.isInteger(p) && p >= 1 && p <= pages) loadAudit(p);
+      });
+      el.body.addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-aud-index]');
+        if (!b) return;
+        const e = events[Number(b.dataset.audIndex)];
+        if (e) openDetail(e);
+      });
+      el.error.addEventListener('click', ev => { if (ev.target.closest('#aud-retry')) loadAudit(page); });
+
+      // ===== Theme toggle =====
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        themeBtn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      // ===== Sidebar mobile toggle =====
+      const toggleBtn = document.getElementById('sidebar-toggle-btn');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          document.body.classList.toggle('mobile-nav-active');
+        });
+      }
+
+      // ===== Mirror badges admin → rail =====
+      function mirrorBadges() {
+        ['kyc','disputes','withdrawals'].forEach((key) => {
+          const original = document.getElementById('sidebar-badge-' + key);
+          const mirror = document.getElementById('rail-badge-' + key);
+          if (!original || !mirror) return;
+          const hidden = original.classList.contains('d-none');
+          mirror.classList.toggle('d-none', hidden);
+          if (!hidden) {
+            const txt = (original.textContent || '').trim();
+            if (txt) mirror.textContent = txt;
+          }
+        });
+      }
+      mirrorBadges();
+      const badgeObserver = new MutationObserver(mirrorBadges);
+      ['kyc','disputes','withdrawals'].forEach((key) => {
+        const elBadge = document.getElementById('sidebar-badge-' + key);
+        if (elBadge) badgeObserver.observe(elBadge, { attributes: true, childList: true, characterData: true, subtree: true });
+      });
+
+      // ===== Ctrl+K foca pesquisa =====
+      document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+          const input = document.getElementById('global-admin-search');
+          if (input) { e.preventDefault(); input.focus(); }
+        }
+      });
+
+      // ===== Relógio UTC =====
+      const clock = document.getElementById('admin-utc-clock');
+      function tick() {
+        if (clock) clock.textContent = new Intl.DateTimeFormat('pt-PT', {timeZone:'UTC',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date()) + ' UTC';
+      }
+      tick();
+      window.setInterval(tick, 1000);
+
+      loadAudit(1);
+    })();
+  </script>
+</body>
+</html>

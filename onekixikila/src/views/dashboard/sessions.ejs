@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Dispositivos e Sessões — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Escala MAIOR (igual à Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-accent-emerald: #10b981;
+      --ok-accent-amber: #f59e0b;
+      --ok-accent-rose: #f43f5e;
+      --ok-accent-cyan: #06b6d4;
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL SLIM TECH
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* =========================================================================
+       TOP BAR — CENTRALIZADA NO CONTEÚDO (max-width 1280px)
+       ========================================================================= */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1280px;
+      margin: 0 auto 26px auto;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: 1280px;
+      margin: 0 auto 30px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-breadcrumb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      font-size: 0.86rem; font-weight: 700;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .ok-breadcrumb-btn:hover {
+      background: var(--ok-pill-bg-hover);
+      color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-border);
+      transform: translateX(-2px);
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+    }
+
+    .ok-canvas-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .ok-btn-confirm-pill {
+      height: 52px;
+      padding: 0 28px;
+      border-radius: var(--ok-radius-pill);
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45);
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+    .ok-btn-confirm-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.65);
+      color: #ffffff;
+    }
+
+    .ok-btn-ghost-pill {
+      height: 52px;
+      padding: 0 24px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-ghost-pill:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Banner cautelar */
+    .ok-security-banner-pill {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 22px;
+      border-radius: 18px;
+      background: rgba(245, 158, 11, 0.10);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #f59e0b;
+      margin-bottom: 30px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* =========================================================================
+       LAYOUT 2 COLUNAS
+       ========================================================================= */
+    .ok-sessions-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 32px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .ok-sessions-roster-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 10px 36px var(--ok-shadow-card);
+    }
+
+    .ok-roster-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Item de sessão */
+    .ok-session-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      border-radius: 18px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      margin-bottom: 14px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 14px;
+    }
+    .ok-session-item-row:hover {
+      border-color: var(--ok-purple-border);
+      background: var(--ok-purple-soft);
+      transform: translateX(4px);
+    }
+    .ok-session-item-row.current-active {
+      border-left: 4px solid var(--ok-purple-vibrant);
+      background: linear-gradient(90deg, rgba(139, 92, 246, 0.09) 0%, var(--ok-pill-bg) 100%);
+    }
+
+    .ok-device-emblem-cell {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .ok-device-3d-badge {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    }
+    .ok-device-3d-badge svg { width: 24px; height: 24px; }
+    .ok-device-3d-badge.current {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+    }
+    .ok-device-3d-badge.regular {
+      background: var(--ok-bg-surface);
+      color: var(--ok-purple-vibrant);
+      border: 1px solid var(--ok-purple-border);
+    }
+
+    .ok-device-info-text h6 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0 0 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ok-status-pill-sub {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: var(--ok-radius-pill);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .ok-status-pill-sub.current {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-status-pill-sub.trusted {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+    }
+
+    .ok-device-specs-line {
+      font-size: 0.8rem;
+      color: var(--ok-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .ok-device-specs-line span {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ok-device-specs-line code {
+      background: var(--ok-pill-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: var(--ok-text-primary);
+    }
+
+    .ok-session-action-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .ok-btn-revoke-single {
+      height: 40px;
+      padding: 0 18px;
+      border-radius: var(--ok-radius-pill);
+      background: transparent;
+      color: #f43f5e;
+      border: 1.5px solid rgba(244, 63, 94, 0.4);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .ok-btn-revoke-single:hover {
+      background: #f43f5e;
+      color: #ffffff;
+      border-color: #f43f5e;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+    }
+
+    /* =========================================================================
+       WIDGETS DIREITA
+       ========================================================================= */
+    .ok-side-widget-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 36px var(--ok-shadow-card);
+      margin-bottom: 24px;
+    }
+
+    .ok-widget-title-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 20px;
+    }
+    .ok-widget-title-row h5 {
+      font-size: 1.1rem; font-weight: 800;
+      margin: 0;
+      color: var(--ok-text-primary);
+    }
+
+    .ok-widget-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .ok-kpi-box {
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .ok-kpi-num {
+      font-size: 1.65rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--ok-text-primary);
+      line-height: 1.1;
+    }
+    .ok-kpi-sub {
+      font-size: 0.76rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 6px;
+    }
+
+    .ok-widget-btn-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ok-side-action-btn {
+      width: 100%;
+      height: 48px;
+      border-radius: var(--ok-radius-pill);
+      font-size: 0.88rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-side-action-btn.secondary {
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1.5px solid var(--ok-border-subtle);
+    }
+    .ok-side-action-btn.secondary:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-side-action-btn.danger {
+      background: transparent;
+      color: #f43f5e;
+      border: 1.5px solid rgba(244, 63, 94, 0.4);
+    }
+    .ok-side-action-btn.danger:hover {
+      background: #f43f5e;
+      color: #ffffff;
+      border-color: #f43f5e;
+      box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .ok-vigilance-card {
+      background: linear-gradient(145deg, var(--ok-bg-surface) 0%, var(--ok-bg-canvas) 100%);
+      border: 1px solid var(--ok-purple-border);
+      border-radius: 24px;
+      padding: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px var(--ok-shadow-card), 0 0 30px rgba(124, 58, 237, 0.15);
+    }
+    .ok-vigilance-card svg.watermark {
+      position: absolute;
+      right: -20px; bottom: -20px;
+      width: 140px; height: 140px;
+      opacity: 0.08;
+      pointer-events: none;
+      color: var(--ok-purple-vibrant);
+    }
+
+    /* Empty state */
+    .ok-empty-state {
+      text-align: center; padding: 3rem 1.5rem;
+      color: var(--ok-text-muted);
+    }
+    .ok-empty-state svg {
+      opacity: 0.4;
+      margin-bottom: 0.75rem;
+      display: block;
+      margin-inline: auto;
+    }
+    .ok-empty-state h6 {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    /* Responsividade */
+    @media (max-width: 1280px) {
+      .ok-sessions-layout-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.7rem; }
+      .ok-session-item-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .ok-session-action-cell {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/sessions" class="ok-rail-link active" title="Sessões">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior — CENTRALIZADA NO CONTEÚDO (max-width 1280px) -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar IP, dispositivo ou navegador..." autocomplete="off">
+        <kbd class="shortcut-hint">Filtrar</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" id="ok-nav-fullname" style="font-size: 0.92rem; line-height: 1.15;"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" id="ok-nav-role" style="font-size: 0.76rem;"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <a href="/dashboard" class="ok-breadcrumb-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Voltar ao Painel
+        </a>
+        <h1 class="ok-page-title-main">
+          Dispositivos & Sessões Ativas
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Monitorização Contínua
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          Auditoria de acessos, revogação imediata de terminais remotos e gestão de confiança criptográfica de hardware.
+        </p>
+      </div>
+
+      <div class="ok-canvas-header-actions">
+        <a href="/change-password" class="ok-btn-ghost-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Alterar Palavra-passe
+        </a>
+        <button type="button" class="ok-btn-confirm-pill" id="btn-terminate-other-sessions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+          Terminar Outras Sessões
+        </button>
+      </div>
+    </section>
+
+    <!-- Banner cautelar -->
+    <div class="ok-security-banner-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width: 22px; height: 22px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <div>
+        <strong>Medida de Salvaguarda:</strong> Se identificar algum dispositivo, endereço IP ou localização não reconhecida, termine a sessão imediatamente e proceda à redefinição de palavra-passe.
+      </div>
+    </div>
+
+    <!-- Layout principal -->
+    <div class="ok-sessions-layout-grid">
+
+      <!-- Roster de Sessões -->
+      <div class="ok-sessions-roster-card">
+        <div class="ok-roster-header-bar">
+          <div class="d-flex align-items-center gap-2">
+            <h5 class="fw-bold mb-0" style="font-size: 1.15rem;">Sessões com Tokens Ativos</h5>
+            <span class="badge" style="background: var(--ok-purple-soft); color: var(--ok-purple-vibrant); font-weight: 800; font-size: 0.78rem; padding: 5px 12px; border-radius: 999px;" id="sessions-count-badge">
+              0 ativas
+            </span>
+          </div>
+
+          <button type="button" class="ok-btn-ghost-pill" id="btn-reload-sessions" style="height: 42px; padding: 0 16px; font-size: 0.82rem;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 14px; height: 14px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Sincronizar
+          </button>
+        </div>
+
+        <div id="sessions-stream-container">
+          <div class="ok-empty-state">
+            <div class="spinner-border spinner-border-sm mb-2" role="status" style="color: var(--ok-purple-vibrant);"></div>
+            <p class="small mb-0">A consultar conexões ativas no Neon PostgreSQL...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widgets -->
+      <div>
+        
+        <div class="ok-side-widget-card">
+          <div class="ok-widget-title-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="width: 22px; height: 22px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <h5>Métricas de Acesso</h5>
+          </div>
+
+          <div class="ok-widget-kpi-grid">
+            <div class="ok-kpi-box">
+              <div class="ok-kpi-num" id="kpi-active-sessions-num">0</div>
+              <div class="ok-kpi-sub">Sessões Ativas</div>
+            </div>
+            <div class="ok-kpi-box">
+              <div class="ok-kpi-num" id="kpi-trusted-devices-num">0</div>
+              <div class="ok-kpi-sub">Confiáveis</div>
+            </div>
+            <div class="ok-kpi-box">
+              <div class="ok-kpi-num" id="kpi-unique-ips-num">0</div>
+              <div class="ok-kpi-sub">IPs Registados</div>
+            </div>
+            <div class="ok-kpi-box">
+              <div class="ok-kpi-num" style="color: #10b981;" id="kpi-session-cap-num">10</div>
+              <div class="ok-kpi-sub">Limite Máximo</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ok-side-widget-card">
+          <div class="ok-widget-title-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="width: 22px; height: 22px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <h5>Ações de Emergência</h5>
+          </div>
+
+          <div class="ok-widget-btn-stack">
+            <a href="/change-password" class="ok-side-action-btn secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Mudar Palavra-passe
+            </a>
+
+            <button type="button" class="ok-side-action-btn secondary" id="btn-side-revoke-others">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width: 16px; height: 16px;"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+              Encerrar Outros Aparelhos
+            </button>
+
+            <button type="button" class="ok-side-action-btn danger" id="btn-terminate-all-exit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width: 16px; height: 16px;"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
+              Terminar Todas as Sessões & Sair
+            </button>
+          </div>
+        </div>
+
+        <div class="ok-vigilance-card">
+          <svg class="watermark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+
+          <div style="position: relative; z-index: 1;">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.5" style="width: 22px; height: 22px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <h5 class="fw-bold mb-0" style="font-size: 1.05rem;">Isolamento de Sessão</h5>
+            </div>
+            <p class="small mb-3" style="color: var(--ok-text-secondary); line-height: 1.55; font-size: 0.86rem;">
+              Cada sessão possui um token de acesso de 15 minutos e um Refresh Token com chave de rotação de 7 dias armazenada com hash SHA-256 no Neon PostgreSQL.
+            </p>
+            <a href="/profile" class="ok-btn-ghost-pill" style="height: 42px; font-size: 0.82rem; padding: 0 18px; text-decoration: none;">
+              Ver Ficha Cadastral &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         HELPERS DE AVATAR (real do backend + fallback robusto)
+         ==================================================================== */
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function pick(obj, camel, snake, fallback) {
+        if (!obj) return fallback;
+        if (obj[camel] !== undefined && obj[camel] !== null) return obj[camel];
+        if (obj[snake] !== undefined && obj[snake] !== null) return obj[snake];
+        return fallback;
+      }
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          if (trimmed === DEFAULT_AVATAR) return null;
+          return trimmed;
+        }
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      async function hydrateUserIdentity() {
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          if (!raw) return;
+
+          const fullName = pick(raw, 'fullName', 'full_name', '');
+          const role = pick(raw, 'role', 'role', 'Utilizador');
+          const avatarUrl = pick(raw, 'avatarUrl', 'avatar_url', null);
+          const normalizedAvatar = resolveAvatarUrlForRender(avatarUrl);
+
+          const navAvatar = document.getElementById('ok-nav-avatar');
+          const navName = document.getElementById('ok-nav-fullname');
+          const navRole = document.getElementById('ok-nav-role');
+
+          applyAvatarToImg(navAvatar, normalizedAvatar);
+
+          if (navName && fullName) {
+            navName.textContent = fullName.split(' ')[0];
+          }
+          if (navRole) navRole.textContent = role || 'Utilizador';
+        } catch (err) {
+          console.warn('[SESSIONS:USER:HYDRATE] Falha ao hidratar identidade:', err && err.message);
+        }
+      }
+
+      /* ====================================================================
+         ESTADO E CONFIG
+         ==================================================================== */
+      const DEVICE_ICON_SVGS = {
+        MOBILE: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+        TABLET: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="20" x="3" y="2" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+        DESKTOP: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>',
+        OTHER: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'
+      };
+
+      function formatTimeAgo(isoDate) {
+        if (!isoDate) return '—';
+        const d = new Date(isoDate);
+        const diffMs = Date.now() - d.getTime();
+        const diffMin = Math.floor(diffMs / 60000);
+        if (diffMin < 1) return 'Ativo agora';
+        if (diffMin < 60) return `Há ${diffMin} min`;
+        const diffH = Math.floor(diffMin / 60);
+        if (diffH < 24) return `Há ${diffH}h`;
+        const diffDays = Math.floor(diffH / 24);
+        if (diffDays === 1) return 'Ontem';
+        return `Há ${diffDays} dias`;
+      }
+
+      /* ====================================================================
+         CARREGAR SESSÕES
+         ==================================================================== */
+      async function loadActiveSessions() {
+        const streamContainer = document.getElementById('sessions-stream-container');
+
+        try {
+          const res = await window.apiClient.get('/sessions/my');
+          const sessions = res.data && res.data.sessions ? res.data.sessions : [];
+
+          document.getElementById('sessions-count-badge').textContent = `${sessions.length} ativas`;
+          document.getElementById('kpi-active-sessions-num').textContent = sessions.length;
+
+          const uniqueIps = new Set(sessions.map(s => s.ipAddress).filter(Boolean));
+          document.getElementById('kpi-unique-ips-num').textContent = uniqueIps.size;
+
+          if (sessions.length === 0) {
+            streamContainer.innerHTML = `
+              <div class="ok-empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <h6>Nenhuma sessão ativa encontrada</h6>
+                <p class="small text-muted mb-0">Todas as sessões foram encerradas com segurança.</p>
+              </div>
+            `;
+            return;
+          }
+
+          let html = '';
+          sessions.forEach((s) => {
+            const isCurrent = Boolean(s.isCurrent);
+            const devSvg = DEVICE_ICON_SVGS[s.deviceType] || DEVICE_ICON_SVGS.OTHER;
+
+            html += `
+              <div class="ok-session-item-row ${isCurrent ? 'current-active' : ''}" data-session-id="${s.id}">
+                <div class="ok-device-emblem-cell">
+                  <div class="ok-device-3d-badge ${isCurrent ? 'current' : 'regular'}">
+                    ${devSvg}
+                  </div>
+
+                  <div class="ok-device-info-text">
+                    <h6>
+                      ${s.deviceName || 'Terminal Conectado'}
+                      ${isCurrent ? '<span class="ok-status-pill-sub current">Sessão Atual</span>' : ''}
+                      ${s.isTrusted ? '<span class="ok-status-pill-sub trusted">Aparelho Confiável</span>' : ''}
+                    </h6>
+
+                    <div class="ok-device-specs-line">
+                      <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                        IP: <code>${s.ipAddress || '127.0.0.1'}</code>
+                      </span>
+                      <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="3" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                        ${s.operatingSystem || 'SO Desconhecido'} &bull; ${s.browser || 'Navegador'}
+                      </span>
+                      <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        ${formatTimeAgo(s.lastActiveAt || s.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ok-session-action-cell">
+                  ${isCurrent ? `
+                    <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700; font-size: 0.78rem; padding: 5px 12px; border-radius: 999px;">
+                      Dispositivo em Uso
+                    </span>
+                  ` : `
+                    <button type="button" class="ok-btn-revoke-single" data-action="revoke-single" data-session-id="${s.id}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      Encerrar Sessão
+                    </button>
+                  `}
+                </div>
+              </div>
+            `;
+          });
+
+          streamContainer.innerHTML = html;
+
+          streamContainer.querySelectorAll('[data-action="revoke-single"]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+              const sid = btn.getAttribute('data-session-id');
+              await revokeIndividualSession(sid);
+            });
+          });
+
+        } catch (err) {
+          streamContainer.innerHTML = `<div class="ok-empty-state"><p class="small text-danger mb-0">Falha ao carregar as sessões ativas da base de dados.</p></div>`;
+        }
+      }
+
+      /* ====================================================================
+         DISPOSITIVOS CONFIÁVEIS
+         ==================================================================== */
+      async function loadTrustedDevices() {
+        try {
+          const res = await window.apiClient.get('/devices/my');
+          const devices = res.data && res.data.devices ? res.data.devices : [];
+          const trusted = devices.filter(d => Boolean(d.is_trusted));
+          document.getElementById('kpi-trusted-devices-num').textContent = trusted.length;
+        } catch (e) {}
+      }
+
+      /* ====================================================================
+         REVOGAÇÃO INDIVIDUAL
+         ==================================================================== */
+      async function revokeIndividualSession(sessionId) {
+        if (!sessionId) return;
+
+        if (window.Alerts) {
+          const confirmed = await window.Alerts.confirm({
+            title: 'Terminar Sessão?',
+            text: 'O acesso deste aparelho será revogado imediatamente.',
+            confirmButtonText: 'Sim, encerrar',
+            isDangerous: true
+          });
+          if (!confirmed) return;
+        }
+
+        try {
+          await window.apiClient.delete(`/sessions/${sessionId}`);
+          if (window.Alerts) window.Alerts.toast('Sessão encerrada com sucesso.', 'success');
+          await loadActiveSessions();
+        } catch (err) {
+          if (window.Alerts) window.Alerts.error('Erro ao Revogar', err.message);
+        }
+      }
+
+      /* ====================================================================
+         TERMINAR OUTRAS
+         ==================================================================== */
+      async function terminateOtherSessions() {
+        if (window.Alerts) {
+          const confirmed = await window.Alerts.confirm({
+            title: 'Terminar Outras Sessões?',
+            text: 'Todas as conexões ativas noutros computadores ou telemóveis serão desconectadas.',
+            confirmButtonText: 'Sim, desconectar outros',
+            isDangerous: true
+          });
+          if (!confirmed) return;
+        }
+
+        try {
+          if (window.Alerts) window.Alerts.showLoading('A revogar sessões...', 'Invalidando tokens remotos.');
+          const res = await window.apiClient.delete('/sessions/other');
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            await window.Alerts.success('Sessões Revogadas', res.message || 'Todas as outras sessões foram encerradas com sucesso.');
+          }
+          await loadActiveSessions();
+        } catch (err) {
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.error('Falha na Operação', err.message);
+          }
+        }
+      }
+
+      /* ====================================================================
+         TERMINAR TUDO E SAIR
+         ==================================================================== */
+      async function terminateAllSessionsAndExit() {
+        if (window.Alerts) {
+          const confirmed = await window.Alerts.confirm({
+            title: 'Encerrar Absolutamente Tudo?',
+            text: 'Esta ação revoga a sessão deste dispositivo e de todos os outros. Será redirecionado para a página de início de sessão.',
+            confirmButtonText: 'Terminar e Sair',
+            isDangerous: true
+          });
+          if (!confirmed) return;
+        }
+
+        try {
+          await window.apiClient.delete('/sessions/all');
+          if (window.apiClient) window.apiClient.clearSession();
+          window.location.href = '/login?expired=1';
+        } catch (err) {
+          window.location.href = '/login';
+        }
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') {
+                window.apiClient.clearSession();
+              }
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         INIT
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        hydrateUserIdentity();
+
+        loadActiveSessions();
+        loadTrustedDevices();
+
+        document.getElementById('btn-terminate-other-sessions')?.addEventListener('click', terminateOtherSessions);
+        document.getElementById('btn-side-revoke-others')?.addEventListener('click', terminateOtherSessions);
+        document.getElementById('btn-terminate-all-exit')?.addEventListener('click', terminateAllSessionsAndExit);
+        document.getElementById('btn-reload-sessions')?.addEventListener('click', loadActiveSessions);
+      });
+    })();
+  </script>
+</body>
+</html>

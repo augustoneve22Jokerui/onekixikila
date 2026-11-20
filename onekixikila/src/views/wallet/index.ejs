@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'A Minha Carteira — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Escala MAIOR em todos os elementos — layout mais espaçoso e legível
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-accent-emerald: #10b981;
+      --ok-accent-amber: #f59e0b;
+      --ok-accent-rose: #f43f5e;
+      --ok-accent-cyan: #06b6d4;
+
+      --ok-color-card-white: #ffffff;
+      --ok-color-card-lime: #bef264;
+      --ok-color-card-purple: #7c3aed;
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-chip-bg: rgba(255, 255, 255, 0.04);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-color-card-white: #ffffff;
+      --ok-color-card-lime: #bef264;
+      --ok-color-card-purple: #7c3aed;
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-chip-bg: #ffffff;
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+        --ok-bg-balance: #0d3b38;
+        --ok-accent-green: #a3e635;
+        --ok-accent-green-hover: #84cc16;
+        --ok-accent-green-light: #eff6e0;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL SLIM TECH
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* =========================================================================
+       TOP BAR — CENTRALIZADA NO CONTEÚDO (max-width 1280px)
+       ========================================================================= */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1280px;
+      margin: 0 auto 26px auto;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle svg { width: 20px; height: 20px; }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: 1280px;
+      margin: 0 auto 30px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+    .ok-page-title-main .user-highlight {
+      background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================================
+       LAYOUT MESTRE 2 COLUNAS
+       ========================================================================= */
+    .ok-wallet-master-grid {
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      gap: 32px;
+      align-items: flex-start;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .ok-cards-section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 18px;
+    }
+    .ok-cards-section-header h4 {
+      font-size: 1.22rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+    }
+    .ok-cards-see-all {
+      font-size: 0.86rem; font-weight: 700;
+      color: var(--ok-purple-vibrant);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .ok-cards-see-all:hover { opacity: 0.85; }
+
+    /* =========================================================================
+       TRIO DE CARTÕES BANCÁRIOS
+       ========================================================================= */
+    .ok-bank-cards-trio {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .ok-realistic-bank-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1.586 / 1;
+      border-radius: 20px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.6);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .ok-realistic-bank-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 26px 50px -10px rgba(0, 0, 0, 0.7), 0 0 40px -5px rgba(139, 92, 246, 0.35);
+    }
+
+    .ok-realistic-bank-card.card-primary-black {
+      background: linear-gradient(135deg, #121217 0%, #050508 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+    .ok-realistic-bank-card.card-secondary-purple {
+      background: linear-gradient(135deg, #1c1433 0%, #0b0716 100%);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      color: #ffffff;
+    }
+    .ok-realistic-bank-card.card-tertiary-emerald {
+      background: linear-gradient(135deg, #0e201b 0%, #040908 100%);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #ffffff;
+    }
+
+    .ok-card-subtle-wave {
+      position: absolute; top: -30px; right: -30px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.18) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none; z-index: 1;
+    }
+
+    .ok-card-top-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      position: relative; z-index: 2;
+    }
+    .ok-card-label {
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      opacity: 0.75;
+    }
+    .ok-card-amount {
+      font-size: 1.5rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+      margin-top: 4px; line-height: 1.1;
+    }
+    .ok-card-menu-btn {
+      background: transparent; border: none;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer; padding: 0;
+      display: flex; align-items: center;
+      transition: color 0.2s;
+    }
+    .ok-card-menu-btn:hover { color: #ffffff; }
+
+    .ok-card-mid-row {
+      display: flex; align-items: center; gap: 10px;
+      position: relative; z-index: 2;
+      margin: 4px 0;
+    }
+    .ok-emv-chip-real {
+      width: 34px; height: 26px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+      position: relative;
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3);
+      flex-shrink: 0;
+    }
+    .ok-emv-chip-real::before {
+      content: "";
+      position: absolute; inset: 3px;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-radius: 2px;
+    }
+    .ok-nfc-wave-icon { color: rgba(255, 255, 255, 0.75); width: 18px; height: 18px; }
+    .ok-card-number-digits {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.88rem; font-weight: 700;
+      letter-spacing: 0.08em;
+      opacity: 0.9; margin-left: 4px;
+    }
+
+    .ok-card-bottom-row {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      position: relative; z-index: 2;
+    }
+    .ok-card-expiry { display: flex; flex-direction: column; }
+    .ok-card-expiry-label {
+      font-size: 0.6rem;
+      text-transform: uppercase; font-weight: 700;
+      opacity: 0.6; letter-spacing: 0.04em;
+    }
+    .ok-card-expiry-val {
+      font-size: 0.82rem; font-weight: 700;
+      font-family: 'Space Grotesk', monospace;
+    }
+    .ok-card-network-logo {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.76rem; font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    /* =========================================================================
+       PÍLULAS DE AÇÃO RÁPIDA
+       ========================================================================= */
+    .ok-action-pills-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .ok-pill-action-btn {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 20px;
+      height: 58px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      font-size: 0.92rem; font-weight: 700;
+      box-shadow: 0 4px 16px var(--ok-shadow-card);
+      transition: all 0.25s ease;
+    }
+    .ok-pill-action-btn:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-pill-action-btn.active-pill {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 10px 24px rgba(124, 58, 237, 0.45);
+    }
+    .ok-pill-action-btn.active-pill .ok-pill-icon-badge {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+    .ok-pill-icon-badge {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--ok-bg-canvas);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--ok-purple-vibrant);
+      transition: all 0.2s;
+    }
+    .ok-pill-icon-badge svg { width: 16px; height: 16px; }
+
+    /* =========================================================================
+       QR PORTAL
+       ========================================================================= */
+    .ok-real-qr-portal-strip {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-purple-border);
+      border-radius: 24px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 36px var(--ok-shadow-card);
+      position: relative;
+      overflow: hidden;
+    }
+    .ok-qr-portal-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .ok-qr-left-meta { max-width: 540px; flex: 1; min-width: 260px; }
+    .ok-qr-left-meta h5 {
+      font-size: 1.2rem; font-weight: 800;
+      margin: 6px 0 6px 0;
+      color: var(--ok-text-primary);
+    }
+    .ok-qr-left-meta p {
+      font-size: 0.9rem;
+      color: var(--ok-text-muted);
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+    .ok-qr-interactive-token-box {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      padding: 7px 18px;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.9rem; font-weight: 700;
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-qr-interactive-token-box button {
+      background: transparent; border: none;
+      color: var(--ok-text-muted); cursor: pointer;
+      display: flex; align-items: center; padding: 0;
+      transition: color 0.2s;
+    }
+    .ok-qr-interactive-token-box button:hover { color: var(--ok-text-primary); }
+
+    .ok-qr-right-frame { display: flex; align-items: center; gap: 20px; }
+
+    .ok-qr-image-wrapper {
+      width: 120px; height: 120px;
+      background: #ffffff;
+      padding: 8px;
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ok-qr-image-wrapper img { width: 100%; height: 100%; object-fit: contain; }
+
+    .ok-btn-qr-action {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff; border: none;
+      font-size: 0.88rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 22px rgba(124, 58, 237, 0.4);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-qr-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(124, 58, 237, 0.6);
+      color: #ffffff;
+    }
+    .ok-btn-qr-action:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* =========================================================================
+       MOVIMENTAÇÕES RECENTES
+       ========================================================================= */
+    .ok-stamped-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--ok-border-subtle);
+    }
+    .ok-stamped-header h4 {
+      font-size: 1.22rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+    }
+
+    .ok-stamped-cols-label {
+      display: grid;
+      grid-template-columns: 2.2fr 1.2fr 1fr 1.2fr;
+      padding: 0 16px 10px 16px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ok-text-muted);
+    }
+
+    .ok-stamped-row {
+      display: grid;
+      grid-template-columns: 2.2fr 1.2fr 1fr 1.2fr;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 14px;
+    }
+    .ok-stamped-row:hover {
+      background-color: var(--ok-stream-hover);
+      border-bottom-color: transparent;
+      transform: translateX(4px);
+      color: inherit;
+    }
+
+    .ok-stamped-sender-cell {
+      display: flex; align-items: center; gap: 14px;
+      min-width: 0;
+    }
+    .ok-stamped-avatar-fallback {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      color: #ffffff;
+      font-size: 0.9rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ok-sender-name-text {
+      font-size: 0.96rem; font-weight: 700;
+      color: var(--ok-text-primary);
+      margin: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ok-sender-sub-text {
+      font-size: 0.78rem;
+      color: var(--ok-text-muted);
+      margin: 2px 0 0 0;
+    }
+    .ok-stamped-date-text {
+      font-size: 0.86rem;
+      color: var(--ok-text-muted);
+      font-weight: 500;
+    }
+
+    .ok-real-status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: var(--ok-radius-pill);
+      font-size: 0.78rem; font-weight: 700;
+      width: fit-content;
+    }
+    .ok-real-status-pill.success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .ok-real-status-pill.process { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .ok-real-status-pill.failed { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+    .ok-status-bullet { width: 7px; height: 7px; border-radius: 50%; background-color: currentColor; }
+
+    .ok-stamped-amount-text {
+      font-size: 1rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      text-align: right;
+    }
+    .ok-stamped-amount-text.debit { color: #f43f5e; }
+    .ok-stamped-amount-text.credit { color: #10b981; }
+
+    /* =========================================================================
+       ASIDE: STATISTIC PANEL
+       ========================================================================= */
+    .ok-statistic-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      padding: 1.9rem;
+      box-shadow: 0 10px 36px var(--ok-shadow-card);
+      position: sticky;
+      top: 110px;
+    }
+
+    .ok-statistic-top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 22px;
+    }
+    .ok-statistic-title-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ok-statistic-title-row h5 {
+      font-size: 1.22rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+    }
+    .ok-statistic-time-select {
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      color: var(--ok-text-muted);
+      border-radius: var(--ok-radius-pill);
+      padding: 6px 14px;
+      font-size: 0.82rem; font-weight: 700;
+      outline: none; cursor: pointer;
+    }
+    .ok-statistic-time-select option { color: #0f172a; }
+
+    .ok-donut-representation {
+      position: relative;
+      width: 230px; height: 230px;
+      margin: 0 auto 26px auto;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ok-donut-inner-data {
+      position: absolute;
+      text-align: center;
+    }
+    .ok-donut-inner-data span.label {
+      font-size: 0.76rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .ok-donut-inner-data div.total-val {
+      font-size: 1.55rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--ok-text-primary);
+      margin-top: 2px;
+    }
+
+    .ok-donut-legend-pills {
+      display: flex; justify-content: center; gap: 20px;
+      margin-bottom: 24px;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--ok-text-muted);
+    }
+    .ok-legend-pill-item {
+      display: flex; align-items: center; gap: 7px;
+    }
+    .ok-legend-box { width: 12px; height: 12px; border-radius: 3px; }
+
+    .ok-stat-breakdown-list {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .ok-breakdown-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      transition: all 0.2s ease;
+    }
+    .ok-breakdown-row:hover {
+      border-color: var(--ok-purple-border);
+      background-color: var(--ok-purple-soft);
+      transform: translateX(3px);
+    }
+    .ok-breakdown-left {
+      display: flex; align-items: center; gap: 12px;
+      min-width: 0;
+    }
+    .ok-breakdown-icon-box {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ok-breakdown-icon-box.purple { background: var(--ok-purple-soft); color: var(--ok-purple-vibrant); }
+    .ok-breakdown-icon-box.emerald { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .ok-breakdown-icon-box.amber { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .ok-breakdown-icon-box.rose { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+
+    .ok-breakdown-title {
+      font-size: 0.9rem; font-weight: 700;
+      color: var(--ok-text-primary);
+      margin: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ok-breakdown-sub {
+      font-size: 0.76rem;
+      color: var(--ok-text-muted);
+      margin: 2px 0 0 0;
+    }
+    .ok-breakdown-amount {
+      font-size: 0.94rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .text-danger { color: #f43f5e !important; }
+    .text-success { color: #10b981 !important; }
+    .text-warning { color: #f59e0b !important; }
+
+    /* Empty state */
+    .ok-empty-state {
+      text-align: center; padding: 3rem 1.5rem;
+      color: var(--ok-text-muted);
+    }
+    .ok-empty-state svg {
+      opacity: 0.4;
+      margin-bottom: 0.75rem;
+      display: block;
+      margin-inline: auto;
+    }
+    .ok-empty-state h6 {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    /* Responsividade */
+    @media (max-width: 1280px) {
+      .ok-wallet-master-grid { grid-template-columns: 1fr; }
+      .ok-statistic-card { position: static; }
+      .ok-bank-cards-trio { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-bank-cards-trio { grid-template-columns: 1fr; }
+      .ok-action-pills-container { grid-template-columns: repeat(2, 1fr); }
+      .ok-stamped-cols-label { display: none; }
+      .ok-stamped-row {
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+      }
+      .ok-stamped-date-text { display: none; }
+      .ok-page-title-main { font-size: 1.7rem; }
+    }
+    @media (max-width: 600px) {
+      .ok-action-pills-container { grid-template-columns: 1fr; }
+      .ok-qr-portal-content { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link active" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior — CENTRALIZADA NO CONTEÚDO (max-width 1280px) -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar referências, valores, destinatários..." autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" id="ok-nav-fullname" style="font-size: 0.92rem; line-height: 1.15;"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" id="ok-nav-role" style="font-size: 0.76rem;"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Carteira Digital,
+          <span class="user-highlight" id="ok-hero-username"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name) : 'Membro' %></span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Partidas Dobradas Ativas
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          Moeda Nacional: <strong>Kwanza Angolano (AOA)</strong> &bull; Livro-Razão Conectado
+        </p>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         LAYOUT MESTRE EM 2 COLUNAS
+         ==================================================================== -->
+    <div class="ok-wallet-master-grid">
+
+      <!-- COLUNA ESQUERDA -->
+      <div>
+
+        <!-- Cabeçalho da secção de cartões -->
+        <div class="ok-cards-section-header">
+          <h4>Os Meus Cartões</h4>
+          <a href="/wallet/statement" class="ok-cards-see-all">Ver todos</a>
+        </div>
+
+        <!-- Trio de cartões bancários -->
+        <div class="ok-bank-cards-trio">
+          
+          <!-- CARTÃO 1: Saldo Disponível -->
+          <div class="ok-realistic-bank-card card-primary-black">
+            <div class="ok-card-subtle-wave"></div>
+
+            <div class="ok-card-top-row">
+              <div>
+                <span class="ok-card-label">Saldo Disponível</span>
+                <div class="ok-card-amount" id="card-available-sum">0,00 Kz</div>
+              </div>
+              <button type="button" class="ok-card-menu-btn" title="Opções">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+              </button>
+            </div>
+
+            <div class="ok-card-mid-row">
+              <div class="ok-emv-chip-real" title="Chip EMV"></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="ok-nfc-wave-icon">
+                <path d="M5 9c2.5-2.5 6.5-2.5 9 0"></path>
+                <path d="M2 6c4.5-4.5 11.5-4.5 16 0"></path>
+                <path d="M8 12c1.2-1.2 3.2-1.2 4.4 0"></path>
+              </svg>
+              <span class="ok-card-number-digits" id="card-primary-digits">•••• 1810</span>
+            </div>
+
+            <div class="ok-card-bottom-row">
+              <div class="ok-card-expiry">
+                <span class="ok-card-expiry-label">Validade</span>
+                <span class="ok-card-expiry-val">10/28</span>
+              </div>
+              <div class="ok-card-network-logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                <span>MULTICAIXA</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARTÃO 2: Cofre em Garantia -->
+          <div class="ok-realistic-bank-card card-secondary-purple">
+            <div class="ok-card-subtle-wave"></div>
+
+            <div class="ok-card-top-row">
+              <div>
+                <span class="ok-card-label">Cofre em Garantia</span>
+                <div class="ok-card-amount" id="card-locked-sum" style="color: #c4b5fd;">0,00 Kz</div>
+              </div>
+              <button type="button" class="ok-card-menu-btn" title="Opções">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+              </button>
+            </div>
+
+            <div class="ok-card-mid-row">
+              <div class="ok-emv-chip-real" title="Chip EMV"></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="ok-nfc-wave-icon">
+                <path d="M5 9c2.5-2.5 6.5-2.5 9 0"></path>
+                <path d="M2 6c4.5-4.5 11.5-4.5 16 0"></path>
+                <path d="M8 12c1.2-1.2 3.2-1.2 4.4 0"></path>
+              </svg>
+              <span class="ok-card-number-digits" id="card-locked-digits">•••• 8421</span>
+            </div>
+
+            <div class="ok-card-bottom-row">
+              <div class="ok-card-expiry">
+                <span class="ok-card-expiry-label">Validade</span>
+                <span class="ok-card-expiry-val">12/28</span>
+              </div>
+              <div class="ok-card-network-logo" style="color: #c4b5fd;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>KIXIKILA</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARTÃO 3: Livro-Razão Geral -->
+          <div class="ok-realistic-bank-card card-tertiary-emerald">
+            <div class="ok-card-subtle-wave" style="background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(0, 0, 0, 0) 70%);"></div>
+
+            <div class="ok-card-top-row">
+              <div>
+                <span class="ok-card-label">Livro-Razão Geral</span>
+                <div class="ok-card-amount" id="card-ledger-sum" style="color: #10b981;">0,00 Kz</div>
+              </div>
+              <button type="button" class="ok-card-menu-btn" title="Opções">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+              </button>
+            </div>
+
+            <div class="ok-card-mid-row">
+              <div class="ok-emv-chip-real" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%);"></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="ok-nfc-wave-icon">
+                <path d="M5 9c2.5-2.5 6.5-2.5 9 0"></path>
+                <path d="M2 6c4.5-4.5 11.5-4.5 16 0"></path>
+                <path d="M8 12c1.2-1.2 3.2-1.2 4.4 0"></path>
+              </svg>
+              <span class="ok-card-number-digits" id="card-ledger-digits" style="color: #a7f3d0;">•••• 5590</span>
+            </div>
+
+            <div class="ok-card-bottom-row">
+              <div class="ok-card-expiry">
+                <span class="ok-card-expiry-label">Status</span>
+                <span class="ok-card-expiry-val" style="color: #10b981;">Equilibrado</span>
+              </div>
+              <div class="ok-card-network-logo" style="color: #10b981;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>AUDITADO</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Pílulas de ação rápida -->
+        <div class="ok-action-pills-container">
+          <a href="/wallet/transfer" class="ok-pill-action-btn active-pill">
+            <div class="ok-pill-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+            </div>
+            <span>Transferir</span>
+          </a>
+
+          <a href="/wallet/deposit" class="ok-pill-action-btn">
+            <div class="ok-pill-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </div>
+            <span>Depositar</span>
+          </a>
+
+          <a href="/wallet/withdrawal" class="ok-pill-action-btn">
+            <div class="ok-pill-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path></svg>
+            </div>
+            <span>Levantar</span>
+          </a>
+
+          <a href="/wallet/statement" class="ok-pill-action-btn">
+            <div class="ok-pill-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg>
+            </div>
+            <span>Extrato</span>
+          </a>
+        </div>
+
+        <!-- QR Code Portal -->
+        <section class="ok-real-qr-portal-strip">
+          <div class="ok-qr-portal-content">
+            <div class="ok-qr-left-meta">
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <span class="badge" style="background: rgba(139, 92, 246, 0.2); color: var(--ok-purple-vibrant); font-weight: 800; font-size: 0.76rem; border-radius: 999px; padding: 5px 12px;">
+                  Sincronização Neon PostgreSQL
+                </span>
+                <span class="text-muted small" id="qr-scan-counter" style="font-size: 0.82rem;">&bull; 0/1 utilizações</span>
+              </div>
+              <h5>Código QR de Recebimento & Convite</h5>
+              <p>Escaneie diretamente para receber transferências instantâneas P2P ou ingressar no ecossistema através da sua chave única de participante.</p>
+              
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="ok-qr-interactive-token-box">
+                  <span id="qr-token-code-text">A gerar token...</span>
+                  <button type="button" id="btn-copy-qr-token" title="Copiar Token">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                  </button>
+                </div>
+                <button type="button" class="ok-btn-qr-action" id="btn-regenerate-qr">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
+                  Novo Token
+                </button>
+              </div>
+            </div>
+
+            <div class="ok-qr-right-frame">
+              <div class="ok-qr-image-wrapper">
+                <img src="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%237c3aed%22 stroke-width=%222%22%3E%3Crect width=%2218%22 height=%2218%22 x=%223%22 y=%223%22 rx=%222%22/%3E%3Cpath d=%22M7 7h.01M7 17h.01M17 7h.01M17 17h.01M12 12h.01%22/%3E%3C/svg%3E" id="real-qr-image-tag" alt="Código QR do Backend">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Movimentações recentes -->
+        <section>
+          <div class="ok-stamped-header">
+            <h4>Movimentações Recentes</h4>
+            <a href="/wallet/statement" class="ok-cards-see-all">Ver todas</a>
+          </div>
+
+          <div class="ok-stamped-cols-label">
+            <span>Remetente / Operação</span>
+            <span>Data</span>
+            <span>Estado</span>
+            <span class="text-end">Montante</span>
+          </div>
+
+          <div id="stamped-recent-transactions-stream">
+            <div class="ok-empty-state">
+              <div class="spinner-border spinner-border-sm mb-2" role="status" style="color: var(--ok-purple-vibrant);"></div>
+              <p class="small mb-0">A carregar movimentações do razão contábil...</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- COLUNA DIREITA: STATISTIC PANEL -->
+      <aside class="ok-statistic-card">
+        
+        <div class="ok-statistic-top-bar">
+          <div class="ok-statistic-title-row">
+            <h5>Estatística</h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-text-muted)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </div>
+
+          <select class="ok-statistic-time-select" id="statistic-timeframe-select">
+            <option value="week">Esta semana</option>
+            <option value="month" selected>Este mês</option>
+            <option value="cycle">Ciclo atual</option>
+          </select>
+        </div>
+
+        <div class="ok-donut-representation">
+          <svg width="230" height="230" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ok-meter-bg)" stroke-width="12"></circle>
+            <circle id="donut-slice-available" cx="50" cy="50" r="38" fill="none" stroke="#38bdf8" stroke-width="12" stroke-dasharray="150 240" stroke-linecap="round"></circle>
+            <circle id="donut-slice-locked" cx="50" cy="50" r="38" fill="none" stroke="#7c3aed" stroke-width="12" stroke-dasharray="60 240" stroke-dashoffset="-155" stroke-linecap="round"></circle>
+          </svg>
+          <div class="ok-donut-inner-data">
+            <span class="label">Total da Carteira</span>
+            <div class="total-val" id="stat-donut-total-val">0,00 Kz</div>
+          </div>
+        </div>
+
+        <div class="ok-donut-legend-pills">
+          <div class="ok-legend-pill-item">
+            <span class="ok-legend-box" style="background-color: #38bdf8;"></span>
+            <span>Disponível</span>
+          </div>
+          <div class="ok-legend-pill-item">
+            <span class="ok-legend-box" style="background-color: #7c3aed;"></span>
+            <span>Garantias Kixikila</span>
+          </div>
+        </div>
+
+        <div class="ok-stat-breakdown-list" id="stat-breakdown-items-box">
+          
+          <div class="ok-breakdown-row">
+            <div class="ok-breakdown-left">
+              <div class="ok-breakdown-icon-box purple">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              </div>
+              <div>
+                <p class="ok-breakdown-title">Quotas de Kixikila</p>
+                <p class="ok-breakdown-sub">Último ciclo</p>
+              </div>
+            </div>
+            <div class="ok-breakdown-amount text-danger" id="breakdown-quotas-sum">- 0 Kz</div>
+          </div>
+
+          <div class="ok-breakdown-row">
+            <div class="ok-breakdown-left">
+              <div class="ok-breakdown-icon-box emerald">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+              </div>
+              <div>
+                <p class="ok-breakdown-title">Carregamentos MCX</p>
+                <p class="ok-breakdown-sub">Entradas bancárias</p>
+              </div>
+            </div>
+            <div class="ok-breakdown-amount text-success" id="breakdown-deposits-sum">+ 0 Kz</div>
+          </div>
+
+          <div class="ok-breakdown-row">
+            <div class="ok-breakdown-left">
+              <div class="ok-breakdown-icon-box amber">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path></svg>
+              </div>
+              <div>
+                <p class="ok-breakdown-title">Transferências P2P</p>
+                <p class="ok-breakdown-sub">Entre membros</p>
+              </div>
+            </div>
+            <div class="ok-breakdown-amount text-warning" id="breakdown-transfers-sum">0 Kz</div>
+          </div>
+
+          <div class="ok-breakdown-row">
+            <div class="ok-breakdown-left">
+              <div class="ok-breakdown-icon-box rose">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+              <div>
+                <p class="ok-breakdown-title">Bolo da Kixikila</p>
+                <p class="ok-breakdown-sub">Contemplação recebida</p>
+              </div>
+            </div>
+            <div class="ok-breakdown-amount text-success" id="breakdown-payouts-sum">+ 0 Kz</div>
+          </div>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         HELPERS DE AVATAR (real do backend + fallback robusto)
+         ==================================================================== */
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function pick(obj, camel, snake, fallback) {
+        if (!obj) return fallback;
+        if (obj[camel] !== undefined && obj[camel] !== null) return obj[camel];
+        if (obj[snake] !== undefined && obj[snake] !== null) return obj[snake];
+        return fallback;
+      }
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          if (trimmed === DEFAULT_AVATAR) return null;
+          return trimmed;
+        }
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      async function hydrateUserIdentity() {
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          if (!raw) return;
+
+          const fullName = pick(raw, 'fullName', 'full_name', '');
+          const role = pick(raw, 'role', 'role', 'Utilizador');
+          const avatarUrl = pick(raw, 'avatarUrl', 'avatar_url', null);
+          const normalizedAvatar = resolveAvatarUrlForRender(avatarUrl);
+
+          const navAvatar = document.getElementById('ok-nav-avatar');
+          const navName = document.getElementById('ok-nav-fullname');
+          const navRole = document.getElementById('ok-nav-role');
+          const heroName = document.getElementById('ok-hero-username');
+
+          applyAvatarToImg(navAvatar, normalizedAvatar);
+
+          if (navName && fullName) {
+            navName.textContent = fullName.split(' ')[0];
+          }
+          if (navRole) navRole.textContent = role || 'Utilizador';
+          if (heroName && fullName) heroName.textContent = fullName;
+        } catch (err) {
+          console.warn('[WALLET:USER:HYDRATE] Falha ao hidratar identidade:', err && err.message);
+        }
+      }
+
+      /* ====================================================================
+         ESTADO
+         ==================================================================== */
+      let currentWalletId = null;
+      let activeQrTokenCode = null;
+
+      const formatAOA = (amount) => {
+        const val = Number(amount) || 0;
+        return val.toLocaleString('pt-AO') + ' Kz';
+      };
+      const formatDateTime = (isoDate) => {
+        if (!isoDate) return '—';
+        const d = new Date(isoDate);
+        return d.toLocaleDateString('pt-AO', { day: '2-digit', month: 'short', year: 'numeric' });
+      };
+
+      /* ====================================================================
+         1. WALLET CORE
+         ==================================================================== */
+      async function loadWalletCore() {
+        try {
+          const res = await window.apiClient.get('/wallet/me');
+          const wallet = res.data && res.data.wallet ? res.data.wallet : null;
+          if (!wallet) return;
+          currentWalletId = wallet.id;
+
+          const available = Number(wallet.availableBalance || 0);
+          const locked = Number(wallet.lockedBalance || 0);
+          const ledger = Number(wallet.ledgerBalance || 0);
+
+          document.getElementById('card-available-sum').textContent = formatAOA(available);
+          document.getElementById('card-locked-sum').textContent = formatAOA(locked);
+          document.getElementById('card-ledger-sum').textContent = formatAOA(ledger);
+          document.getElementById('stat-donut-total-val').textContent = formatAOA(ledger);
+
+          if (wallet.id) {
+            const hexDigits = wallet.id.replace(/-/g, '').slice(-4).toUpperCase();
+            document.getElementById('card-primary-digits').textContent = `•••• ${hexDigits}`;
+          }
+
+          if (ledger > 0) {
+            const availRatio = Math.round((available / ledger) * 240);
+            const lockedRatio = Math.round((locked / ledger) * 240);
+            document.getElementById('donut-slice-available').setAttribute('stroke-dasharray', `${availRatio} 240`);
+            document.getElementById('donut-slice-locked').setAttribute('stroke-dasharray', `${lockedRatio} 240`);
+          }
+
+          await loadRecentTransactionsStream(wallet.id);
+          await loadRealBackendQrCode();
+        } catch (err) {
+          console.error('[WALLET:LOAD:ERROR]', err);
+        }
+      }
+
+      /* ====================================================================
+         2. QR CODE
+         ==================================================================== */
+      async function loadRealBackendQrCode() {
+        const qrImage = document.getElementById('real-qr-image-tag');
+        const tokenLabel = document.getElementById('qr-token-code-text');
+        const scanCounter = document.getElementById('qr-scan-counter');
+
+        try {
+          const myQrsRes = await window.apiClient.get('/payments/qr/my?status=ACTIVE&limit=1');
+          let qrData = myQrsRes.data && myQrsRes.data.length > 0 ? myQrsRes.data[0] : null;
+
+          if (!qrData) {
+            const genRes = await window.apiClient.post('/payments/qr/generate', {
+              fixedAmount: null,
+              description: 'Convite e Recebimento Oficial OneKixikila',
+              maxScans: 10,
+              expiresInMinutes: 1440
+            });
+            qrData = genRes.data || {};
+          }
+
+          if (qrData) {
+            activeQrTokenCode = qrData.tokenCode || qrData.token_code;
+            tokenLabel.textContent = activeQrTokenCode;
+
+            if (qrData.qrCodeDataUrl) {
+              qrImage.src = qrData.qrCodeDataUrl;
+            } else if (activeQrTokenCode) {
+              const scanRes = await window.apiClient.post('/payments/qr/scan', { tokenCode: activeQrTokenCode });
+              if (scanRes.data && scanRes.data.qrCodeDataUrl) {
+                qrImage.src = scanRes.data.qrCodeDataUrl;
+              }
+            }
+
+            const currentScans = qrData.scanCount !== undefined ? qrData.scanCount : qrData.scan_count || 0;
+            const maxScans = qrData.maxScans !== undefined ? qrData.maxScans : qrData.max_scans || 10;
+            scanCounter.textContent = `• ${currentScans}/${maxScans} utilizações`;
+          }
+        } catch (qrErr) {
+          console.warn('[WALLET:QR_LOAD:WARN]', qrErr);
+          tokenLabel.textContent = 'QRP-DISPONIVEL';
+        }
+      }
+
+      async function regenerateNewQrToken() {
+        const tokenLabel = document.getElementById('qr-token-code-text');
+        const btn = document.getElementById('btn-regenerate-qr');
+        btn.disabled = true;
+        tokenLabel.textContent = 'A gerar...';
+
+        try {
+          const genRes = await window.apiClient.post('/payments/qr/generate', {
+            fixedAmount: null,
+            description: 'Novo Token de Pagamento e Convite',
+            maxScans: 10,
+            expiresInMinutes: 1440
+          });
+
+          const qrData = genRes.data || {};
+          activeQrTokenCode = qrData.tokenCode || qrData.token_code;
+          tokenLabel.textContent = activeQrTokenCode;
+
+          if (qrData.qrCodeDataUrl) {
+            document.getElementById('real-qr-image-tag').src = qrData.qrCodeDataUrl;
+          }
+
+          if (window.Alerts) window.Alerts.toast('Novo Código QR gerado no banco de dados!', 'success');
+        } catch (err) {
+          if (window.Alerts) window.Alerts.error('Erro ao Gerar QR', err.message);
+          tokenLabel.textContent = activeQrTokenCode || 'Erro';
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      /* ====================================================================
+         3. TRANSAÇÕES
+         ==================================================================== */
+      async function loadRecentTransactionsStream(walletId) {
+        const streamContainer = document.getElementById('stamped-recent-transactions-stream');
+        if (!walletId || !streamContainer) return;
+
+        try {
+          const res = await window.apiClient.get(`/wallet/${walletId}/statement?limit=6`);
+          const items = res.data || [];
+
+          if (items.length === 0) {
+            streamContainer.innerHTML = `
+              <div class="ok-empty-state">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                </svg>
+                <h6>Nenhuma movimentação registada</h6>
+                <p class="small text-muted mb-0">Efetue o seu primeiro depósito ou participe numa Kixikila.</p>
+              </div>
+            `;
+            return;
+          }
+
+          let html = '';
+          let sumQuotas = 0;
+          let sumDeposits = 0;
+          let sumTransfers = 0;
+          let sumPayouts = 0;
+
+          items.forEach((tx) => {
+            const isDebit = tx.direction === 'DEBIT';
+            const amountNum = Number(tx.amount || 0);
+
+            const op = tx.operationType || '';
+            if (op === 'CONTRIBUTION_PAYMENT') sumQuotas += amountNum;
+            else if (op === 'DEPOSIT') sumDeposits += amountNum;
+            else if (op === 'INTERNAL_TRANSFER') sumTransfers += amountNum;
+            else if (op === 'ROTATION_PAYOUT') sumPayouts += amountNum;
+
+            const sign = isDebit ? '- ' : '+ ';
+            const amountClass = isDebit ? 'debit' : 'credit';
+
+            let statusBadge = '<span class="ok-real-status-pill success"><span class="ok-status-bullet"></span> Sucesso</span>';
+            if (tx.status === 'PENDING' || tx.status === 'PROCESSING') {
+              statusBadge = '<span class="ok-real-status-pill process"><span class="ok-status-bullet"></span> Em curso</span>';
+            } else if (tx.status === 'FAILED') {
+              statusBadge = '<span class="ok-real-status-pill failed"><span class="ok-status-bullet"></span> Falhou</span>';
+            }
+
+            const title = tx.description || tx.referenceCode || 'Movimentação';
+            const initials = title.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'TX';
+
+            html += `
+              <div class="ok-stamped-row">
+                <div class="ok-stamped-sender-cell">
+                  <div class="ok-stamped-avatar-fallback">${initials}</div>
+                  <div style="min-width:0;">
+                    <p class="ok-sender-name-text">${title}</p>
+                    <p class="ok-sender-sub-text">Ref: ${tx.referenceCode}</p>
+                  </div>
+                </div>
+                <div class="ok-stamped-date-text">${formatDateTime(tx.postedAt)}</div>
+                <div>${statusBadge}</div>
+                <div class="ok-stamped-amount-text ${amountClass}">${sign}${formatAOA(tx.amount)}</div>
+              </div>
+            `;
+          });
+
+          streamContainer.innerHTML = html;
+
+          document.getElementById('breakdown-quotas-sum').textContent = `- ${formatAOA(sumQuotas)}`;
+          document.getElementById('breakdown-deposits-sum').textContent = `+ ${formatAOA(sumDeposits)}`;
+          document.getElementById('breakdown-transfers-sum').textContent = formatAOA(sumTransfers);
+          document.getElementById('breakdown-payouts-sum').textContent = `+ ${formatAOA(sumPayouts)}`;
+
+        } catch (err) {
+          streamContainer.innerHTML = `
+            <div class="p-4 text-center text-danger small">
+              Falha ao sincronizar movimentações do livro-razão contábil.
+            </div>
+          `;
+        }
+      }
+
+      /* ====================================================================
+         4. AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') {
+                window.apiClient.clearSession();
+              }
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+            const input = document.querySelector('.ok-search-capsule input');
+            if (input) { e.preventDefault(); input.focus(); }
+          }
+        });
+      }
+
+      /* ====================================================================
+         INICIALIZAÇÃO
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        hydrateUserIdentity();
+        loadWalletCore();
+
+        document.getElementById('btn-regenerate-qr')?.addEventListener('click', regenerateNewQrToken);
+
+        document.getElementById('btn-copy-qr-token')?.addEventListener('click', () => {
+          if (!activeQrTokenCode) return;
+          navigator.clipboard.writeText(activeQrTokenCode).then(() => {
+            if (window.Alerts) window.Alerts.toast('Código do Token copiado!', 'success');
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

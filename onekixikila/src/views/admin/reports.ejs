@@ -1,0 +1,1618 @@
+<%- include('../partials/head') %>
+<%
+  const adminUser = (typeof user !== 'undefined' && user) ? user : {};
+  const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador';
+  const adminRoleForPage = String(adminUser.role || '').toUpperCase();
+  const canAccessAdminPage = (...roles) => roles.includes(adminRoleForPage);
+  const canViewAuditTrail = canAccessAdminPage('ADMIN', 'AUDITOR');
+  const adminDisplayName = adminUserName || 'Administrador';
+%>
+
+<!-- Fontes do dashboard normal — identidade visual preservada. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     SISTEMA DE DESIGN — ONEKIXIKILA ADMIN (TEMA ESCURO PADRÃO + TEMA CLARO)
+     Fontes: Plus Jakarta Sans (corpo) + Space Grotesk (títulos)
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-pill: 9999px;
+    --ok-radius-card: 20px;
+    --ok-radius-md: 12px;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1180px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.25);
+    --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.10);
+    --ok-border-strong: rgba(15, 23, 42, 0.18);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.08);
+    --ok-shadow-card: rgba(15, 23, 42, 0.10);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+      --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-border-strong: rgba(15, 23, 42, 0.18);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ok-bg-canvas);
+    color: var(--ok-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(5, 5, 8, 0) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(244, 245, 249, 0) 70%);
+  }
+
+  /* =========================================================================
+     SIDEBAR SLIM TECH
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+  }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    text-decoration: none;
+  }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; width: 100%;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: thin;
+  }
+  .ok-rail-nav::-webkit-scrollbar { width: 3px; }
+  .ok-rail-nav::-webkit-scrollbar-thumb { background: var(--ok-border-subtle); border-radius: 5px; }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: transparent;
+    position: relative;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+  }
+  .ok-rail-link svg { width: 20px; height: 20px; }
+
+  .admin-rail-count {
+    position: absolute; top: 2px; right: 1px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    background: #ef4444; color: #fff;
+    border: 2px solid var(--ok-bg-surface);
+    font-size: 9px; font-weight: 800;
+  }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CENTRALIZADO
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 20px);
+    padding: 20px 20px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 0;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex; align-items: center;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    color: inherit;
+  }
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%; object-fit: cover;
+    background: var(--ok-purple-soft);
+    border: 2px solid var(--ok-purple-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); font-weight: 800; font-size: 0.9rem;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+
+  .ok-page-title-main {
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 820px;
+  }
+
+  .admin-hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-btn-pill-soft {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ok-btn-pill-soft:hover {
+    background: var(--ok-purple-vibrant);
+    color: #ffffff;
+  }
+  .ok-btn-pill-soft[disabled] { opacity: 0.65; cursor: wait; }
+
+  .ok-btn-pill-primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 18px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+  }
+  .ok-btn-pill-primary:hover { transform: translateY(-1px); color: #ffffff; }
+  .ok-btn-pill-primary[disabled] { opacity: 0.65; cursor: wait; }
+
+  .admin-currency-badge {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-muted);
+    font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* =========================================================================
+     CARDS BASE
+     ========================================================================= */
+  .admin-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-card);
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 20px auto;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .admin-note {
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-text-secondary);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    padding: 0.85rem 1rem;
+    display: flex; align-items: flex-start; gap: 8px;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+  .admin-note i { color: var(--ok-purple-vibrant); flex-shrink: 0; }
+  .admin-note.warning {
+    background: rgba(6, 182, 212, 0.08);
+    border-color: rgba(6, 182, 212, 0.22);
+    color: #b6e7ee;
+  }
+  .admin-note.warning i { color: #67e8f9; }
+
+  .rep-panel-head {
+    align-items: center;
+    border-bottom: 1px solid var(--ok-border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    padding: 1.1rem 1.25rem;
+  }
+  .rep-panel-title {
+    color: var(--ok-text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .rep-panel-title i { color: var(--ok-purple-vibrant); }
+  .rep-panel-description {
+    color: var(--ok-text-muted);
+    font-size: 0.76rem;
+    margin: 0.28rem 0 0;
+  }
+  .rep-panel-body { padding: 1.15rem 1.25rem; }
+
+  .rep-filter {
+    align-items: end;
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    padding: 0.85rem;
+  }
+  .rep-filter .form-label {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+  }
+  .rep-filter .form-control {
+    background: var(--ok-bg-surface) !important;
+    border: 1px solid var(--ok-border-strong) !important;
+    color: var(--ok-text-primary) !important;
+    min-height: 40px;
+    border-radius: var(--ok-radius-md);
+  }
+  .rep-filter .form-control:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 3px var(--ok-purple-soft) !important;
+  }
+
+  /* =========================================================================
+     KPI CARDS INTERNOS
+     ========================================================================= */
+  .rep-kpi {
+    height: 100%;
+    padding: 1rem 1.1rem;
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-md);
+    transition: all 0.2s ease;
+  }
+  .rep-kpi:hover { border-color: var(--ok-border-strong); transform: translateY(-1px); }
+  .rep-kpi-label {
+    color: var(--ok-text-muted);
+    font-size: 0.69rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .rep-kpi-value {
+    color: var(--ok-text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.12rem, 1.7vw, 1.45rem);
+    font-weight: 800;
+    margin: 0.35rem 0 0;
+    overflow-wrap: anywhere;
+  }
+  .rep-kpi-meta { color: var(--ok-text-muted); font-size: 0.72rem; margin-top: 0.25rem; }
+  .rep-kpi-icon {
+    align-items: center;
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: 11px;
+    color: var(--ok-purple-vibrant);
+    display: flex;
+    height: 34px;
+    justify-content: center;
+    width: 34px;
+    flex-shrink: 0;
+  }
+
+  /* =========================================================================
+     GRÁFICO DE BARRAS
+     ========================================================================= */
+  .rep-chart-scroll { overflow-x: auto; padding-bottom: 0.4rem; }
+  .rep-chart {
+    align-items: flex-end;
+    display: flex;
+    gap: 0.55rem;
+    min-height: 230px;
+    min-width: max-content;
+    padding: 0.4rem 0.25rem 0;
+  }
+  .rep-chart-col {
+    align-items: center;
+    display: flex;
+    flex: 0 0 28px;
+    flex-direction: column;
+    gap: 0.4rem;
+    height: 215px;
+    justify-content: flex-end;
+  }
+  .rep-chart-bars {
+    align-items: flex-end;
+    display: flex;
+    gap: 3px;
+    height: 180px;
+    justify-content: center;
+    width: 100%;
+  }
+  .rep-bar {
+    border-radius: 5px 5px 2px 2px;
+    min-height: 2px;
+    min-width: 9px;
+    transition: height 0.25s ease;
+  }
+  .rep-bar-deposit { background: linear-gradient(180deg, #a78bfa, #7c3aed); }
+  .rep-bar-payout { background: linear-gradient(180deg, #67e8f9, #0891b2); }
+  .rep-chart-date {
+    color: var(--ok-text-muted);
+    font-size: 0.61rem;
+    white-space: nowrap;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+  .rep-legend {
+    color: var(--ok-text-secondary);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 0.72rem;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
+  }
+  .rep-legend i {
+    border-radius: 3px;
+    display: inline-block;
+    height: 9px;
+    margin-right: 0.35rem;
+    width: 9px;
+  }
+  .rep-legend .rep-bar-deposit { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .rep-legend .rep-bar-payout { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+  /* =========================================================================
+     PROGRESS BARS
+     ========================================================================= */
+  .rep-progress-row { margin-bottom: 1rem; }
+  .rep-progress-row:last-child { margin-bottom: 0; }
+  .rep-progress-top {
+    align-items: center;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+  .rep-progress-label { color: var(--ok-text-secondary); font-size: 0.78rem; }
+  .rep-progress-value { color: var(--ok-text-primary); font-size: 0.78rem; font-weight: 800; }
+  .rep-track {
+    background: var(--ok-meter-bg);
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .rep-track-fill {
+    background: linear-gradient(90deg, #7c3aed, #22d3ee);
+    border-radius: 999px;
+    height: 100%;
+    min-width: 0;
+    transition: width 0.3s ease;
+  }
+  .rep-track-fill.good { background: linear-gradient(90deg, #059669, #34d399); }
+  .rep-track-fill.warn { background: linear-gradient(90deg, #d97706, #fbbf24); }
+  .rep-track-fill.bad  { background: linear-gradient(90deg, #e11d48, #fb7185); }
+
+  /* =========================================================================
+     PROVIDERS
+     ========================================================================= */
+  .rep-provider {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 14px;
+    height: 100%;
+    padding: 1rem;
+    transition: all 0.2s ease;
+  }
+  .rep-provider:hover { border-color: var(--ok-border-strong); }
+  .rep-provider-name {
+    color: var(--ok-text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 800;
+  }
+  .rep-provider-rate {
+    color: var(--ok-purple-vibrant);
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* =========================================================================
+     TABELA
+     ========================================================================= */
+  .rep-table {
+    color: var(--ok-text-secondary);
+    font-size: 0.75rem;
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--ok-text-secondary);
+  }
+  .rep-table th {
+    border-color: var(--ok-border-subtle);
+    color: var(--ok-text-muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 0.7rem 0.6rem;
+  }
+  .rep-table td {
+    border-color: var(--ok-border-subtle);
+    padding: 0.6rem;
+    vertical-align: middle;
+  }
+  .rep-table tbody tr:hover { background: var(--ok-stream-hover); }
+
+  /* =========================================================================
+     ESTADOS
+     ========================================================================= */
+  .rep-state {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-text-muted);
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .rep-state i {
+    color: var(--ok-purple-vibrant);
+    font-size: 1.35rem;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+  .rep-state-error {
+    border-color: rgba(244, 63, 94, 0.35);
+    color: #fecdd3;
+    background: rgba(244, 63, 94, 0.06);
+  }
+
+  .rep-updated { color: var(--ok-text-muted); font-size: 0.7rem; }
+
+  /* Botão primário genérico */
+  .btn-primary-ok {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    border: none;
+    color: #ffffff;
+    border-radius: var(--ok-radius-md);
+    min-height: 40px;
+    font-weight: 700;
+    padding: 0 1rem;
+    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .btn-primary-ok:hover { transform: translateY(-1px); color: #fff; }
+  .btn-primary-ok[disabled] { opacity: 0.65; cursor: wait; }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+    .admin-hero-actions { width: 100%; justify-content: space-between; }
+    .admin-hero-actions .ok-btn-pill-soft,
+    .admin-hero-actions .ok-btn-pill-primary { flex: 1; justify-content: center; }
+  }
+  @media (max-width: 767px) {
+    .rep-panel-head, .rep-panel-body { padding: 1rem; }
+    .rep-filter > * { flex: 1 1 42%; }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<body data-admin-role="<%= adminRoleForPage %>">
+  <div class="ok-ambient-glow-core" aria-hidden="true"></div>
+
+  <!-- ======================================================================
+       SIDEBAR SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila — Administração" aria-label="Painel administrativo OneKixikila">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav" aria-label="Ferramentas de administração">
+      <a href="/admin" class="ok-rail-link" title="Dashboard executivo" aria-label="Dashboard executivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'SUPPORT_AGENT')) { %>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores" aria-label="Utilizadores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila" aria-label="Grupos de Kixikila">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão de identidade KYC" aria-label="Revisão KYC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2.5"></circle><path d="M5.5 17c.8-2 2-3 3.5-3s2.7 1 3.5 3M15 9h3M15 13h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas" aria-label="Disputas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path><path d="M12 8v4M12 16h.01"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-disputes">0</span>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos e saídas" aria-label="Pagamentos e saídas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20M6 15h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link active" title="Relatórios financeiros" aria-label="Relatórios financeiros" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path><path d="M14 9h5v5"></path></svg>
+      </a>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas e limites" aria-label="Configurações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.6-1.4-2.4 1.4-1.1A8 8 0 0 1 7 13l-1.8-.3V9.9L7 9.6a8 8 0 0 1 .7-1.6L6.3 6.8l1.4-2.4 1.7.6a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.6 1.4 2.4-1.4 1.2a8 8 0 0 1 .7 1.6l1.8.3v2.8l-1.8.3a8 8 0 0 1-.7 1.6z"></path></svg>
+      </a>
+      <% } %>
+      <% if (canViewAuditTrail) { %>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria forense" aria-label="Auditoria forense">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M8 13h8M8 17h8"></path></svg>
+      </a>
+      <% } %>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/notifications" class="ok-rail-link" title="Notificações" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+      <a href="/profile" class="ok-rail-link" title="Perfil" aria-label="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar sessão" aria-label="Terminar sessão" style="background:transparent;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- TOP BAR -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" id="global-dashboard-search" placeholder="Pesquisar indicadores..." autocomplete="off" aria-label="Pesquisar">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <span class="admin-currency-badge d-none d-md-inline-flex" id="admin-utc-clock" style="font-family:'Space Grotesk',monospace;letter-spacing:0.02em;">--:--:-- UTC</span>
+
+        <a href="/dashboard" class="ok-action-circle d-none d-sm-inline-flex" title="Painel do Membro" aria-label="Painel do Membro">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill" aria-label="Perfil do administrador">
+          <span class="ok-profile-avatar-nav" aria-hidden="true"><%= String(adminDisplayName).trim().charAt(0).toUpperCase() || 'A' %></span>
+          <div class="d-flex flex-column text-start admin-profile-text">
+            <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1;"><%= adminDisplayName %></span>
+            <span class="text-muted" style="font-size: 0.7rem;"><%= adminRoleForPage.replaceAll('_', ' ') || 'ADMIN' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Relatórios <span class="user-highlight">Analíticos</span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Indicadores & Análise
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          Visão consolidada de atividade financeira, pontualidade das quotas, conformidade KYC, prestadores de pagamento e risco. Os dados são agregados e respeitam o período selecionado quando aplicável.
+        </p>
+      </div>
+
+      <div class="admin-hero-actions">
+        <button type="button" class="ok-btn-pill-soft" id="rep-refresh">
+          <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Atualizar
+        </button>
+        <button type="button" class="ok-btn-pill-primary" id="rep-export" disabled>
+          <i class="bi bi-download" aria-hidden="true"></i> Exportar CSV
+        </button>
+      </div>
+    </section>
+
+    <!-- Aviso -->
+    <div class="admin-note warning" style="max-width:var(--ok-content-max);margin:0 auto 20px auto;">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      <span>Os totais apresentados refletem os dados devolvidos pelo backend; podem incluir períodos e universos distintos entre secções. Não some categorias de volume para interpretar um saldo líquido. O CSV exporta apenas métricas agregadas carregadas nesta página.</span>
+    </div>
+
+    <!-- ====================================================================
+         PAINEL FINANCEIRO
+         ==================================================================== -->
+    <section class="admin-card" id="panel-financial">
+      <div class="rep-panel-head">
+        <div>
+          <h2 class="rep-panel-title"><i class="bi bi-cash-stack" aria-hidden="true"></i> Volume financeiro</h2>
+          <p class="rep-panel-description">Agregados confirmados no intervalo selecionado · valores em AOA</p>
+        </div>
+        <div class="rep-filter">
+          <div>
+            <label for="rep-start" class="form-label">De</label>
+            <input type="date" class="form-control" id="rep-start" required>
+          </div>
+          <div>
+            <label for="rep-end" class="form-label">Até</label>
+            <input type="date" class="form-control" id="rep-end" required>
+          </div>
+          <button type="button" class="btn btn-primary-ok" id="rep-apply-dates">
+            <i class="bi bi-funnel me-1" aria-hidden="true"></i>Aplicar período
+          </button>
+        </div>
+      </div>
+      <div class="rep-panel-body">
+        <div id="financial-error" class="rep-state rep-state-error d-none" role="alert"></div>
+        <div id="financial-loading" class="rep-state" role="status">
+          <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+          A carregar valores financeiros…
+        </div>
+        <div id="financial-content" class="row g-3 d-none"></div>
+
+        <div class="mt-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <div>
+              <h3 class="h6 fw-bold mb-1" style="color:var(--ok-text-primary);font-family:'Space Grotesk',sans-serif;">Depósitos confirmados e desembolsos</h3>
+              <p class="rep-panel-description mb-0">Série diária do período selecionado.</p>
+            </div>
+            <span class="rep-updated" id="timeline-period"></span>
+          </div>
+          <div id="timeline-error" class="rep-state rep-state-error d-none" role="alert"></div>
+          <div id="timeline-loading" class="rep-state" role="status">
+            <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+            A carregar série temporal…
+          </div>
+          <div id="timeline-content" class="d-none">
+            <div class="rep-legend">
+              <span><i class="rep-bar-deposit"></i>Depósitos</span>
+              <span><i class="rep-bar-payout"></i>Desembolsos</span>
+            </div>
+            <div class="rep-chart-scroll">
+              <div class="rep-chart" id="timeline-chart" role="img" aria-label="Gráfico diário de depósitos e desembolsos"></div>
+            </div>
+            <div class="table-responsive mt-3">
+              <table class="table table-sm rep-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th class="text-end">Depósitos</th>
+                    <th class="text-end">Desembolsos</th>
+                  </tr>
+                </thead>
+                <tbody id="timeline-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="rep-updated text-end mt-3" id="financial-updated"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAINEL ADIMPLÊNCIA
+         ==================================================================== -->
+    <section class="admin-card d-none" id="panel-compliance">
+      <div class="rep-panel-head">
+        <div>
+          <h2 class="rep-panel-title"><i class="bi bi-people" aria-hidden="true"></i> Adimplência de quotas</h2>
+          <p class="rep-panel-description">Indicadores globais de obrigações de contribuição dos grupos.</p>
+        </div>
+        <span class="rep-updated" id="compliance-updated"></span>
+      </div>
+      <div class="rep-panel-body">
+        <div id="compliance-error" class="rep-state rep-state-error d-none" role="alert"></div>
+        <div id="compliance-loading" class="rep-state" role="status">
+          <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+          A carregar adimplência…
+        </div>
+        <div id="compliance-content" class="d-none"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAINEL KYC
+         ==================================================================== -->
+    <section class="admin-card d-none" id="panel-kyc">
+      <div class="rep-panel-head">
+        <div>
+          <h2 class="rep-panel-title"><i class="bi bi-person-vcard" aria-hidden="true"></i> Conformidade KYC</h2>
+          <p class="rep-panel-description">Submissões, estado de revisão e distribuição por nível de verificação.</p>
+        </div>
+        <span class="rep-updated" id="kyc-updated"></span>
+      </div>
+      <div class="rep-panel-body">
+        <div id="kyc-error" class="rep-state rep-state-error d-none" role="alert"></div>
+        <div id="kyc-loading" class="rep-state" role="status">
+          <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+          A carregar KYC…
+        </div>
+        <div id="kyc-content" class="d-none"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAINEL PRESTADORES
+         ==================================================================== -->
+    <section class="admin-card" id="panel-providers">
+      <div class="rep-panel-head">
+        <div>
+          <h2 class="rep-panel-title"><i class="bi bi-diagram-3" aria-hidden="true"></i> Desempenho dos prestadores</h2>
+          <p class="rep-panel-description">Pedidos totais, taxa de sucesso, falhas e volume concluído por gateway.</p>
+        </div>
+        <span class="rep-updated" id="providers-updated"></span>
+      </div>
+      <div class="rep-panel-body">
+        <div id="providers-error" class="rep-state rep-state-error d-none" role="alert"></div>
+        <div id="providers-loading" class="rep-state" role="status">
+          <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+          A carregar prestadores…
+        </div>
+        <div id="providers-content" class="row g-3 d-none"></div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         PAINEL RISCO
+         ==================================================================== -->
+    <section class="admin-card d-none" id="panel-risk">
+      <div class="rep-panel-head">
+        <div>
+          <h2 class="rep-panel-title"><i class="bi bi-shield-exclamation" aria-hidden="true"></i> Disputas e eventos de risco</h2>
+          <p class="rep-panel-description">Distribuição agregada de decisões sobre disputas e níveis de risco.</p>
+        </div>
+        <span class="rep-updated" id="risk-updated"></span>
+      </div>
+      <div class="rep-panel-body">
+        <div id="risk-error" class="rep-state rep-state-error d-none" role="alert"></div>
+        <div id="risk-loading" class="rep-state" role="status">
+          <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+          A carregar indicadores de risco…
+        </div>
+        <div id="risk-content" class="d-none"></div>
+      </div>
+    </section>
+
+    <footer class="admin-footer" style="border-top:1px solid var(--ok-border-subtle);background:transparent;padding:1rem 1.25rem;text-align:center;color:var(--ok-text-muted);font-size:0.78rem;max-width:var(--ok-content-max);margin:2rem auto 0;width:100%;">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Relatórios agregados para supervisão e decisão informada.</span>
+    </footer>
+
+  </div>
+
+  <%- include('../partials/sweet-alert') %>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+        sidebarToggle?.addEventListener('click', () => {
+          const active = document.body.classList.toggle('mobile-nav-active');
+          sidebarToggle.setAttribute('aria-expanded', String(active));
+        });
+        document.querySelectorAll('.ok-rail-link[href]').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 991px)').matches) {
+              document.body.classList.remove('mobile-nav-active');
+            }
+          });
+        });
+        const search = document.getElementById('global-dashboard-search');
+        document.addEventListener('keydown', (event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (search) { event.preventDefault(); search.focus(); }
+          }
+        });
+        document.querySelectorAll('[data-action="logout"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            button.disabled = true;
+            try {
+              if (window.apiClient && typeof window.apiClient.post === 'function') await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') window.apiClient.clearSession();
+            } catch (_) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         ESTADO E HELPERS
+         ==================================================================== */
+      const role = String(document.body.dataset.adminRole || '').toUpperCase();
+      const canFinancial = ['ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR'].includes(role);
+      const canAdmin = ['ADMIN', 'AUDITOR'].includes(role);
+      const loaded = {};
+      const apiReady = () => window.apiClient && typeof window.apiClient.get === 'function';
+
+      const fmtMoney = n => {
+        const v = Number(n);
+        if (!Number.isFinite(v)) return '—';
+        try { return new Intl.NumberFormat('pt-AO', { style: 'currency', currency: 'AOA', maximumFractionDigits: 2 }).format(v); }
+        catch (_) { return new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 2 }).format(v) + ' AOA'; }
+      };
+      const fmtInt = n => {
+        const v = Number(n);
+        return Number.isFinite(v) ? new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 0 }).format(v) : '—';
+      };
+      const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      function nval(v) { const n = Number(v); return Number.isFinite(n) ? n : 0; }
+      function pct(v) { return Math.max(0, Math.min(100, nval(v))); }
+
+      function showError(id, error) {
+        const x = document.getElementById(id);
+        x.textContent = error && error.message ? error.message : 'Não foi possível carregar este relatório.';
+        x.classList.remove('d-none');
+      }
+      function setLoading(prefix, on) {
+        const l = document.getElementById(prefix + '-loading');
+        const c = document.getElementById(prefix + '-content');
+        if (l) l.classList.toggle('d-none', !on);
+        if (c && on) c.classList.add('d-none');
+      }
+      function stamp(id) {
+        const x = document.getElementById(id);
+        if (x) x.textContent = 'Atualizado ' + new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date());
+      }
+
+      function kpi(label, value, meta, icon) {
+        return '<div class="col-12 col-sm-6 col-xl-4"><div class="rep-kpi"><div class="d-flex justify-content-between align-items-start"><div><div class="rep-kpi-label">' + esc(label) + '</div><div class="rep-kpi-value">' + esc(value) + '</div><div class="rep-kpi-meta">' + esc(meta || '') + '</div></div><span class="rep-kpi-icon"><i class="bi ' + esc(icon || 'bi-graph-up') + '" aria-hidden="true"></i></span></div></div></div>';
+      }
+      function progress(label, value, max, color) {
+        const val = nval(value);
+        const width = max > 0 ? pct(val / max * 100) : 0;
+        return '<div class="rep-progress-row"><div class="rep-progress-top"><span class="rep-progress-label">' + esc(label) + '</span><span class="rep-progress-value">' + fmtInt(val) + '</span></div><div class="rep-track"><div class="rep-track-fill ' + (color || '') + '" style="width:' + width + '%"></div></div></div>';
+      }
+      function checkResponse(r, key) {
+        if (!r || r.success === false || !r.data) throw new Error(r && r.message || 'O backend devolveu uma resposta inválida.');
+        return key ? r.data[key] : r.data;
+      }
+      function localDate(d) { const x = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return x.toISOString().slice(0, 10); }
+      function buildPeriod() {
+        const start = document.getElementById('rep-start').value;
+        const end = document.getElementById('rep-end').value;
+        if (!start || !end || start > end) throw new Error('Selecione um intervalo válido: a data inicial deve ser anterior ou igual à final.');
+        return new URLSearchParams({ startDate: start, endDate: end }).toString();
+      }
+
+      /* ====================================================================
+         FINANCEIRO + TIMELINE
+         ==================================================================== */
+      async function loadFinancial() {
+        if (!canFinancial) return;
+        delete loaded.financial;
+        delete loaded.timeline;
+        updateExport();
+        if (!apiReady()) {
+          showError('financial-error', new Error('Cliente da API indisponível. Não serão apresentados valores presumidos.'));
+          document.getElementById('financial-loading').classList.add('d-none');
+          showError('timeline-error', new Error('Cliente da API indisponível.'));
+          document.getElementById('timeline-loading').classList.add('d-none');
+          return;
+        }
+        let query;
+        try { query = buildPeriod(); }
+        catch (e) {
+          return window.Alerts && window.Alerts.error ? window.Alerts.error(e.message) : alert(e.message);
+        }
+        document.getElementById('financial-error').classList.add('d-none');
+        document.getElementById('timeline-error').classList.add('d-none');
+        setLoading('financial', true);
+        setLoading('timeline', true);
+        try {
+          const response = await window.apiClient.get('/reports/financial?' + query);
+          const report = checkResponse(response);
+          if (!report.metrics) throw new Error('O relatório financeiro não contém métricas.');
+          loaded.financial = report;
+          const m = report.metrics;
+          document.getElementById('financial-content').innerHTML =
+            kpi('Depósitos confirmados', fmtMoney(m.deposits && m.deposits.volume), fmtInt(m.deposits && m.deposits.count) + ' operação(ões)', 'bi-box-arrow-in-down') +
+            kpi('Levantamentos liquidados', fmtMoney(m.withdrawals && m.withdrawals.volume), fmtInt(m.withdrawals && m.withdrawals.count) + ' operação(ões)', 'bi-box-arrow-up-right') +
+            kpi('Transferências concluídas', fmtMoney(m.transfers && m.transfers.volume), fmtInt(m.transfers && m.transfers.count) + ' operação(ões)', 'bi-arrow-left-right') +
+            kpi('Contribuições confirmadas', fmtMoney(m.contributions && m.contributions.volume), fmtInt(m.contributions && m.contributions.count) + ' quota(s)', 'bi-people') +
+            kpi('Desembolsos pagos', fmtMoney(m.payouts && m.payouts.volume), fmtInt(m.payouts && m.payouts.count) + ' pagamento(s)', 'bi-send-check') +
+            kpi('Taxas cobradas', fmtMoney(m.feesCollected && m.feesCollected.volume), 'Conforme agregação financeira do backend', 'bi-receipt');
+          setLoading('financial', false);
+          document.getElementById('financial-content').classList.remove('d-none');
+          stamp('financial-updated');
+
+          try {
+            const tResponse = await window.apiClient.get('/reports/financial/timeline?' + query);
+            const entries = checkResponse(tResponse, 'timeline');
+            if (!Array.isArray(entries)) throw new Error('A API não devolveu uma série temporal válida.');
+            loaded.timeline = entries;
+            renderTimeline(entries);
+            setLoading('timeline', false);
+            document.getElementById('timeline-content').classList.remove('d-none');
+            document.getElementById('timeline-period').textContent = document.getElementById('rep-start').value + ' — ' + document.getElementById('rep-end').value;
+            stamp('financial-updated');
+          } catch (e) {
+            document.getElementById('timeline-loading').classList.add('d-none');
+            showError('timeline-error', e);
+          }
+        } catch (e) {
+          document.getElementById('financial-loading').classList.add('d-none');
+          showError('financial-error', e);
+        }
+        updateExport();
+      }
+
+      function renderTimeline(entries) {
+        const max = Math.max(0, ...entries.flatMap(x => [nval(x.deposits), nval(x.payouts)]));
+        const chart = document.getElementById('timeline-chart');
+        const table = document.getElementById('timeline-table');
+        chart.innerHTML = entries.map(x => {
+          const d = nval(x.deposits), p = nval(x.payouts);
+          const dh = max ? Math.max(d ? 3 : 0, d / max * 100) : 0;
+          const ph = max ? Math.max(p ? 3 : 0, p / max * 100) : 0;
+          const date = String(x.date || '');
+          return '<div class="rep-chart-col" title="' + esc(date) + ' · Depósitos: ' + esc(fmtMoney(d)) + ' · Desembolsos: ' + esc(fmtMoney(p)) + '"><div class="rep-chart-bars"><span class="rep-bar rep-bar-deposit" style="height:' + dh + '%" aria-hidden="true"></span><span class="rep-bar rep-bar-payout" style="height:' + ph + '%" aria-hidden="true"></span></div><span class="rep-chart-date">' + esc(date.slice(5)) + '</span></div>';
+        }).join('');
+        table.innerHTML = entries.map(x => '<tr><td>' + esc(x.date || '—') + '</td><td class="text-end">' + esc(fmtMoney(x.deposits)) + '</td><td class="text-end">' + esc(fmtMoney(x.payouts)) + '</td></tr>').join('');
+      }
+
+      /* ====================================================================
+         RELATÓRIOS ADMIN
+         ==================================================================== */
+      async function loadAdminReports() {
+        if (!canAdmin) return;
+        ['compliance', 'kyc', 'risk'].forEach(p => {
+          delete loaded[p];
+          document.getElementById(p + '-content').classList.add('d-none');
+          document.getElementById(p + '-error').classList.add('d-none');
+          document.getElementById(p + '-loading').classList.remove('d-none');
+        });
+        updateExport();
+        const jobs = [
+          ['compliance', '/reports/compliance/groups', 'compliance', renderCompliance, 'compliance-updated'],
+          ['kyc', '/reports/compliance/kyc', 'kyc', renderKyc, 'kyc-updated'],
+          ['risk', '/reports/disputes-risk', null, renderRisk, 'risk-updated']
+        ];
+        await Promise.all(jobs.map(async ([prefix, path, key, render, stampId]) => {
+          if (!apiReady()) {
+            document.getElementById(prefix + '-loading').classList.add('d-none');
+            showError(prefix + '-error', new Error('Cliente da API indisponível.'));
+            return;
+          }
+          try {
+            const r = await window.apiClient.get(path);
+            const data = checkResponse(r, key);
+            loaded[prefix] = data;
+            render(data);
+            setLoading(prefix, false);
+            document.getElementById(prefix + '-content').classList.remove('d-none');
+            stamp(stampId);
+          } catch (e) {
+            document.getElementById(prefix + '-loading').classList.add('d-none');
+            showError(prefix + '-error', e);
+          }
+        }));
+        updateExport();
+      }
+
+      function renderCompliance(data) {
+        const c = data && data.compliance;
+        if (!c) throw new Error('Dados de adimplência incompletos.');
+        const total = nval(c.totalObligations);
+        const rate = pct(c.onTimeRatePercentage);
+        document.getElementById('compliance-content').innerHTML =
+          '<div class="row g-3 mb-4">' +
+            kpi('Obrigações totais', fmtInt(total), 'Total global reportado', 'bi-list-check') +
+            kpi('Pagas dentro do prazo', fmtInt(c.paidOnTime), rate.toFixed(2) + '% de pontualidade', 'bi-check-circle') +
+            kpi('Pagas em atraso', fmtInt(c.paidLate), 'Liquidadas após a data-limite', 'bi-clock-history') +
+            kpi('Em atraso atualmente', fmtInt(c.currentlyLate), 'Obrigações pendentes fora do prazo', 'bi-hourglass-split') +
+            kpi('Em incumprimento', fmtInt(c.defaulted), 'Obrigações classificadas como incumpridas', 'bi-exclamation-triangle') +
+          '</div>' +
+          '<div class="rep-progress-row"><div class="rep-progress-top"><span class="rep-progress-label">Taxa de pagamento pontual</span><span class="rep-progress-value">' + rate.toFixed(2) + '%</span></div><div class="rep-track" style="height:12px"><div class="rep-track-fill good" style="height:12px;width:' + rate + '%"></div></div></div>';
+      }
+
+      function renderKyc(data) {
+        const t = (data && data.tierDistribution) || {};
+        const arr = [
+          ['Não verificado · nível 1', t.tier1Unverified],
+          ['Verificado · nível 2', t.tier2Verified],
+          ['Verificação reforçada · nível 3', t.tier3Enhanced]
+        ];
+        const max = Math.max(1, ...arr.map(x => nval(x[1])));
+        document.getElementById('kyc-content').innerHTML =
+          '<div class="row g-3">' +
+            '<div class="col-12 col-xl-7"><div class="row g-3">' +
+              kpi('Submissões totais', fmtInt(data.totalSubmissions), 'Processos na esteira KYC', 'bi-person-vcard') +
+              kpi('Aprovadas', fmtInt(data.approvedCount), 'Estado APPROVED', 'bi-patch-check') +
+              kpi('Rejeitadas', fmtInt(data.rejectedCount), 'Estado REJECTED', 'bi-x-circle') +
+              kpi('Em revisão', fmtInt(data.underReviewCount), 'Estado UNDER_REVIEW', 'bi-hourglass') +
+              kpi('Requerem revisão', fmtInt(data.needsReviewCount), 'Estado NEEDS_REVIEW', 'bi-clipboard2-pulse') +
+            '</div></div>' +
+            '<div class="col-12 col-xl-5"><div class="rep-kpi h-100"><div class="rep-kpi-label mb-3">Distribuição de níveis</div>' +
+              arr.map(x => progress(x[0], x[1], max, '')).join('') +
+            '</div></div>' +
+          '</div>';
+      }
+
+      function providerLabel(p) {
+        return ({ MULTICAIXA_EXPRESS: 'Multicaixa Express', UNITEL_MONEY: 'Unitel Money', E_KWANZA: 'e-Kwanza' })[String(p || '').toUpperCase()] || String(p || 'Prestador');
+      }
+      function renderProviders(arr) {
+        if (!Array.isArray(arr)) throw new Error('A API não devolveu uma lista de prestadores válida.');
+        if (!arr.length) {
+          document.getElementById('providers-content').innerHTML = '<div class="col-12"><div class="rep-state">Não há pedidos de pagamento agregados para apresentar.</div></div>';
+          return;
+        }
+        document.getElementById('providers-content').innerHTML = arr.map(x => {
+          const rate = pct(x.successRatePercentage);
+          const total = nval(x.totalRequests);
+          const failed = nval(x.failedCount);
+          const success = nval(x.succeededCount);
+          return '<div class="col-12 col-lg-6"><article class="rep-provider">' +
+            '<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">' +
+              '<div><div style="color:var(--ok-purple-vibrant);font-size:0.68rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;">Gateway integrado</div><h3 class="rep-provider-name mt-1 mb-0">' + esc(providerLabel(x.provider)) + '</h3></div>' +
+              '<div class="text-end"><div class="rep-provider-rate">' + rate.toFixed(2) + '%</div><div class="rep-kpi-meta">taxa de sucesso</div></div>' +
+            '</div>' +
+            '<div class="rep-progress-row"><div class="rep-progress-top"><span class="rep-progress-label">Conversão de pedidos</span><span class="rep-progress-value">' + rate.toFixed(2) + '%</span></div><div class="rep-track"><div class="rep-track-fill ' + (rate >= 90 ? 'good' : rate >= 70 ? 'warn' : 'bad') + '" style="width:' + rate + '%"></div></div></div>' +
+            '<div class="row g-2 mt-3">' +
+              '<div class="col-4"><div class="rep-kpi-label">Pedidos</div><div class="fw-bold" style="color:var(--ok-text-primary);">' + fmtInt(total) + '</div></div>' +
+              '<div class="col-4"><div class="rep-kpi-label">Sucesso</div><div class="fw-bold text-success">' + fmtInt(success) + '</div></div>' +
+              '<div class="col-4"><div class="rep-kpi-label">Falhados</div><div class="fw-bold text-warning">' + fmtInt(failed) + '</div></div>' +
+              '<div class="col-12 mt-3"><div class="rep-kpi-label">Volume de pagamentos concluídos</div><div class="fw-bold mt-1" style="color:var(--ok-text-primary);">' + esc(fmtMoney(x.totalVolume)) + '</div></div>' +
+            '</div>' +
+          '</article></div>';
+        }).join('');
+      }
+
+      function renderRisk(data) {
+        const dist = (data && data.riskEventsDistribution) || {};
+        const risks = [
+          ['Baixo', dist.low, 'good'],
+          ['Médio', dist.medium, 'warn'],
+          ['Alto', dist.high, 'bad'],
+          ['Crítico', dist.critical, 'bad']
+        ];
+        const maxRisk = Math.max(1, ...risks.map(x => nval(x[1])));
+        const disputes = [
+          ['Abertas', data.openDisputes, 'warn'],
+          ['A favor do requerente', data.resolvedFavorInitiator, 'good'],
+          ['A favor da parte reclamada', data.resolvedFavorRespondent, ''],
+          ['Encerradas sem provimento', data.dismissed, '']
+        ];
+        const maxD = Math.max(1, ...disputes.map(x => nval(x[1])));
+        document.getElementById('risk-content').innerHTML =
+          '<div class="row g-3 mb-4">' +
+            kpi('Disputas totais', fmtInt(data.totalDisputes), 'Volume global de contestações', 'bi-shield-exclamation') +
+            kpi('Eventos de risco', fmtInt(risks.reduce((a, x) => a + nval(x[1]), 0)), 'Distribuição por nível de risco', 'bi-exclamation-diamond') +
+            kpi('Eventos críticos', fmtInt(dist.critical), 'Nível CRITICAL', 'bi-shield-fill-exclamation') +
+          '</div>' +
+          '<div class="row g-4">' +
+            '<div class="col-12 col-xl-6"><div class="rep-kpi h-100"><div class="rep-kpi-label mb-3">Decisões de contestação</div>' +
+              disputes.map(x => progress(x[0], x[1], maxD, x[2])).join('') +
+            '</div></div>' +
+            '<div class="col-12 col-xl-6"><div class="rep-kpi h-100"><div class="rep-kpi-label mb-3">Eventos por nível de risco</div>' +
+              risks.map(x => progress(x[0], x[1], maxRisk, x[2])).join('') +
+            '</div></div>' +
+          '</div>';
+      }
+
+      /* ====================================================================
+         CSV
+         ==================================================================== */
+      function csvCell(v) {
+        let s = String(v == null ? '' : v);
+        if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      function updateExport() {
+        const b = document.getElementById('rep-export');
+        b.disabled = !Object.keys(loaded).length;
+      }
+      function exportCsv() {
+        const rows = [['Secção', 'Indicador', 'Valor', 'Unidade']];
+        const add = (section, label, value, unit = '') => rows.push([section, label, value, unit]);
+        if (loaded.financial && loaded.financial.metrics) {
+          const m = loaded.financial.metrics;
+          add('Financeiro', 'Período inicial', document.getElementById('rep-start').value);
+          add('Financeiro', 'Período final', document.getElementById('rep-end').value);
+          for (const [key, label] of [['deposits', 'Depósitos'], ['withdrawals', 'Levantamentos'], ['transfers', 'Transferências'], ['contributions', 'Contribuições'], ['payouts', 'Desembolsos']]) {
+            const x = m[key] || {};
+            add('Financeiro', label + ' volume', x.volume, 'AOA');
+            add('Financeiro', label + ' operações', x.count, 'unidades');
+          }
+          add('Financeiro', 'Taxas cobradas', m.feesCollected && m.feesCollected.volume, 'AOA');
+        }
+        if (Array.isArray(loaded.timeline)) loaded.timeline.forEach(x => {
+          add('Série diária ' + x.date, 'Depósitos', x.deposits, 'AOA');
+          add('Série diária ' + x.date, 'Desembolsos', x.payouts, 'AOA');
+        });
+        if (loaded.compliance && loaded.compliance.compliance) {
+          const x = loaded.compliance.compliance;
+          for (const k of ['totalObligations', 'paidOnTime', 'paidLate', 'currentlyLate', 'defaulted', 'onTimeRatePercentage']) add('Adimplência', k, x[k], k === 'onTimeRatePercentage' ? '%' : 'unidades');
+        }
+        if (loaded.kyc) {
+          const x = loaded.kyc;
+          for (const k of ['totalSubmissions', 'approvedCount', 'rejectedCount', 'underReviewCount', 'needsReviewCount']) add('KYC', k, x[k], 'submissões');
+          for (const [k, v] of Object.entries(x.tierDistribution || {})) add('KYC', 'Nível ' + k, v, 'contas');
+        }
+        if (Array.isArray(loaded.providers)) loaded.providers.forEach(x => {
+          add('Prestadores', x.provider + ' pedidos', x.totalRequests, 'unidades');
+          add('Prestadores', x.provider + ' taxa de sucesso', x.successRatePercentage, '%');
+          add('Prestadores', x.provider + ' volume concluído', x.totalVolume, 'AOA');
+        });
+        if (loaded.risk) {
+          const x = loaded.risk;
+          for (const k of ['totalDisputes', 'openDisputes', 'resolvedFavorInitiator', 'resolvedFavorRespondent', 'dismissed']) add('Disputas', k, x[k], 'unidades');
+          for (const [k, v] of Object.entries(x.riskEventsDistribution || {})) add('Risco', k, v, 'eventos');
+        }
+        const csv = '\uFEFF' + rows.map(r => r.map(csvCell).join(';')).join('\r\n');
+        const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'onekixikila-relatorios-' + localDate(new Date()) + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      /* ====================================================================
+         PRESTADORES
+         ==================================================================== */
+      async function loadProviders() {
+        if (!canFinancial) return;
+        delete loaded.providers;
+        updateExport();
+        document.getElementById('providers-content').classList.add('d-none');
+        document.getElementById('providers-error').classList.add('d-none');
+        const load = document.getElementById('providers-loading');
+        if (!apiReady()) {
+          load.classList.add('d-none');
+          showError('providers-error', new Error('Cliente da API indisponível.'));
+          return;
+        }
+        try {
+          const r = await window.apiClient.get('/reports/providers');
+          const data = checkResponse(r, 'providers');
+          loaded.providers = data;
+          renderProviders(data);
+          setLoading('providers', false);
+          document.getElementById('providers-content').classList.remove('d-none');
+          stamp('providers-updated');
+        } catch (e) {
+          load.classList.add('d-none');
+          showError('providers-error', e);
+        }
+        updateExport();
+      }
+
+      /* ====================================================================
+         PERMISSÕES
+         ==================================================================== */
+      function setupRole() {
+        if (!canAdmin) {
+          ['panel-compliance', 'panel-kyc', 'panel-risk'].forEach(id => document.getElementById(id).classList.add('d-none'));
+        }
+        if (!canFinancial) {
+          ['panel-financial', 'panel-providers'].forEach(id => document.getElementById(id).classList.add('d-none'));
+        }
+        if (!canAdmin && !canFinancial) {
+          const warn = document.querySelector('.admin-note.warning');
+          if (warn) warn.innerHTML = '<i class="bi bi-shield-lock" aria-hidden="true"></i><span>Acesso restrito: os relatórios exigem ADMIN, AUDITOR ou FINANCIAL_OPERATOR.</span>';
+          document.getElementById('rep-refresh').disabled = true;
+        }
+      }
+
+      /* ====================================================================
+         EVENTOS
+         ==================================================================== */
+      document.getElementById('rep-apply-dates').addEventListener('click', loadFinancial);
+      document.getElementById('rep-refresh').addEventListener('click', () => {
+        if (canFinancial) { loadFinancial(); loadProviders(); }
+        if (canAdmin) loadAdminReports();
+      });
+      document.getElementById('rep-export').addEventListener('click', exportCsv);
+
+      /* ====================================================================
+         DATAS + RELÓGIO
+         ==================================================================== */
+      const today = localDate(new Date());
+      const startDateObj = new Date();
+      startDateObj.setDate(startDateObj.getDate() - 29);
+      const start = localDate(startDateObj);
+      document.getElementById('rep-start').value = start;
+      document.getElementById('rep-end').value = today;
+      document.getElementById('rep-start').max = today;
+      document.getElementById('rep-end').max = today;
+
+      const clock = document.getElementById('admin-utc-clock');
+      function updateClock() {
+        if (clock) clock.textContent = new Intl.DateTimeFormat('pt-PT', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()) + ' UTC';
+      }
+      updateClock();
+      window.setInterval(updateClock, 1000);
+
+      /* ====================================================================
+         INICIALIZAÇÃO
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        setupRole();
+        if (!apiReady()) {
+          ['financial-loading', 'timeline-loading', 'providers-loading', 'compliance-loading', 'kyc-loading', 'risk-loading'].forEach(id => {
+            const x = document.getElementById(id);
+            if (x) x.classList.add('d-none');
+          });
+          if (canFinancial) {
+            showError('financial-error', new Error('Cliente da API indisponível.'));
+            showError('timeline-error', new Error('Cliente da API indisponível.'));
+            showError('providers-error', new Error('Cliente da API indisponível.'));
+          }
+          if (canAdmin) {
+            ['compliance', 'kyc', 'risk'].forEach(p => showError(p + '-error', new Error('Cliente da API indisponível.')));
+          }
+        } else {
+          if (canFinancial) { loadFinancial(); loadProviders(); }
+          if (canAdmin) loadAdminReports();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

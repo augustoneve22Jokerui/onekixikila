@@ -1,0 +1,455 @@
+<aside class="ok-sidebar" id="app-sidebar" role="navigation" aria-label="Menu principal">
+  
+  <!-- Cabeçalho da Sidebar: Logótipo -->
+  <div class="ok-sidebar-header">
+    <a href="/dashboard" class="ok-sidebar-brand" aria-label="OneKixikila - Painel">
+      <div class="ok-sidebar-brand-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M20 2L38 20L20 38L2 20L20 2Z" fill="url(#ok-logo-gradient)" />
+          <path d="M20 12L28 20L20 28L12 20L20 12Z" fill="#ffffff" />
+          <defs>
+            <linearGradient id="ok-logo-gradient" x1="2" y1="2" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#10b981" />
+              <stop offset="100%" stop-color="#0f3b3a" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="ok-sidebar-brand-text">OneKixikila</span>
+    </a>
+    <button 
+      type="button" 
+      class="ok-sidebar-close d-lg-none" 
+      id="sidebar-close-btn" 
+      aria-label="Fechar menu"
+    >
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- Navegação Principal -->
+  <nav class="ok-sidebar-nav">
+    <ul class="ok-nav-list">
+
+      <li class="ok-nav-item">
+        <a 
+          href="/dashboard" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && (path === '/dashboard' || path === '/') ? 'active' : '' %>"
+          aria-current="<%= typeof path !== 'undefined' && (path === '/dashboard' || path === '/') ? 'page' : 'false' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-house-door"></i></span>
+          <span class="ok-nav-text">Início</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/wallet" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path.startsWith('/wallet') ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-wallet2"></i></span>
+          <span class="ok-nav-text">Carteira</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/groups" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path.startsWith('/groups') ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-people"></i></span>
+          <span class="ok-nav-text">Kixikila</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/groups" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path === '/groups/list' ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-person-hearts"></i></span>
+          <span class="ok-nav-text">Grupos</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/wallet/transfer" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path.startsWith('/wallet/transfer') ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-arrow-left-right"></i></span>
+          <span class="ok-nav-text">Transferências</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/wallet/deposit" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path.startsWith('/wallet/deposit') ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-credit-card"></i></span>
+          <span class="ok-nav-text">Pagamentos</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/wallet/statement" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path.startsWith('/wallet/statement') ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-clock-history"></i></span>
+          <span class="ok-nav-text">Histórico</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/notifications" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path.startsWith('/notifications') ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-bell"></i></span>
+          <span class="ok-nav-text">Notificações</span>
+          <span class="ok-nav-badge unread-notifications-count d-none">0</span>
+        </a>
+      </li>
+
+      <li class="ok-nav-item">
+        <a 
+          href="/profile" 
+          class="ok-nav-link <%= typeof path !== 'undefined' && path.startsWith('/profile') ? 'active' : '' %>"
+        >
+          <span class="ok-nav-icon"><i class="bi bi-gear"></i></span>
+          <span class="ok-nav-text">Definições</span>
+        </a>
+      </li>
+
+    </ul>
+  </nav>
+
+  <!-- Card Promocional Inferior -->
+  <div class="ok-sidebar-promo">
+    <div class="ok-promo-illustration" aria-hidden="true">
+      <svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="120" rx="12" fill="url(#ok-promo-bg)" />
+        <circle cx="50" cy="60" r="28" fill="#a3e635" fill-opacity="0.35" />
+        <circle cx="100" cy="50" r="24" fill="#facc15" fill-opacity="0.4" />
+        <circle cx="150" cy="65" r="26" fill="#60a5fa" fill-opacity="0.4" />
+        <path d="M30 90 Q100 50 170 90" stroke="#ffffff" stroke-opacity="0.6" stroke-width="2" fill="none" />
+        <defs>
+          <linearGradient id="ok-promo-bg" x1="0" y1="0" x2="200" y2="120" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ecfdf5" />
+            <stop offset="100%" stop-color="#d1fae5" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <h3 class="ok-promo-title">Juntos vamos mais longe</h3>
+    <p class="ok-promo-text">O OneKixikila conecta pessoas, fortalece grupos e constrói um futuro melhor.</p>
+    <a href="/groups" class="btn-ok-primary ok-promo-btn">Saber mais</a>
+  </div>
+
+</aside>
+
+<!-- Overlay para mobile -->
+<div class="ok-sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+<style>
+  .ok-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--ok-bg-sidebar);
+    border-right: 1px solid var(--ok-border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 1030;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Cabeçalho / Logótipo */
+  .ok-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--ok-border-color);
+    flex-shrink: 0;
+  }
+
+  .ok-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ok-text-main);
+    transition: opacity 0.2s ease;
+  }
+
+  .ok-sidebar-brand:hover {
+    opacity: 0.85;
+    color: var(--ok-text-main);
+  }
+
+  .ok-sidebar-brand-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ok-sidebar-brand-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .ok-sidebar-brand-text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--ok-text-main);
+  }
+
+  .ok-sidebar-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--ok-border-color);
+    color: var(--ok-text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .ok-sidebar-close:hover {
+    background-color: var(--ok-bg-body);
+  }
+
+  /* Navegação */
+  .ok-sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+  }
+
+  .ok-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ok-nav-item {
+    width: 100%;
+  }
+
+  .ok-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 14px;
+    border-radius: var(--ok-border-radius-sm);
+    text-decoration: none;
+    color: var(--ok-text-muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    position: relative;
+  }
+
+  .ok-nav-link:hover {
+    background-color: var(--ok-bg-body);
+    color: var(--ok-text-main);
+  }
+
+  .ok-nav-link.active {
+    background-color: var(--ok-accent-green-light);
+    color: #14532d;
+    font-weight: 600;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ok-nav-link.active {
+      background-color: rgba(163, 230, 53, 0.15);
+      color: var(--ok-accent-green);
+    }
+  }
+
+  .ok-nav-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .ok-nav-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ok-nav-badge {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: var(--ok-border-radius-pill);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Card Promocional */
+  .ok-sidebar-promo {
+    margin: 16px;
+    padding: 18px 16px;
+    background-color: var(--ok-accent-green-light);
+    border-radius: var(--ok-border-radius-md);
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ok-sidebar-promo {
+      background-color: rgba(163, 230, 53, 0.08);
+    }
+  }
+
+  .ok-promo-illustration {
+    margin-bottom: 12px;
+    border-radius: var(--ok-border-radius-sm);
+    overflow: hidden;
+  }
+
+  .ok-promo-illustration svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .ok-promo-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ok-text-main);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .ok-promo-text {
+    font-size: 0.78rem;
+    color: var(--ok-text-muted);
+    line-height: 1.45;
+    margin-bottom: 14px;
+  }
+
+  .ok-promo-btn {
+    width: 100%;
+    font-size: 0.82rem;
+    padding: 0.5rem 1rem;
+    background-color: #0f3b3a;
+    color: #ffffff;
+  }
+
+  .ok-promo-btn:hover {
+    background-color: #064e3b;
+    color: #ffffff;
+  }
+
+  /* Overlay Mobile */
+  .ok-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 1025;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  /* Responsividade Mobile */
+  @media (max-width: 991.98px) {
+    .ok-sidebar {
+      transform: translateX(-100%);
+      box-shadow: var(--ok-shadow-lg);
+    }
+
+    body.sidebar-mobile-open .ok-sidebar {
+      transform: translateX(0);
+    }
+
+    body.sidebar-mobile-open .ok-sidebar-overlay {
+      display: block;
+      opacity: 1;
+    }
+
+    body.sidebar-mobile-open {
+      overflow: hidden;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .ok-sidebar {
+      transform: translateX(0);
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const closeBtn = document.getElementById('sidebar-close-btn');
+      const overlay = document.getElementById('sidebar-overlay');
+      const navLinks = document.querySelectorAll('.ok-sidebar .ok-nav-link');
+
+      function closeSidebar() {
+        document.body.classList.remove('sidebar-mobile-open');
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeSidebar);
+      }
+
+      if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+      }
+
+      // Fecha a sidebar ao clicar num link (útil em mobile)
+      navLinks.forEach(function (link) {
+        link.addEventListener('click', function () {
+          if (window.innerWidth < 992) {
+            closeSidebar();
+          }
+        });
+      });
+
+      // Fecha a sidebar ao premir ESC
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && document.body.classList.contains('sidebar-mobile-open')) {
+          closeSidebar();
+        }
+      });
+    });
+  })();
+</script>

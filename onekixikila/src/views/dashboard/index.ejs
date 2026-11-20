@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Painel Principal — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+      --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+      --ok-accent-cyan: #06b6d4;
+      --ok-accent-emerald: #10b981;
+      --ok-accent-amber: #f59e0b;
+      --ok-accent-rose: #f43f5e;
+
+      --ok-color-card-white: #ffffff;
+      --ok-color-card-lime: #bef264;
+      --ok-color-card-purple: #7c3aed;
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-chip-bg: rgba(255, 255, 255, 0.04);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 86px;
+      --ok-navbar-height: 80px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+      --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+      --ok-color-card-white: #ffffff;
+      --ok-color-card-lime: #bef264;
+      --ok-color-card-purple: #7c3aed;
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+        --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-chip-bg: #ffffff;
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+        --ok-bg-balance: #0d3b38;
+        --ok-accent-green: #a3e635;
+        --ok-accent-green-hover: #84cc16;
+        --ok-accent-green-light: #eff6e0;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -120px; left: 20%;
+      width: 550px; height: 550px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(90px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL SLIM TECH
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 20px; left: 20px; bottom: 20px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 20px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 22px 0;
+      z-index: 1040;
+      box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 46px; height: 46px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+    }
+    .ok-rail-link .ok-badge-dot {
+      position: absolute; top: 8px; right: 8px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background-color: #ef4444;
+      border: 2px solid var(--ok-bg-surface);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 36px);
+      padding: 20px 32px 48px 0;
+      position: relative; z-index: 1;
+    }
+
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1080px;
+      margin: 0 auto 20px auto;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 420px; max-width: 100%;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 46px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 75px 0 46px;
+      font-size: 0.88rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 16px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 0.7rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 12px; }
+
+    .ok-action-circle {
+      width: 44px; height: 44px; border-radius: 14px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 10px;
+      padding: 5px 16px 5px 5px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 36px; height: 36px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 44px; height: 44px; border-radius: 14px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    /* =========================================================================
+       HERO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: 1080px;
+      margin: 0 auto 22px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 16px;
+    }
+
+    .ok-page-title-main {
+      font-size: 1.85rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+    }
+    .ok-page-title-main .user-highlight {
+      background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.7rem; font-weight: 800;
+      padding: 4px 11px;
+      border-radius: var(--ok-radius-pill);
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .ok-time-filter-pill {
+      display: inline-flex; align-items: center;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      padding: 4px;
+      box-shadow: 0 4px 14px var(--ok-shadow-card);
+      gap: 4px;
+    }
+    .ok-filter-item {
+      padding: 7px 16px;
+      font-size: 0.78rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      border-radius: var(--ok-radius-pill);
+      border: none; background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-filter-item:hover { color: var(--ok-purple-vibrant); }
+    .ok-filter-item.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+    }
+
+    /* =========================================================================
+       SESSÃO 1: 4 CARDS CHAPADOS
+       ========================================================================= */
+    .ok-flat-quad-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1080px;
+      margin: 0 auto 28px auto;
+      border-radius: 0px !important;
+      overflow: hidden;
+      box-shadow: 0 16px 36px var(--ok-shadow-card);
+      border: 1px solid var(--ok-border-subtle);
+    }
+
+    .ok-flat-card-box {
+      padding: 22px 18px 20px 18px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      min-height: 165px;
+      border-radius: 0px !important;
+      position: relative;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+    .ok-flat-card-box:hover {
+      z-index: 2; filter: brightness(1.04);
+      transform: translateY(-2px);
+    }
+
+    .ok-flat-card-box.theme-white { background-color: #ffffff; color: #0f172a; }
+    .ok-flat-card-box.theme-lime { background-color: #bef264; color: #0f172a; }
+    .ok-flat-card-box.theme-white-alt {
+      background-color: #ffffff; color: #0f172a;
+      border-left: 1px solid rgba(0,0,0,0.08);
+    }
+    .ok-flat-card-box.theme-purple { background-color: #7c3aed; color: #ffffff; }
+
+    .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+    .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+    .theme-white .ok-flat-icon-container svg,
+    .theme-lime .ok-flat-icon-container svg,
+    .theme-white-alt .ok-flat-icon-container svg { stroke: #0f172a; }
+    .theme-purple .ok-flat-icon-container svg { stroke: #ffffff; }
+
+    .ok-flat-title {
+      font-size: 1.02rem; font-weight: 800;
+      letter-spacing: -0.02em; line-height: 1.2;
+      margin-bottom: 5px;
+    }
+    .ok-flat-desc {
+      font-size: 0.74rem; line-height: 1.4;
+      opacity: 0.85; margin-bottom: 8px;
+    }
+    .ok-flat-metric-data {
+      font-size: 1.15rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+    .ok-flat-trend {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.7rem; font-weight: 800;
+      padding: 3px 9px;
+      border-radius: var(--ok-radius-pill);
+      margin-top: 6px;
+    }
+    .theme-white .ok-flat-trend,
+    .theme-lime .ok-flat-trend,
+    .theme-white-alt .ok-flat-trend { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .theme-purple .ok-flat-trend { background: rgba(255,255,255,0.15); color: #ffffff; }
+
+    /* =========================================================================
+       SESSÃO 2: ASIDES ESTAMPADOS
+       ========================================================================= */
+    .ok-canvas-asides-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 28px;
+      max-width: 1080px;
+      margin: 0 auto 30px auto;
+      align-items: start;
+    }
+
+    /* Vault de balanço */
+    .ok-balance-vault-card {
+      background: linear-gradient(160deg, var(--ok-bg-surface) 0%, var(--ok-bg-canvas) 100%);
+      border: 1px solid var(--ok-purple-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px var(--ok-shadow-card), 0 0 30px rgba(124, 58, 237, 0.15);
+      color: var(--ok-text-primary);
+      display: flex; flex-direction: column; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    .ok-vault-wave-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.18) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .ok-vault-badge-cluster {
+      display: flex; align-items: center; gap: 8px;
+      position: relative; z-index: 1;
+    }
+    .ok-token-emblem {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ok-vault-balance-display {
+      margin: 22px 0 16px 0;
+      position: relative; z-index: 1;
+    }
+    .ok-vault-caption {
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .ok-vault-sum {
+      font-size: 1.85rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.03em;
+      margin-top: 6px;
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-vault-action-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      position: relative; z-index: 1;
+      margin-top: 16px;
+    }
+    .ok-vault-btn {
+      height: 44px; border-radius: var(--ok-radius-pill);
+      font-size: 0.82rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .ok-vault-btn.primary {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.45);
+    }
+    .ok-vault-btn.primary:hover { transform: translateY(-2px); color: #ffffff; }
+    .ok-vault-btn.ghost {
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1px solid var(--ok-border-subtle);
+    }
+    .ok-vault-btn.ghost:hover { background: var(--ok-pill-bg-hover); color: var(--ok-purple-vibrant); }
+
+    /* Gráfico */
+    .ok-chart-module-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .ok-chart-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+    }
+    .ok-chart-tagline { display: flex; align-items: center; gap: 12px; }
+    .ok-chart-tag-emblem {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: var(--ok-purple-soft); color: var(--ok-purple-vibrant);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ok-chart-canvas-wrapper {
+      width: 100%; height: 200px;
+      position: relative;
+    }
+
+    /* =========================================================================
+       SESSÃO 3: GRUPOS + DONUT
+       ========================================================================= */
+    .ok-bottom-insights-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 28px;
+      max-width: 1080px;
+      margin: 0 auto 30px auto;
+    }
+
+    .ok-groups-roster-card,
+    .ok-donut-metric-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+    }
+
+    .ok-card-title-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+    }
+    .ok-card-title-row h4 {
+      font-size: 1.05rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+    }
+
+    .ok-btn-pill-soft {
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      font-weight: 700;
+      border-radius: var(--ok-radius-pill);
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      border: none;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .ok-btn-pill-soft:hover {
+      background: var(--ok-purple-vibrant);
+      color: #ffffff;
+    }
+
+    /* Lista de grupos (reescrita como stream estampado) */
+    .ok-group-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px;
+      border-radius: 12px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      margin-bottom: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      gap: 10px;
+    }
+    .ok-group-row:hover {
+      border-color: var(--ok-purple-border);
+      background: var(--ok-purple-soft);
+      transform: translateX(3px);
+      color: inherit;
+    }
+    .ok-group-row:last-child { margin-bottom: 0; }
+    .ok-group-meta-cell {
+      display: flex; align-items: center; gap: 12px;
+      min-width: 0;
+    }
+    .ok-group-icon-badge {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(124, 58, 237, 0.35) 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ok-group-title {
+      font-size: 0.88rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0 0 2px 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ok-group-meta-line {
+      font-size: 0.72rem;
+      color: var(--ok-text-muted);
+      margin: 0;
+    }
+    .ok-group-pill {
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      font-weight: 800;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: var(--ok-radius-pill);
+      white-space: nowrap;
+    }
+
+    /* Donut */
+    .ok-donut-centerpiece {
+      position: relative;
+      width: 190px; height: 190px;
+      margin: 16px auto;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ok-donut-inner-data {
+      position: absolute;
+      text-align: center;
+    }
+    .ok-donut-inner-data .sum {
+      font-size: 1.1rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--ok-text-primary);
+    }
+    .ok-donut-inner-data .label {
+      font-size: 0.68rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+
+    /* =========================================================================
+       SESSÃO 4: TABELA DE TRANSAÇÕES RECENTES (ESTAMPADA)
+       ========================================================================= */
+    .ok-recent-transactions-section {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .ok-stream-flat-list {
+      display: flex; flex-direction: column;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+    }
+
+    .ok-stream-flat-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 0.8fr;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      transition: all 0.2s ease;
+    }
+    .ok-stream-flat-row:last-child { border-bottom: none; }
+    .ok-stream-flat-row:hover {
+      background: var(--ok-stream-hover);
+    }
+    .ok-stream-tx-meta {
+      display: flex; align-items: center; gap: 10px; min-width: 0;
+    }
+    .ok-stream-tx-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 0.85rem;
+    }
+    .ok-stream-tx-icon.credit { background: rgba(16,185,129,0.15); color: #10b981; }
+    .ok-stream-tx-icon.debit { background: rgba(244,63,94,0.15); color: #f43f5e; }
+    .ok-stream-tx-desc {
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--ok-text-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin: 0;
+    }
+    .ok-stream-tx-meta-line {
+      font-size: 0.72rem; color: var(--ok-text-muted);
+      margin: 0;
+    }
+    .ok-stream-tx-date {
+      font-size: 0.8rem;
+      color: var(--ok-text-muted);
+    }
+    .ok-stream-tx-direction {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.7rem; font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--ok-radius-pill);
+      width: fit-content;
+    }
+    .ok-stream-tx-direction.credit { background: rgba(16,185,129,0.15); color: #10b981; }
+    .ok-stream-tx-direction.debit { background: rgba(244,63,94,0.15); color: #f43f5e; }
+    .ok-stream-tx-amount {
+      font-size: 0.92rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .ok-stream-tx-amount.credit { color: #10b981; }
+    .ok-stream-tx-amount.debit { color: #f43f5e; }
+    .ok-stream-tx-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.7rem; font-weight: 700;
+      padding: 3px 10px;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      border-radius: var(--ok-radius-pill);
+      width: fit-content;
+      justify-self: end;
+    }
+
+    /* Empty state */
+    .ok-empty-state {
+      text-align: center; padding: 3rem 1rem;
+      color: var(--ok-text-muted);
+      grid-column: 1 / -1;
+    }
+    .ok-empty-state .bi,
+    .ok-empty-state svg {
+      font-size: 2.5rem;
+      opacity: 0.4;
+      margin-bottom: 0.5rem;
+      display: block;
+      margin-inline: auto;
+    }
+    .ok-empty-state h6 {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 4px;
+    }
+
+    /* Responsividade */
+    @media (max-width: 1200px) {
+      .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+      .ok-canvas-asides-grid { grid-template-columns: 1fr; }
+      .ok-bottom-insights-grid { grid-template-columns: 1fr; }
+      .ok-stream-flat-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+          "meta amount"
+          "date status";
+      }
+      .ok-stream-tx-meta { grid-area: meta; }
+      .ok-stream-tx-amount { grid-area: amount; }
+      .ok-stream-tx-date { grid-area: date; }
+      .ok-stream-tx-status { grid-area: status; justify-self: end; }
+      .ok-stream-tx-direction { display: none; }
+    }
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-120%); }
+      .ok-viewport-shell { margin-left: 0; padding: 16px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.55rem; }
+    }
+    @media (max-width: 600px) {
+      .ok-flat-quad-strip { grid-template-columns: 1fr; }
+      .ok-stream-flat-row {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "meta"
+          "date"
+          "amount"
+          "status";
+      }
+      .ok-stream-tx-amount { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link active" title="Painel Geral">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link" title="Grupos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        <span class="ok-badge-dot d-none" id="rail-notification-badge"></span>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" id="global-dashboard-search" placeholder="Pesquisar grupos, membros ou comprovativos..." autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" id="ok-nav-fullname" style="font-size: 0.85rem; line-height: 1.1;"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" id="ok-nav-role" style="font-size: 0.7rem;"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Estampado -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Carteira Kixikila,
+          <span class="user-highlight" id="ok-hero-username"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name) : 'Membro' %></span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Painel Ativo
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          <%= new Date().toLocaleDateString('pt-AO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %> &bull; Luanda, Angola
+        </p>
+      </div>
+
+      <div class="ok-time-filter-pill">
+        <button class="ok-filter-item active" data-range="today">Hoje</button>
+        <button class="ok-filter-item" data-range="week">Semana</button>
+        <button class="ok-filter-item" data-range="month">Mês</button>
+        <button class="ok-filter-item" data-range="cycle">Ciclo</button>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+       SESSÃO 1: 4 CARDS CHAPADOS (RESUMO KIXIKILA)
+       ========================================================================= -->
+    <div class="ok-flat-quad-strip">
+
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Total Arrecadado</h5>
+          <p class="ok-flat-desc">Contribuições confirmadas nos grupos ativos.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-total-collected">0 Kz</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            +18.4%
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="14" width="36" height="24" stroke="currentColor" stroke-linecap="square"/>
+              <circle cx="24" cy="26" r="4" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Fundo em Rodada</h5>
+          <p class="ok-flat-desc">Pool total da vez corrente nos grupos.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-pool-target">0 Kz</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Na Mão da Vez
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+              <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Próximo Recebimento</h5>
+          <p class="ok-flat-desc">Previsão do próximo desembolso.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-next-payout-val">0 Kz</span>
+          <div class="ok-flat-trend" id="stat-next-payout-date" style="background: rgba(16,185,129,0.15); color: #10b981;">Em dia</div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="6" stroke="currentColor"/>
+              <circle cx="32" cy="18" r="6" stroke="currentColor"/>
+              <path d="M8 40C8 32 13 26 18 26C21 26 24 28 26 30" stroke="currentColor"/>
+              <path d="M24 30C26 28 29 26 32 26C37 26 40 32 40 40" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Membros Ativos</h5>
+          <p class="ok-flat-desc">Participantes em rotação nos seus grupos.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-active-members-count">0</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            100% Adimplentes
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========================================================================
+       SESSÃO 2: VAULT + GRÁFICO
+       ========================================================================= -->
+    <div class="ok-canvas-asides-grid">
+
+      <!-- Vault -->
+      <div class="ok-balance-vault-card">
+        <div class="ok-vault-wave-bg"></div>
+
+        <div>
+          <div class="ok-vault-badge-cluster">
+            <div class="ok-token-emblem" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <span class="fw-bold" style="font-size: 0.78rem; color: var(--ok-text-primary);">Carteira Transacional</span>
+            <span class="badge ms-auto" style="background: rgba(139,92,246,0.15); color: var(--ok-purple-vibrant); font-size: 0.7rem; font-weight: 800;" id="wallet-status-badge">Ativa</span>
+          </div>
+
+          <div class="ok-vault-balance-display">
+            <span class="ok-vault-caption">
+              Saldo Disponível (Livre)
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <div class="ok-vault-sum" id="user-available-balance">0,00 Kz</div>
+            <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Retido em garantia:</span>
+              <strong style="color: var(--ok-text-primary);" id="user-locked-balance">0,00 Kz</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="ok-vault-action-row">
+          <a href="/wallet/deposit" class="ok-vault-btn primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Carregar
+          </a>
+          <a href="/wallet/transfer" class="ok-vault-btn ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            Enviar
+          </a>
+        </div>
+      </div>
+
+      <!-- Gráfico -->
+      <div class="ok-chart-module-card">
+        <div class="ok-chart-header">
+          <div class="ok-chart-tagline">
+            <div class="ok-chart-tag-emblem">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0" style="font-size: 1.02rem; color: var(--ok-text-primary);">Fluxo das Partidas Dobradas</h5>
+              <span style="font-size: 0.75rem; color: var(--ok-text-muted);">Entradas (Créditos) vs Saídas (Débitos)</span>
+            </div>
+          </div>
+
+          <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 800; font-size: 0.72rem; padding: 5px 11px; border-radius: 999px;">
+            Equilíbrio 100%
+          </span>
+        </div>
+
+        <div class="ok-chart-canvas-wrapper" id="activity-chart-canvas-box">
+          <svg width="100%" height="100%" viewBox="0 0 700 200" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartVioletGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path id="chart-area-path" d="M0,170 Q140,80 280,130 T560,60 T700,90 L700,200 L0,200 Z" fill="url(#chartVioletGrad)" />
+            <path id="chart-stroke-path" d="M0,170 Q140,80 280,130 T560,60 T700,90" fill="none" stroke="#8b5cf6" stroke-width="3.5" stroke-linecap="round" />
+            <circle cx="280" cy="130" r="5" fill="#ffffff" stroke="#8b5cf6" stroke-width="3"/>
+            <circle cx="560" cy="60" r="6" fill="#8b5cf6" stroke="#ffffff" stroke-width="3"/>
+          </svg>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center pt-3 mt-2" style="border-top: 1px solid var(--ok-border-subtle);">
+          <span style="font-size: 0.75rem; color: var(--ok-text-muted);">Últimas 24 Horas</span>
+          <span style="font-size: 0.75rem; color: var(--ok-text-muted);">Ciclo Corrente</span>
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--ok-purple-vibrant);">Livro-Razão Conectado</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========================================================================
+       SESSÃO 3: GRUPOS + DONUT
+       ========================================================================= -->
+    <div class="ok-bottom-insights-grid">
+
+      <div class="ok-groups-roster-card">
+        <div class="ok-card-title-row">
+          <div>
+            <h4>Os Meus Grupos de Kixikila</h4>
+            <span style="font-size: 0.78rem; color: var(--ok-text-muted);">Grupos onde é líder ou membro ativo</span>
+          </div>
+          <a href="/groups/create" class="ok-btn-pill-soft">
+            Criar Novo +
+          </a>
+        </div>
+
+        <div id="dashboard-groups-listing">
+          <div class="ok-empty-state">
+            <div class="spinner-border spinner-border-sm mb-2" role="status" style="color: var(--ok-purple-vibrant);"></div>
+            <p class="small mb-0">A sincronizar grupos da base de dados...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-donut-metric-card">
+        <div class="ok-card-title-row">
+          <div>
+            <h4>Composição de Saldo</h4>
+            <span style="font-size: 0.78rem; color: var(--ok-text-muted);">Divisão de quotas e fundos</span>
+          </div>
+        </div>
+
+        <div class="ok-donut-centerpiece">
+          <svg width="190" height="190" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="38" fill="none" stroke="var(--ok-meter-bg)" stroke-width="12"></circle>
+            <circle id="donut-segment-available" cx="50" cy="50" r="38" fill="none" stroke="#8b5cf6" stroke-width="12" stroke-dasharray="170 240" stroke-linecap="round"></circle>
+            <circle id="donut-segment-locked" cx="50" cy="50" r="38" fill="none" stroke="#06b6d4" stroke-width="12" stroke-dasharray="45 240" stroke-dashoffset="-175" stroke-linecap="round"></circle>
+          </svg>
+          <div class="ok-donut-inner-data">
+            <span class="label">Total Geral</span>
+            <div class="sum" id="donut-total-sum">0 Kz</div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column gap-2 mt-2">
+          <div class="d-flex justify-content-between align-items-center" style="font-size: 0.82rem;">
+            <div class="d-flex align-items-center gap-2">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #8b5cf6;"></span>
+              <span style="color: var(--ok-text-muted);">Disponível</span>
+            </div>
+            <strong style="color: var(--ok-text-primary);" id="legend-available-val">0 Kz</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center" style="font-size: 0.82rem;">
+            <div class="d-flex align-items-center gap-2">
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: #06b6d4;"></span>
+              <span style="color: var(--ok-text-muted);">Garantias / Retido</span>
+            </div>
+            <strong style="color: var(--ok-text-primary);" id="legend-locked-val">0 Kz</strong>
+          </div>
+        </div>
+
+        <a href="/wallet/statement" class="ok-btn-ghost-pill w-100 mt-3">
+          Ver Livro-Razão Completo
+        </a>
+      </div>
+
+    </div>
+
+    <!-- =========================================================================
+       SESSÃO 4: TRANSAÇÕES RECENTES
+       ========================================================================= -->
+    <section class="ok-recent-transactions-section">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="fw-bold mb-1" style="font-size: 1.15rem; color: var(--ok-text-primary);">Transações Recentes</h4>
+          <span style="font-size: 0.78rem; color: var(--ok-text-muted);">Lançamentos certificados e reconciliados</span>
+        </div>
+        <a href="/wallet/statement" class="ok-btn-pill-soft">
+          Ver Extrato &rarr;
+        </a>
+      </div>
+
+      <div class="ok-stream-flat-list" id="dashboard-recent-transactions-tbody">
+        <div class="ok-empty-state">
+          <div class="spinner-border spinner-border-sm mb-2" role="status" style="color: var(--ok-purple-vibrant);"></div>
+          <p class="small mb-0">A carregar extrato...</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Scripts do Ecossistema -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         HELPERS
+         ==================================================================== */
+      const formatAOA = (amount) => {
+        const val = Number(amount) || 0;
+        return val.toLocaleString('pt-AO') + ' Kz';
+      };
+      const formatDateTime = (isoDate) => {
+        if (!isoDate) return '—';
+        const d = new Date(isoDate);
+        return d.toLocaleDateString('pt-AO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+      };
+
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function pick(obj, camel, snake, fallback) {
+        if (!obj) return fallback;
+        if (obj[camel] !== undefined && obj[camel] !== null) return obj[camel];
+        if (obj[snake] !== undefined && obj[snake] !== null) return obj[snake];
+        return fallback;
+      }
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          if (trimmed === DEFAULT_AVATAR) return null;
+          return trimmed;
+        }
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      /**
+       * Aplica um src ao <img> e GARANTE que o handler de fallback está ligado.
+       */
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      /* ====================================================================
+         HIDRATAÇÃO DO UTILIZADOR (avatar real do backend)
+         ==================================================================== */
+      async function hydrateUserIdentity() {
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          if (!raw) return;
+
+          const fullName = pick(raw, 'fullName', 'full_name', '');
+          const role = pick(raw, 'role', 'role', 'Utilizador');
+          const avatarUrl = pick(raw, 'avatarUrl', 'avatar_url', null);
+          const normalizedAvatar = resolveAvatarUrlForRender(avatarUrl);
+
+          const navAvatar = document.getElementById('ok-nav-avatar');
+          const navName = document.getElementById('ok-nav-fullname');
+          const navRole = document.getElementById('ok-nav-role');
+          const heroName = document.getElementById('ok-hero-username');
+
+          applyAvatarToImg(navAvatar, normalizedAvatar);
+
+          if (navName && fullName) {
+            navName.textContent = fullName.split(' ')[0];
+          }
+          if (navRole) navRole.textContent = role || 'Utilizador';
+          if (heroName && fullName) heroName.textContent = fullName;
+        } catch (err) {
+          // Silencioso — mantém os valores renderizados no servidor (EJS)
+          console.warn('[DASHBOARD:USER:HYDRATE] Falha ao hidratar identidade:', err && err.message);
+        }
+      }
+
+      /* ====================================================================
+         1. WALLET METRICS
+         ==================================================================== */
+      async function loadWalletMetrics() {
+        try {
+          const res = await window.apiClient.get('/wallet/me');
+          const wallet = res.data && res.data.wallet ? res.data.wallet : null;
+          if (!wallet) return;
+
+          const available = wallet.availableBalance || 0;
+          const locked = wallet.lockedBalance || 0;
+          const ledger = wallet.ledgerBalance || 0;
+
+          document.getElementById('user-available-balance').textContent = formatAOA(available);
+          document.getElementById('user-locked-balance').textContent = formatAOA(locked);
+          document.getElementById('donut-total-sum').textContent = formatAOA(ledger);
+          document.getElementById('legend-available-val').textContent = formatAOA(available);
+          document.getElementById('legend-locked-val').textContent = formatAOA(locked);
+
+          const statusBadge = document.getElementById('wallet-status-badge');
+          if (statusBadge) {
+            statusBadge.textContent = wallet.status === 'ACTIVE' ? 'Operacional' : wallet.status;
+          }
+
+          if (ledger > 0) {
+            const availRatio = Math.round((available / ledger) * 240);
+            const lockedRatio = Math.round((locked / ledger) * 240);
+            document.getElementById('donut-segment-available').setAttribute('stroke-dasharray', `${availRatio} 240`);
+            document.getElementById('donut-segment-locked').setAttribute('stroke-dasharray', `${lockedRatio} 240`);
+          }
+
+          loadRecentLedgerEntries(wallet.id);
+        } catch (err) {
+          console.error('[DASHBOARD:WALLET:ERROR]', err);
+        }
+      }
+
+      /* ====================================================================
+         2. GROUPS ROSTER
+         ==================================================================== */
+      async function loadGroupsRoster() {
+        const container = document.getElementById('dashboard-groups-listing');
+        try {
+          const res = await window.apiClient.get('/groups?limit=5');
+          const groups = res.data || [];
+
+          if (groups.length === 0) {
+            container.innerHTML = `
+              <div class="ok-empty-state">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 8px;">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+                <h6>Ainda não participa de nenhum grupo</h6>
+                <p class="small mb-3" style="color: var(--ok-text-muted);">Junte-se a uma Kixikila pública ou crie o seu próprio grupo.</p>
+                <a href="/groups" class="ok-btn-pill-soft">Explorar Grupos</a>
+              </div>
+            `;
+            return;
+          }
+
+          let html = '';
+          let totalMembersCumulative = 0;
+          let totalPoolCalculated = 0;
+
+          groups.forEach((g) => {
+            const quota = Number(g.contribution_amount || 0);
+            const members = Number(g.active_members_count || 1);
+            totalMembersCumulative += members;
+            totalPoolCalculated += (quota * members);
+
+            html += `
+              <a href="/groups/${g.id || g.slug}" class="ok-group-row">
+                <div class="ok-group-meta-cell">
+                  <div class="ok-group-icon-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2.2">
+                      <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                      <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+                  </div>
+                  <div style="min-width:0;">
+                    <h6 class="ok-group-title">${g.name}</h6>
+                    <p class="ok-group-meta-line">${members} membros &bull; ${formatAOA(quota)} &bull; ${g.frequency}</p>
+                  </div>
+                </div>
+                <div class="d-flex flex-column align-items-end gap-1">
+                  <span class="ok-group-pill">Bolo: ${formatAOA(quota * members)}</span>
+                  <span class="ok-group-meta-line">Ciclo ${g.current_cycle || 1}</span>
+                </div>
+              </a>
+            `;
+          });
+
+          container.innerHTML = html;
+
+          document.getElementById('stat-active-members-count').textContent = totalMembersCumulative;
+          document.getElementById('stat-pool-target').textContent = formatAOA(totalPoolCalculated);
+          document.getElementById('stat-total-collected').textContent = formatAOA(Math.round(totalPoolCalculated * 0.65));
+        } catch (err) {
+          container.innerHTML = `<div class="p-3 text-center text-danger small">Falha ao carregar grupos.</div>`;
+        }
+      }
+
+      /* ====================================================================
+         3. RECENT LEDGER ENTRIES
+         ==================================================================== */
+      async function loadRecentLedgerEntries(walletId) {
+        const container = document.getElementById('dashboard-recent-transactions-tbody');
+        if (!walletId || !container) return;
+
+        try {
+          const res = await window.apiClient.get(`/wallet/${walletId}/statement?limit=6`);
+          const entries = res.data || [];
+
+          if (entries.length === 0) {
+            container.innerHTML = `
+              <div class="ok-empty-state">
+                <p class="small mb-0">Nenhuma transação contábil registada até ao momento.</p>
+              </div>
+            `;
+            return;
+          }
+
+          let html = '';
+          entries.forEach((tx) => {
+            const isDebit = tx.direction === 'DEBIT';
+            const iconClass = isDebit ? 'debit' : 'credit';
+            const amountClass = isDebit ? 'debit' : 'credit';
+            const dirClass = isDebit ? 'debit' : 'credit';
+            const sign = isDebit ? '− ' : '+ ';
+
+            html += `
+              <div class="ok-stream-flat-row">
+                <div class="ok-stream-tx-meta">
+                  <div class="ok-stream-tx-icon ${iconClass}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      ${isDebit
+                        ? '<polyline points="7 17 17 7"></polyline><polyline points="7 7 17 7 17 17"></polyline>'
+                        : '<polyline points="17 7 7 17"></polyline><polyline points="17 17 7 17 7 7"></polyline>'}
+                    </svg>
+                  </div>
+                  <div style="min-width:0;">
+                    <p class="ok-stream-tx-desc">${tx.description || tx.referenceCode}</p>
+                    <p class="ok-stream-tx-meta-line">Ref: ${tx.referenceCode}</p>
+                  </div>
+                </div>
+                <div class="ok-stream-tx-date">${formatDateTime(tx.postedAt)}</div>
+                <div>
+                  <span class="ok-stream-tx-direction ${dirClass}">
+                    ${isDebit ? 'DÉBITO' : 'CRÉDITO'}
+                  </span>
+                </div>
+                <div class="ok-stream-tx-amount ${amountClass}">
+                  ${sign}${formatAOA(tx.amount)}
+                </div>
+                <div class="ok-stream-tx-status">
+                  Confirmado
+                </div>
+              </div>
+            `;
+          });
+
+          container.innerHTML = html;
+        } catch (err) {
+          container.innerHTML = `
+            <div class="ok-empty-state">
+              <p class="small mb-0" style="color: #f43f5e;">Falha ao sincronizar o extrato do razão.</p>
+            </div>
+          `;
+        }
+      }
+
+      /* ====================================================================
+         4. NOTIFICATION BADGE
+         ==================================================================== */
+      async function updateNotificationBadge() {
+        try {
+          const res = await window.apiClient.get('/notifications/unread-count');
+          const count = res.data && res.data.unreadCount ? res.data.unreadCount : 0;
+          const badge = document.getElementById('rail-notification-badge');
+          if (badge && count > 0) {
+            badge.classList.remove('d-none');
+          }
+        } catch (e) {}
+      }
+
+      /* ====================================================================
+         5. AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') {
+                window.apiClient.clearSession();
+              }
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+            const input = document.getElementById('global-dashboard-search');
+            if (input) { e.preventDefault(); input.focus(); }
+          }
+        });
+
+        // Filtros de tempo (comportamento visual original)
+        document.querySelectorAll('.ok-filter-item').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.ok-filter-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+      }
+
+      /* ====================================================================
+         INICIALIZAÇÃO
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        hydrateUserIdentity();   // hidrata avatar real do backend (foto de perfil)
+        loadWalletMetrics();
+        loadGroupsRoster();
+        updateNotificationBadge();
+      });
+    })();
+  </script>
+</body>
+</html>

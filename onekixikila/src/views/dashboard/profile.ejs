@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'O Meu Perfil — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Escala MAIOR (igual à Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-accent-emerald: #10b981;
+      --ok-accent-amber: #f59e0b;
+      --ok-accent-rose: #f43f5e;
+      --ok-accent-cyan: #06b6d4;
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+      --ok-content-max-width: 1280px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL SLIM TECH
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* =========================================================================
+       TOP BAR — CENTRALIZADA NO EIXO DO CONTEÚDO (max-width 1280px)
+       Pesquisa à esquerda, ações à direita, alinhadas com os cards abaixo
+       ========================================================================= */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 26px auto;
+      padding: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+      flex-shrink: 1;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 30px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-breadcrumb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      font-size: 0.86rem; font-weight: 700;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .ok-breadcrumb-btn:hover {
+      background: var(--ok-pill-bg-hover);
+      color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-border);
+      transform: translateX(-2px);
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 10px var(--ok-purple-vibrant);
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+    }
+
+    /* Filtros / tabs */
+    .ok-tab-pill-strip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    .ok-tab-pill-btn {
+      padding: 10px 22px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--ok-text-muted);
+      border-radius: var(--ok-radius-pill);
+      border: 1px solid var(--ok-border-subtle);
+      background-color: var(--ok-bg-surface);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ok-tab-pill-btn:hover {
+      color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-border);
+      transform: translateY(-2px);
+    }
+    .ok-tab-pill-btn.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.45);
+    }
+
+    /* =========================================================================
+       LAYOUT PRINCIPAL
+       ========================================================================= */
+    .ok-profile-layout-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 32px;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* CARD ESQUERDO DE IDENTIDADE */
+    .ok-identity-badge-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 2.25rem 1.75rem;
+      box-shadow: 0 10px 36px var(--ok-shadow-card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: sticky;
+      top: 110px;
+    }
+
+    .ok-avatar-stellar-box {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin-bottom: 24px;
+    }
+    .ok-avatar-stellar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--ok-bg-surface);
+      box-shadow: 0 0 40px rgba(139, 92, 246, 0.4);
+      background: var(--ok-purple-soft);
+    }
+    .ok-avatar-cam-trigger {
+      position: absolute;
+      bottom: 4px; right: 4px;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      border: 3px solid var(--ok-bg-surface);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.5);
+      transition: all 0.25s ease;
+    }
+    .ok-avatar-cam-trigger:hover {
+      transform: scale(1.08);
+      filter: brightness(1.15);
+    }
+    .ok-avatar-cam-trigger svg { width: 20px; height: 20px; }
+
+    .ok-user-display-name {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--ok-text-primary);
+      margin-bottom: 6px;
+    }
+    .ok-user-display-handle {
+      font-size: 0.88rem;
+      color: var(--ok-text-muted);
+      margin-bottom: 20px;
+      word-break: break-all;
+    }
+
+    .ok-kyc-tier-capsule {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 0;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 26px;
+    }
+    .ok-kyc-tier-capsule.verified {
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      border: 1px solid var(--ok-purple-border);
+    }
+    .ok-kyc-tier-capsule.unverified {
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      border: 1px solid var(--ok-purple-border);
+    }
+
+    .ok-profile-spec-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+      padding-top: 22px;
+      border-top: 1px solid var(--ok-border-subtle);
+      margin-bottom: 24px;
+    }
+    .ok-spec-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      gap: 10px;
+    }
+    .ok-spec-item-label {
+      color: var(--ok-text-muted);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .ok-spec-item-value {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      text-align: right;
+    }
+
+    /* CARD DIREITO COM FORMULÁRIOS */
+    .ok-form-chassis-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 10px 36px var(--ok-shadow-card);
+    }
+
+    .ok-form-section-heading {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--ok-text-primary);
+      margin-bottom: 26px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ok-form-label-tech {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .ok-input-pill-tech {
+      width: 100%;
+      height: 52px;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1.5px solid var(--ok-border-subtle);
+      padding: 0 22px;
+      font-size: 0.94rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-input-pill-tech:focus {
+      border-color: var(--ok-purple-vibrant);
+      background: var(--ok-bg-surface);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-input-pill-tech::placeholder { color: var(--ok-text-muted); }
+    .ok-input-pill-tech option { color: #0f172a; }
+
+    .ok-textarea-tech {
+      width: 100%;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1.5px solid var(--ok-border-subtle);
+      padding: 16px 20px;
+      font-size: 0.94rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      resize: vertical;
+      min-height: 110px;
+      transition: all 0.25s ease;
+    }
+    .ok-textarea-tech:focus {
+      border-color: var(--ok-purple-vibrant);
+      background: var(--ok-bg-surface);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-textarea-tech::placeholder { color: var(--ok-text-muted); }
+
+    .ok-btn-submit-action {
+      height: 52px;
+      padding: 0 32px;
+      border-radius: 0;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      border: none;
+      font-size: 0.94rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45);
+      transition: all 0.25s ease;
+    }
+    .ok-btn-submit-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(124, 58, 237, 0.65);
+      color: #ffffff;
+    }
+    .ok-btn-submit-action:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .ok-btn-ghost-pill {
+      height: 52px;
+      padding: 0 24px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1.5px solid var(--ok-border-subtle);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-ghost-pill:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+    }
+
+    /* Dropzone */
+    .ok-avatar-drop-chassis {
+      border: 2px dashed var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 32px 20px;
+      text-align: center;
+      background: var(--ok-pill-bg);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .ok-avatar-drop-chassis:hover {
+      border-color: var(--ok-purple-vibrant);
+      background: var(--ok-purple-soft);
+    }
+
+    /* Modal */
+    .ok-modal-tech-content {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      color: var(--ok-text-primary);
+    }
+
+    /* Responsividade */
+    @media (max-width: 1280px) {
+      .ok-profile-layout-grid { grid-template-columns: 1fr; }
+      .ok-identity-badge-card { position: static; }
+    }
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.7rem; }
+      .ok-search-capsule { width: 100%; }
+      .ok-top-nav { gap: 10px; }
+    }
+    @media (max-width: 680px) {
+      .ok-top-nav { flex-wrap: wrap; height: auto; padding: 10px 0; }
+      .ok-nav-actions { margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link active" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior — CENTRALIZADA NO EIXO DO CONTEÚDO (max-width 1280px) -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar definições, documentos..." autocomplete="off">
+        <kbd class="shortcut-hint">Ajuda</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <div class="ok-profile-pill">
+          <img 
+            id="nav-avatar-img"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" style="font-size: 0.92rem; line-height: 1.15;" id="nav-user-fullname"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" style="font-size: 0.76rem;" id="nav-user-role"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <a href="/dashboard" class="ok-breadcrumb-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Voltar ao Painel
+        </a>
+        <h1 class="ok-page-title-main">
+          Definições e Perfil
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Conta Ativa
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          Controle centralizado dos seus dados cadastrais, domiciliação territorial, credenciais e parâmetros operacionais.
+        </p>
+
+        <div class="ok-tab-pill-strip">
+          <button class="ok-tab-pill-btn active" data-tab="personal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            Dados Pessoais
+          </button>
+          <button class="ok-tab-pill-btn" data-tab="location">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            Localização Territorial
+          </button>
+          <button class="ok-tab-pill-btn" data-tab="preferences">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Preferências & Moeda
+          </button>
+          <a href="/identity" class="ok-tab-pill-btn" style="text-decoration: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Verificação KYC
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         LAYOUT PRINCIPAL
+         ==================================================================== -->
+    <div class="ok-profile-layout-grid">
+      
+      <!-- COLUNA ESQUERDA: CARD DE IDENTIDADE -->
+      <div>
+        <div class="ok-identity-badge-card">
+          <div class="ok-avatar-stellar-box">
+            <img 
+              id="user-profile-avatar"
+              src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>"
+              data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+              alt="Foto de Perfil" 
+              class="ok-avatar-stellar-img" 
+            >
+            <button type="button" class="ok-avatar-cam-trigger" id="btn-trigger-avatar-modal" title="Alterar fotografia">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            </button>
+          </div>
+
+          <h3 class="ok-user-display-name" id="user-display-name">—</h3>
+          <p class="ok-user-display-handle" id="user-display-email">—</p>
+
+          <span class="ok-kyc-tier-capsule unverified" id="user-kyc-tier-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            TIER 1 &bull; NÃO VERIFICADO
+          </span>
+
+          <div class="ok-profile-spec-list">
+            <div class="ok-spec-item-row">
+              <span class="ok-spec-item-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                Telemóvel
+              </span>
+              <span class="ok-spec-item-value" id="spec-phone-number">—</span>
+            </div>
+
+            <div class="ok-spec-item-row">
+              <span class="ok-spec-item-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+                Registo na Kixikila
+              </span>
+              <span class="ok-spec-item-value" id="spec-created-at">—</span>
+            </div>
+
+            <div class="ok-spec-item-row">
+              <span class="ok-spec-item-label">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+                Carteira Transacional
+              </span>
+              <span class="ok-spec-item-value text-success" id="spec-wallet-status">Ativa</span>
+            </div>
+          </div>
+
+          <a href="/sessions" class="ok-btn-ghost-pill w-100">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Gerir Dispositivos e Sessões
+          </a>
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA: FORMULÁRIOS -->
+      <div>
+        <div class="ok-form-chassis-card">
+          
+          <!-- ABA 1: DADOS PESSOAIS -->
+          <div class="ok-tab-content-panel" id="tab-pane-personal">
+            <div class="ok-form-section-heading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="width: 22px; height: 22px;"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              Identificação Civil e Apresentação
+            </div>
+
+            <form id="form-update-personal" novalidate>
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label for="input-fullName" class="ok-form-label-tech">Nome Completo Oficial (Bilhete de Identidade)</label>
+                  <input type="text" class="ok-input-pill-tech" id="input-fullName" name="fullName" required placeholder="ex: Manuel Domingos Kiala">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-preferredName" class="ok-form-label-tech">Nome Preferencial / Alcunha no Grupo</label>
+                  <input type="text" class="ok-input-pill-tech" id="input-preferredName" name="preferredName" placeholder="ex: Kiala">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-dateOfBirth" class="ok-form-label-tech">Data de Nascimento</label>
+                  <input type="date" class="ok-input-pill-tech" id="input-dateOfBirth" name="dateOfBirth">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-gender" class="ok-form-label-tech">Género</label>
+                  <select class="ok-input-pill-tech" id="input-gender" name="gender">
+                    <option value="">Selecionar...</option>
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                    <option value="OUTRO">Outro</option>
+                    <option value="PREFIRO_NAO_DIZER">Prefiro não declarar</option>
+                  </select>
+                </div>
+
+                <div class="col-12">
+                  <label for="input-bio" class="ok-form-label-tech">Biografia / Apresentação Comunitária</label>
+                  <textarea class="ok-textarea-tech" id="input-bio" name="bio" rows="3" maxlength="300" placeholder="Partilhe a sua experiência e objetivos com os grupos de Kixikila..."></textarea>
+                  <small class="text-muted" style="font-size: 0.76rem;">Máximo de 300 caracteres visíveis nos grupos.</small>
+                </div>
+
+                <div class="col-12 text-end mt-4">
+                  <button type="submit" class="ok-btn-submit-action" id="btn-save-personal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Salvar Dados Pessoais
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- ABA 2: LOCALIZAÇÃO -->
+          <div class="ok-tab-content-panel d-none" id="tab-pane-location">
+            <div class="ok-form-section-heading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="width: 22px; height: 22px;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              Domiciliação e Descoberta Geográfica
+            </div>
+
+            <form id="form-update-location" novalidate>
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label for="input-province" class="ok-form-label-tech">Província</label>
+                  <input type="text" class="ok-input-pill-tech" id="input-province" name="province" placeholder="ex: Luanda">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-municipality" class="ok-form-label-tech">Município</label>
+                  <input type="text" class="ok-input-pill-tech" id="input-municipality" name="municipality" placeholder="ex: Talatona">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-neighborhood" class="ok-form-label-tech">Bairro / Zona de Residência</label>
+                  <input type="text" class="ok-input-pill-tech" id="input-neighborhood" name="neighborhood" placeholder="ex: Cidade Financeira">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-addressLine" class="ok-form-label-tech">Endereço Residencial Completo</label>
+                  <input type="text" class="ok-input-pill-tech" id="input-addressLine" name="addressLine" placeholder="Rua, Bloco ou Edifício">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-latitude" class="ok-form-label-tech">Latitude (Aproximada)</label>
+                  <input type="number" step="any" class="ok-input-pill-tech" id="input-latitude" name="latitude" placeholder="-8.8383">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="input-longitude" class="ok-form-label-tech">Longitude (Aproximada)</label>
+                  <input type="number" step="any" class="ok-input-pill-tech" id="input-longitude" name="longitude" placeholder="13.2344">
+                </div>
+
+                <div class="col-12">
+                  <button type="button" class="ok-btn-ghost-pill w-100" id="btn-detect-gps">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width: 18px; height: 18px;"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                    Captar Coordenadas Automaticamente via GPS
+                  </button>
+                  <small class="text-muted d-block mt-2" style="font-size: 0.78rem;">
+                    As coordenadas são aproximadas e utilizadas estritamente para apresentar grupos de Kixikila que operam na sua vizinhança.
+                  </small>
+                </div>
+
+                <div class="col-12 mt-3">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="check-locationAuthorized" name="locationAuthorized">
+                    <label class="form-check-label fw-bold ms-2" for="check-locationAuthorized" style="font-size: 0.84rem;">
+                      Autorizo a utilização da minha localização aproximada para descoberta de grupos comunitários próximos.
+                    </label>
+                  </div>
+                </div>
+
+                <div class="col-12 text-end mt-4">
+                  <button type="submit" class="ok-btn-submit-action" id="btn-save-location">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Atualizar Localização
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- ABA 3: PREFERÊNCIAS -->
+          <div class="ok-tab-content-panel d-none" id="tab-pane-preferences">
+            <div class="ok-form-section-heading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="width: 22px; height: 22px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Parâmetros de Experiência e Canais
+            </div>
+
+            <form id="form-update-preferences" novalidate>
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label for="select-locale" class="ok-form-label-tech">Idioma da Plataforma</label>
+                  <select class="ok-input-pill-tech" id="select-locale" name="preferredLocale">
+                    <option value="pt-AO">Português (Angola) &bull; Oficial</option>
+                    <option value="en-US">English (International)</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="select-currency" class="ok-form-label-tech">Moeda Padrão de Exibição</label>
+                  <select class="ok-input-pill-tech" id="select-currency" name="preferredCurrency">
+                    <option value="AOA">Kwanza Angolano (Kz &bull; AOA)</option>
+                  </select>
+                </div>
+
+                <div class="col-12 mt-4">
+                  <h6 class="fw-bold mb-3" style="font-size: 1rem;">Notificações Ativas na Conta</h6>
+                  
+                  <div class="d-flex justify-content-between align-items-center py-3 border-bottom" style="border-color: var(--ok-border-subtle) !important;">
+                    <div>
+                      <strong class="d-block" style="font-size: 0.92rem;">Alertas por E-mail</strong>
+                      <span class="text-muted" style="font-size: 0.78rem;">Receba extratos de quotas e comprovativos oficiais</span>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="pref-email-active" checked>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center py-3 border-bottom" style="border-color: var(--ok-border-subtle) !important;">
+                    <div>
+                      <strong class="d-block" style="font-size: 0.92rem;">Alertas por SMS Nacional</strong>
+                      <span class="text-muted" style="font-size: 0.78rem;">Mensagens para o número +244 no dia do vencimento da sua quota</span>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="pref-sms-active" checked>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center py-3">
+                    <div>
+                      <strong class="d-block" style="font-size: 0.92rem;">Notificações em Tempo Real (In-App)</strong>
+                      <span class="text-muted" style="font-size: 0.78rem;">Sons e pop-ups durante a navegação</span>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="pref-inapp-active" checked>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 text-end mt-4">
+                  <button type="submit" class="ok-btn-submit-action" id="btn-save-preferences">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px; height: 18px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Salvar Preferências
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL AVATAR
+       ====================================================================== -->
+  <div class="modal fade" id="modal-upload-avatar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content ok-modal-tech-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Alterar Fotografia de Perfil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="text-center mb-4">
+            <img 
+              src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+              id="avatar-modal-preview" 
+              alt="Pré-visualização" 
+              data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+              style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid var(--ok-purple-border); box-shadow: 0 0 30px rgba(124, 58, 237, 0.35);"
+            >
+          </div>
+
+          <div class="ok-avatar-drop-chassis" id="avatar-dropzone-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2" style="width: 36px; height: 36px; margin-bottom: 8px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h6 class="fw-bold mb-1" style="font-size: 1rem;">Arraste ou clique para selecionar imagem</h6>
+            <span class="text-muted" style="font-size: 0.82rem;">Formatos: JPG, PNG, WEBP &bull; Limite de 5 MB</span>
+            <input type="file" id="input-avatar-file" accept="image/jpeg,image/png,image/webp" class="d-none">
+          </div>
+
+          <div class="text-center text-muted small my-3">&bull; ou &bull;</div>
+
+          <div>
+            <label for="input-avatar-url" class="ok-form-label-tech">URL direta da imagem</label>
+            <input type="url" class="ok-input-pill-tech" id="input-avatar-url" placeholder="https://exemplo.com/foto.jpg">
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="ok-btn-ghost-pill" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="ok-btn-submit-action" id="btn-save-avatar">Guardar Fotografia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         ESTADO
+         ==================================================================== */
+      let cachedUser = null;
+      let modalAvatarInstance = null;
+      let pendingUploadedAvatarUrl = null;
+
+      /* ====================================================================
+         NORMALIZAÇÃO DUAL-FORMAT (camelCase + snake_case)
+         ==================================================================== */
+      function pick(obj, camel, snake, fallback) {
+        if (!obj) return fallback;
+        if (obj[camel] !== undefined && obj[camel] !== null) return obj[camel];
+        if (obj[snake] !== undefined && obj[snake] !== null) return obj[snake];
+        return fallback;
+      }
+
+      function normalizeUser(raw) {
+        if (!raw) return null;
+        return {
+          id: raw.id,
+          email: pick(raw, 'email', 'email', null),
+          phoneNumber: pick(raw, 'phoneNumber', 'phone_number', null),
+          fullName: pick(raw, 'fullName', 'full_name', ''),
+          preferredName: pick(raw, 'preferredName', 'preferred_name', ''),
+          avatarUrl: pick(raw, 'avatarUrl', 'avatar_url', null),
+          dateOfBirth: (() => {
+            const v = pick(raw, 'dateOfBirth', 'date_of_birth', null);
+            return v ? String(v).split('T')[0] : null;
+          })(),
+          gender: pick(raw, 'gender', 'gender', ''),
+          province: pick(raw, 'province', 'province', ''),
+          municipality: pick(raw, 'municipality', 'municipality', ''),
+          neighborhood: pick(raw, 'neighborhood', 'neighborhood', ''),
+          addressLine: pick(raw, 'addressLine', 'address_line', ''),
+          latitude: pick(raw, 'latitude', 'latitude', null),
+          longitude: pick(raw, 'longitude', 'longitude', null),
+          locationAuthorized: Boolean(pick(raw, 'locationAuthorized', 'location_authorized', false)),
+          preferredLocale: pick(raw, 'preferredLocale', 'preferred_locale', 'pt-AO'),
+          preferredCurrency: pick(raw, 'preferredCurrency', 'preferred_currency', 'AOA'),
+          notificationPreferences: pick(raw, 'notificationPreferences', 'notification_preferences', null),
+          bio: pick(raw, 'bio', 'bio', ''),
+          role: pick(raw, 'role', 'role', 'Utilizador'),
+          status: pick(raw, 'status', 'status', 'ACTIVE'),
+          identityTier: pick(raw, 'identityTier', 'identity_tier', 'TIER_1_UNVERIFIED'),
+          createdAt: pick(raw, 'createdAt', 'created_at', null)
+        };
+      }
+
+      /* ====================================================================
+         HELPERS DE AVATAR
+         ==================================================================== */
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function buildAvatarUrlFromUploadResponse(docData) {
+        if (!docData) return null;
+        // Ordem de preferência:
+        // 1. avatarUrl / avatar_url (novo backend AVATAR — já com /uploads/)
+        // 2. url (URL absoluta ou relativa já pronta)
+        // 3. storageKey (precisa de prefixo /uploads/)
+        const direct = docData.avatarUrl || docData.avatar_url || docData.url;
+        if (direct) return String(direct);
+
+        const key = docData.storageKey || docData.storage_key;
+        if (key) {
+          const normalized = String(key).replace(/^\/+/, '');
+          return `/uploads/${normalized}`;
+        }
+        return null;
+      }
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForSave(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        // URLs absolutas ou caminhos já prontos (/uploads/...) passam intactos
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          return trimmed;
+        }
+        // Se for uma storageKey (sem prefixo), prefixa /uploads/
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const normalized = resolveAvatarUrlForSave(rawUrl);
+        if (!normalized) return null;
+        if (normalized === DEFAULT_AVATAR) return null;
+        return normalized;
+      }
+
+      /**
+       * Aplica um src ao <img> e GARANTE que o handler de fallback está ligado.
+       * O handler cai SEMPRE para o data-fallback (svg) e nunca fica pendurado.
+       */
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        // Remove handler antigo se existir
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        // Handler idempotente: sempre que o src falha, cai para o data-fallback
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        // Só muda o src se for diferente (evita re-render loop)
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      /* ====================================================================
+         DATA FETCH
+         ==================================================================== */
+      async function fetchUserProfileData() {
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          const user = normalizeUser(raw);
+          if (!user) throw new Error('Dados de utilizador não encontrados.');
+          cachedUser = user;
+
+          renderIdentityCard(user);
+          populatePersonalForm(user);
+          populateLocationForm(user);
+          populatePreferencesForm(user);
+        } catch (err) {
+          if (window.Alerts) {
+            window.Alerts.error('Falha de Sincronização', err.message || 'Erro ao carregar dados do perfil.');
+          } else {
+            console.error('[PROFILE:FETCH:ERROR]', err);
+          }
+        }
+      }
+
+      function renderIdentityCard(user) {
+        const nameEl = document.getElementById('user-display-name');
+        const emailEl = document.getElementById('user-display-email');
+        const phoneEl = document.getElementById('spec-phone-number');
+        const createdEl = document.getElementById('spec-created-at');
+        const profileAvatar = document.getElementById('user-profile-avatar');
+        const navAvatar = document.getElementById('nav-avatar-img');
+        const navName = document.getElementById('nav-user-fullname');
+        const navRole = document.getElementById('nav-user-role');
+        const tierBadge = document.getElementById('user-kyc-tier-badge');
+
+        if (nameEl) nameEl.textContent = user.fullName || user.preferredName || 'Utilizador';
+        if (emailEl) emailEl.textContent = user.email || '—';
+        if (phoneEl) phoneEl.textContent = user.phoneNumber || '—';
+
+        if (createdEl && user.createdAt) {
+          const d = new Date(user.createdAt);
+          if (!isNaN(d.getTime())) {
+            createdEl.textContent = d.toLocaleDateString('pt-AO', { month: 'short', year: 'numeric' });
+          }
+        }
+
+        // FOTO DE PERFIL: aplica a foto real se existir; caso contrário, default.
+        const normalizedAvatar = resolveAvatarUrlForRender(user.avatarUrl);
+        applyAvatarToImg(profileAvatar, normalizedAvatar);
+        applyAvatarToImg(navAvatar, normalizedAvatar);
+
+        if (navName) navName.textContent = user.fullName ? user.fullName.split(' ')[0] : 'Membro';
+        if (navRole) navRole.textContent = user.role || 'Utilizador';
+
+        const tier = user.identityTier || 'TIER_1_UNVERIFIED';
+        if (tierBadge) {
+          if (tier === 'TIER_2_VERIFIED' || tier === 'TIER_3_ENHANCED') {
+            tierBadge.className = 'ok-kyc-tier-capsule verified';
+            tierBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> ' + tier.replace(/_/g, ' ');
+          } else {
+            tierBadge.className = 'ok-kyc-tier-capsule unverified';
+            tierBadge.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> TIER 1 &bull; NÃO VERIFICADO';
+          }
+        }
+      }
+
+      function populatePersonalForm(user) {
+        const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+        setVal('input-fullName', user.fullName);
+        setVal('input-preferredName', user.preferredName);
+        setVal('input-dateOfBirth', user.dateOfBirth);
+        setVal('input-gender', user.gender);
+        setVal('input-bio', user.bio);
+      }
+      function populateLocationForm(user) {
+        const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v != null ? v : ''; };
+        setVal('input-province', user.province);
+        setVal('input-municipality', user.municipality);
+        setVal('input-neighborhood', user.neighborhood);
+        setVal('input-addressLine', user.addressLine);
+        setVal('input-latitude', user.latitude);
+        setVal('input-longitude', user.longitude);
+        const check = document.getElementById('check-locationAuthorized');
+        if (check) check.checked = Boolean(user.locationAuthorized);
+      }
+      function populatePreferencesForm(user) {
+        const localeEl = document.getElementById('select-locale');
+        const currencyEl = document.getElementById('select-currency');
+        if (localeEl) localeEl.value = user.preferredLocale || 'pt-AO';
+        if (currencyEl) currencyEl.value = user.preferredCurrency || 'AOA';
+
+        const prefs = user.notificationPreferences || {};
+        const emailEl = document.getElementById('pref-email-active');
+        const smsEl = document.getElementById('pref-sms-active');
+        const inappEl = document.getElementById('pref-inapp-active');
+        if (emailEl) emailEl.checked = prefs.email !== false;
+        if (smsEl) smsEl.checked = prefs.sms !== false;
+        if (inappEl) inappEl.checked = prefs.inApp !== false;
+      }
+
+      /* ====================================================================
+         TABS
+         ==================================================================== */
+      function setupTabs() {
+        document.querySelectorAll('.ok-tab-pill-btn[data-tab]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.ok-tab-pill-btn[data-tab]').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tabId = btn.getAttribute('data-tab');
+            document.querySelectorAll('.ok-tab-content-panel').forEach(p => p.classList.add('d-none'));
+            const pane = document.getElementById(`tab-pane-${tabId}`);
+            if (pane) pane.classList.remove('d-none');
+          });
+        });
+      }
+
+      /* ====================================================================
+         FORMULÁRIOS
+         ==================================================================== */
+      function setupFormSubmissions() {
+        const formPersonal = document.getElementById('form-update-personal');
+        if (formPersonal) {
+          formPersonal.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-personal');
+            if (btn) btn.disabled = true;
+            try {
+              const payload = {
+                fullName: document.getElementById('input-fullName').value.trim(),
+                preferredName: document.getElementById('input-preferredName').value.trim() || null,
+                dateOfBirth: document.getElementById('input-dateOfBirth').value || null,
+                gender: document.getElementById('input-gender').value || null,
+                bio: document.getElementById('input-bio').value.trim() || null
+              };
+              await window.apiClient.put('/users/profile', payload);
+              if (window.Alerts) window.Alerts.toast('Dados pessoais atualizados com sucesso!', 'success');
+              await fetchUserProfileData();
+            } catch (err) {
+              if (window.Alerts) window.Alerts.error('Erro ao Atualizar', err.message);
+            } finally {
+              if (btn) btn.disabled = false;
+            }
+          });
+        }
+
+        const formLocation = document.getElementById('form-update-location');
+        if (formLocation) {
+          formLocation.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-location');
+            if (btn) btn.disabled = true;
+            try {
+              const latRaw = document.getElementById('input-latitude').value;
+              const lngRaw = document.getElementById('input-longitude').value;
+              const payload = {
+                province: document.getElementById('input-province').value.trim() || null,
+                municipality: document.getElementById('input-municipality').value.trim() || null,
+                neighborhood: document.getElementById('input-neighborhood').value.trim() || null,
+                addressLine: document.getElementById('input-addressLine').value.trim() || null,
+                latitude: latRaw ? Number(latRaw) : null,
+                longitude: lngRaw ? Number(lngRaw) : null,
+                locationAuthorized: document.getElementById('check-locationAuthorized').checked
+              };
+              await window.apiClient.patch('/users/location', payload);
+              if (window.Alerts) window.Alerts.toast('Localização territorial guardada com sucesso!', 'success');
+              await fetchUserProfileData();
+            } catch (err) {
+              if (window.Alerts) window.Alerts.error('Erro na Localização', err.message);
+            } finally {
+              if (btn) btn.disabled = false;
+            }
+          });
+        }
+
+        const formPrefs = document.getElementById('form-update-preferences');
+        if (formPrefs) {
+          formPrefs.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-preferences');
+            if (btn) btn.disabled = true;
+            try {
+              const payload = {
+                preferredLocale: document.getElementById('select-locale').value,
+                preferredCurrency: document.getElementById('select-currency').value,
+                notificationPreferences: {
+                  email: document.getElementById('pref-email-active').checked,
+                  sms: document.getElementById('pref-sms-active').checked,
+                  inApp: document.getElementById('pref-inapp-active').checked
+                }
+              };
+              await window.apiClient.patch('/users/preferences', payload);
+              if (window.Alerts) window.Alerts.toast('Preferências gravadas com sucesso!', 'success');
+              await fetchUserProfileData();
+            } catch (err) {
+              if (window.Alerts) window.Alerts.error('Erro nas Preferências', err.message);
+            } finally {
+              if (btn) btn.disabled = false;
+            }
+          });
+        }
+
+        const gpsBtn = document.getElementById('btn-detect-gps');
+        if (gpsBtn) {
+          gpsBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+              if (window.Alerts) window.Alerts.warning('Geolocalização não suportada no seu navegador.');
+              return;
+            }
+            gpsBtn.disabled = true;
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                document.getElementById('input-latitude').value = pos.coords.latitude.toFixed(6);
+                document.getElementById('input-longitude').value = pos.coords.longitude.toFixed(6);
+                document.getElementById('check-locationAuthorized').checked = true;
+                gpsBtn.disabled = false;
+                if (window.Alerts) window.Alerts.toast('Coordenadas captadas pelo GPS!', 'success');
+              },
+              () => {
+                gpsBtn.disabled = false;
+                if (window.Alerts) window.Alerts.warning('Acesso à localização negado. Preencha manualmente.');
+              },
+              { timeout: 10000 }
+            );
+          });
+        }
+      }
+
+      /* ====================================================================
+         HELPERS DE PUT PARA AVATAR (fallback de nomes + formato)
+         ==================================================================== */
+      function absolutizeUrl(url) {
+        if (!url) return url;
+        if (isAbsoluteUrl(url)) return url;
+        try {
+          return new URL(url, window.location.origin).toString();
+        } catch (e) {
+          return url;
+        }
+      }
+
+      /**
+       * Tenta guardar o avatar no backend cobrindo as variantes mais comuns:
+       *  - { avatarUrl: "/uploads/..." }         (camel, relativo)
+       *  - { avatar_url: "/uploads/..." }        (snake, relativo)
+       *  - { avatarUrl, avatar_url }             (ambos)
+       *  - { avatarUrl: "https://host/uploads/..." } (absoluto, caso o backend valide IsUrl)
+       * Devolve { ok, response, error, lastPayload, attempts } para o caller decidir.
+       */
+      async function putAvatarWithFallbacks(rawUrl) {
+        const relative = resolveAvatarUrlForSave(rawUrl); // mantém /uploads/...
+        if (!relative) {
+          return { ok: false, error: new Error('URL inválida.'), attempts: [] };
+        }
+        const absolute = absolutizeUrl(relative);
+
+        const attempts = [
+          { avatarUrl: relative },
+          { avatar_url: relative },
+          { avatarUrl: relative, avatar_url: relative },
+          { avatarUrl: absolute },
+          { avatar_url: absolute },
+          { avatarUrl: absolute, avatar_url: absolute }
+        ];
+
+        const tried = [];
+        let lastErr = null;
+
+        for (const payload of attempts) {
+          tried.push(payload);
+          try {
+            const res = await window.apiClient.put('/users/profile', payload);
+            return { ok: true, response: res, payload, attempts: tried };
+          } catch (err) {
+            lastErr = err;
+            // Só continua a tentar em erros de validação; outros (401, 500) abortam
+            const status = err && (err.status || err.statusCode);
+            if (status && status !== 400 && status !== 422) {
+              return { ok: false, error: err, attempts: tried };
+            }
+          }
+        }
+        return { ok: false, error: lastErr, attempts: tried };
+      }
+
+      function describePutError(err, attempts) {
+        const status = (err && (err.status || err.statusCode)) || '?';
+        const msg = (err && err.message) || 'Erro desconhecido.';
+        const triedNames = Array.from(new Set(attempts.map(a => Object.keys(a).join('+')))).join(', ');
+        return `${msg} (HTTP ${status}). Tentativas: ${triedNames}.`;
+      }
+
+      /* ====================================================================
+         AVATAR
+         ==================================================================== */
+      function setupAvatarManagement() {
+        const modalEl = document.getElementById('modal-upload-avatar');
+        if (!modalEl) return;
+        modalAvatarInstance = new bootstrap.Modal(modalEl);
+
+        const triggerBtn = document.getElementById('btn-trigger-avatar-modal');
+        if (triggerBtn) {
+          triggerBtn.addEventListener('click', () => {
+            const current = (cachedUser && cachedUser.avatarUrl) || DEFAULT_AVATAR;
+            const preview = document.getElementById('avatar-modal-preview');
+            const urlInput = document.getElementById('input-avatar-url');
+            if (preview) preview.src = current;
+            if (urlInput) urlInput.value = (cachedUser && cachedUser.avatarUrl) || '';
+            pendingUploadedAvatarUrl = null;
+            modalAvatarInstance.show();
+          });
+        }
+
+        const dropzone = document.getElementById('avatar-dropzone-box');
+        const fileInput = document.getElementById('input-avatar-file');
+
+        if (dropzone && fileInput) {
+          dropzone.addEventListener('click', () => fileInput.click());
+
+          fileInput.addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+              if (window.Alerts) window.Alerts.error('Ficheiro Demasiado Grande', 'O tamanho máximo autorizado é de 5 MB.');
+              fileInput.value = '';
+              return;
+            }
+            const reader = new FileReader();
+            reader.onload = (re) => {
+              const preview = document.getElementById('avatar-modal-preview');
+              if (preview && re.target) preview.src = re.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append('document', file);
+            formData.append('category', 'AVATAR');
+
+            try {
+              if (window.Alerts) window.Alerts.showLoading('A processar imagem...', 'Inspecionando bytes e enviando ao cofre privado.');
+              const res = await window.apiClient.upload('/documents/upload', formData);
+              if (window.Alerts) window.Alerts.closeLoading();
+
+              const docData =
+                (res && res.data && (res.data.document || res.data.data)) ||
+                (res && res.data) ||
+                res;
+              const finalUrl = buildAvatarUrlFromUploadResponse(docData);
+              if (!finalUrl) {
+                throw new Error('Resposta do servidor inválida (sem URL nem storageKey).');
+              }
+              pendingUploadedAvatarUrl = finalUrl;
+              const urlInput = document.getElementById('input-avatar-url');
+              if (urlInput) urlInput.value = finalUrl;
+              if (window.Alerts) window.Alerts.toast('Imagem carregada! Clique em Guardar para confirmar.', 'success');
+            } catch (uploadErr) {
+              if (window.Alerts) {
+                window.Alerts.closeLoading();
+                window.Alerts.error('Erro no Upload', uploadErr.message);
+              } else {
+                console.error('[AVATAR:UPLOAD:ERROR]', uploadErr);
+              }
+            }
+          });
+        }
+
+        const saveBtn = document.getElementById('btn-save-avatar');
+        if (saveBtn) {
+          saveBtn.addEventListener('click', async () => {
+            const urlInput = document.getElementById('input-avatar-url');
+            const rawFinal = pendingUploadedAvatarUrl || (urlInput && urlInput.value.trim());
+
+            if (!rawFinal) {
+              if (window.Alerts) window.Alerts.warning('Selecione uma imagem ou introduza um URL válido.');
+              return;
+            }
+
+            const original = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>A guardar...';
+
+            try {
+              const result = await putAvatarWithFallbacks(rawFinal);
+
+              if (!result.ok) {
+                const detail = describePutError(result.error, result.attempts || []);
+                if (window.Alerts) {
+                  window.Alerts.error('Falha ao Guardar Fotografia', detail);
+                } else {
+                  console.error('[AVATAR:PUT:ERROR]', result.error, 'attempts:', result.attempts);
+                }
+                return;
+              }
+
+              if (window.Alerts) window.Alerts.success('Fotografia Atualizada', 'A sua foto de perfil foi alterada com sucesso.');
+              if (modalAvatarInstance) modalAvatarInstance.hide();
+              pendingUploadedAvatarUrl = null;
+              await fetchUserProfileData();
+            } catch (saveErr) {
+              if (window.Alerts) window.Alerts.error('Falha ao Guardar', saveErr.message);
+            } finally {
+              saveBtn.disabled = false;
+              saveBtn.innerHTML = original;
+            }
+          });
+        }
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') {
+                window.apiClient.clearSession();
+              }
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         INIT
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        setupTabs();
+        setupFormSubmissions();
+        setupAvatarManagement();
+        fetchUserProfileData();
+      });
+    })();
+  </script>
+</body>
+</html>

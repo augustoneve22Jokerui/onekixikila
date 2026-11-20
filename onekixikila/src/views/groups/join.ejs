@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-PT" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#0a0f1c">
+  <title><%= typeof title !== 'undefined' && title ? title : 'Entrar no Grupo — OneKixikila' %></title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    :root {
+      color-scheme: dark;
+      --page-bg: #090e19;
+      --page-bg-2: #0e1524;
+      --surface: rgba(17, 25, 41, .88);
+      --surface-strong: #141d30;
+      --surface-soft: rgba(255,255,255,.035);
+      --text: #f4f6ff;
+      --muted: #9aa7bd;
+      --subtle: #6f7d94;
+      --border: rgba(174, 190, 220, .13);
+      --brand: #9a73ff;
+      --brand-2: #7652ee;
+      --brand-soft: rgba(154,115,255,.12);
+      --success: #43d6a0;
+      --danger: #ff7188;
+      --warning: #f4c46c;
+      --shadow: 0 28px 80px rgba(0,0,0,.32);
+      --rail-width: 82px;
+      --ok-content-max-width: 1280px;
+    }
+    html[data-theme="light"] {
+      color-scheme: light;
+      --page-bg: #f3f5fb;
+      --page-bg-2: #edf0f8;
+      --surface: rgba(255,255,255,.9);
+      --surface-strong: #fff;
+      --surface-soft: rgba(20,32,56,.035);
+      --text: #182236;
+      --muted: #617089;
+      --subtle: #8090a8;
+      --border: rgba(48,64,94,.13);
+      --brand: #704be8;
+      --brand-2: #5d3bd0;
+      --brand-soft: rgba(112,75,232,.09);
+      --success: #128a63;
+      --danger: #d8435d;
+      --warning: #a96d10;
+      --shadow: 0 28px 80px rgba(38,49,74,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      background: radial-gradient(ellipse at 78% 5%, rgba(112,75,232,.13), transparent 34%),
+                  radial-gradient(ellipse at 25% 86%, rgba(30,184,149,.07), transparent 32%),
+                  linear-gradient(145deg, var(--page-bg), var(--page-bg-2));
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: -.01em;
+    }
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .ambient-orb { position: fixed; width: 360px; height: 360px; border-radius: 50%; filter: blur(100px); opacity: .11; pointer-events: none; z-index: 0; background: var(--brand); top: 12%; right: 12%; }
+    .rail {
+      position: fixed; inset: 0 auto 0 0; z-index: 20; width: var(--rail-width);
+      display: flex; flex-direction: column; align-items: center; padding: 18px 0 16px;
+      background: color-mix(in srgb, var(--surface-strong) 86%, transparent);
+      border-right: 1px solid var(--border); backdrop-filter: blur(22px);
+      transition: transform .25s ease;
+    }
+    .brand-mark { width: 46px; height: 46px; display:grid; place-items:center; border-radius: 15px; margin-bottom: 34px; color:#fff; background: linear-gradient(145deg,#a884ff,#6841d4); box-shadow: 0 10px 26px rgba(113,74,221,.34); text-decoration:none; }
+    .brand-mark svg { width: 25px; height: 25px; }
+    .rail-nav, .rail-bottom { display:flex; flex-direction:column; align-items:center; gap: 10px; width:100%; }
+    .rail-nav { flex: 1; }
+    .rail-link { position:relative; width:46px; height:46px; display:grid; place-items:center; border-radius:15px; color:var(--muted); text-decoration:none; transition:.18s ease; }
+    .rail-link svg { width:20px; height:20px; }
+    .rail-link:hover { color:var(--text); background:var(--surface-soft); }
+    .rail-link.active { color:#fff; background:linear-gradient(145deg,#9872ff,#704ce2); box-shadow:0 9px 24px rgba(112,75,232,.26); }
+    .rail-link[title]:hover::after { content:attr(title); position:absolute; z-index:50; left:56px; white-space:nowrap; padding:7px 10px; color:var(--text); background:var(--surface-strong); border:1px solid var(--border); border-radius:9px; font-size:.75rem; box-shadow:var(--shadow); }
+    .app-shell { position:relative; z-index:1; min-height:100vh; margin-left:var(--rail-width); }
+    .topbar { position:sticky; top:0; z-index:15; min-height:78px; display:flex; align-items:center; justify-content:space-between; gap:20px; padding:14px clamp(20px,4vw,52px); border-bottom:1px solid var(--border); background:color-mix(in srgb, var(--page-bg) 72%, transparent); backdrop-filter:blur(18px); }
+    .topbar-inner { display:flex; align-items:center; justify-content:space-between; gap:20px; width:100%; max-width: var(--ok-content-max-width); margin: 0 auto; }
+    .topbar-context { display:flex; align-items:center; gap:13px; min-width:0; }
+    .topbar-kicker { display:block; color:var(--subtle); font-size:.69rem; font-weight:800; letter-spacing:.13em; text-transform:uppercase; }
+    .topbar-title { display:block; margin-top:2px; color:var(--text); font-size:.94rem; font-weight:750; }
+    .topbar-actions { display:flex; align-items:center; gap:9px; }
+    .icon-button { width:42px; height:42px; display:inline-grid; place-items:center; color:var(--muted); border:1px solid var(--border); border-radius:14px; background:var(--surface-soft); text-decoration:none; cursor:pointer; transition:.18s; }
+    .icon-button:hover { color:var(--text); border-color:rgba(154,115,255,.45); background:var(--brand-soft); }
+    .icon-button svg { width:18px; height:18px; }
+    .profile-chip { display:flex; align-items:center; gap:10px; margin-left:6px; padding:5px 12px 5px 5px; border:1px solid var(--border); border-radius:15px; background:var(--surface-soft); text-decoration:none; }
+    .avatar { width:32px; height:32px; display:grid; place-items:center; overflow:hidden; border-radius:11px; color:#fff; background:linear-gradient(145deg,#a884ff,#6841d4); font-size:.78rem; font-weight:850; }
+    .avatar img { width:100%; height:100%; object-fit:cover; }
+    .profile-name { max-width:135px; overflow:hidden; color:var(--text); font-size:.76rem; font-weight:750; text-overflow:ellipsis; white-space:nowrap; }
+    .profile-role { color:var(--subtle); font-size:.67rem; }
+    .mobile-menu { display:none; }
+    .page-content { width:min(var(--ok-content-max-width), 100%); margin:0 auto; padding:clamp(24px,4vw,52px) clamp(18px,4vw,52px) 36px; }
+    .breadcrumb { display:flex; align-items:center; gap:9px; margin-bottom:25px; color:var(--subtle); font-size:.78rem; }
+    .breadcrumb a { color:var(--muted); text-decoration:none; }
+    .breadcrumb a:hover { color:var(--brand); }
+    .breadcrumb svg { width:13px; height:13px; opacity:.65; }
+    .join-hero { position:relative; overflow:hidden; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr); gap:clamp(26px,5vw,70px); align-items:center; padding:clamp(28px,5vw,62px); border:1px solid var(--border); border-radius:30px; background:linear-gradient(135deg, color-mix(in srgb,var(--surface) 94%, transparent), color-mix(in srgb,var(--surface-strong) 92%, transparent)); box-shadow:var(--shadow); }
+    .join-hero::before { content:""; position:absolute; width:450px; height:450px; right:-120px; top:-220px; border-radius:50%; background:radial-gradient(circle,rgba(154,115,255,.21),transparent 68%); pointer-events:none; }
+    .hero-copy, .invite-card { position:relative; z-index:1; }
+    .eyebrow { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; color:var(--brand); border:1px solid color-mix(in srgb,var(--brand) 35%, transparent); border-radius:999px; background:var(--brand-soft); font-size:.69rem; font-weight:850; letter-spacing:.105em; text-transform:uppercase; }
+    .eyebrow-dot { width:7px; height:7px; border-radius:50%; background:var(--success); box-shadow:0 0 0 4px color-mix(in srgb,var(--success) 13%, transparent); }
+    .hero-title { max-width:680px; margin:23px 0 14px; font-size:clamp(2.25rem,5vw,4.15rem); line-height:1.04; font-weight:820; letter-spacing:-.055em; }
+    .hero-title .accent { color:var(--brand); }
+    .hero-subtitle { max-width:550px; margin:0; color:var(--muted); font-size:clamp(.96rem,1.35vw,1.08rem); line-height:1.75; }
+    .secure-note { display:flex; align-items:center; gap:9px; margin-top:27px; color:var(--muted); font-size:.79rem; }
+    .secure-note svg { width:17px; height:17px; color:var(--success); flex:none; }
+    .invite-card { min-height:330px; padding:27px; border:1px solid var(--border); border-radius:24px; background:linear-gradient(155deg,var(--surface-strong),color-mix(in srgb,var(--surface-strong) 84%,var(--brand) 16%)); box-shadow:0 18px 46px rgba(0,0,0,.18); }
+    .card-topline { display:flex; justify-content:space-between; align-items:center; gap:12px; padding-bottom:19px; border-bottom:1px solid var(--border); }
+    .card-caption { color:var(--subtle); font-size:.68rem; font-weight:800; letter-spacing:.11em; text-transform:uppercase; }
+    .status-pill { display:inline-flex; align-items:center; gap:7px; padding:6px 10px; color:var(--success); border:1px solid color-mix(in srgb,var(--success) 27%,transparent); border-radius:999px; background:color-mix(in srgb,var(--success) 8%,transparent); font-size:.68rem; font-weight:800; }
+    .status-pill .tiny-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+    .group-avatar { width:58px; height:58px; display:grid; place-items:center; margin:23px 0 13px; color:#fff; border-radius:19px; background:linear-gradient(145deg,#a884ff,#6841d4); box-shadow:0 12px 30px rgba(112,75,232,.25); }
+    .group-avatar svg { width:28px; height:28px; }
+    .group-name { margin:0; color:var(--text); font-size:1.43rem; font-weight:800; letter-spacing:-.035em; overflow-wrap:anywhere; }
+    .inviter-line { margin:6px 0 20px; color:var(--muted); font-size:.81rem; }
+    .inviter-line strong { color:var(--text); font-weight:700; }
+    .group-facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .fact { min-height:73px; padding:12px 13px; border:1px solid var(--border); border-radius:15px; background:var(--surface-soft); }
+    .fact-label { display:block; margin-bottom:5px; color:var(--subtle); font-size:.66rem; font-weight:750; letter-spacing:.06em; text-transform:uppercase; }
+    .fact-value { display:block; color:var(--text); font-size:.92rem; font-weight:780; overflow-wrap:anywhere; }
+    .fact-value.smallish { font-size:.8rem; }
+    .code-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; padding:12px 14px; border:1px dashed color-mix(in srgb,var(--brand) 45%,var(--border)); border-radius:14px; background:var(--brand-soft); }
+    .code-label { color:var(--muted); font-size:.7rem; font-weight:750; }
+    .code-value { color:var(--text); font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.8rem; font-weight:850; letter-spacing:.08em; overflow-wrap:anywhere; text-align:right; }
+    .actions-row { display:flex; flex-wrap:wrap; gap:11px; margin-top:26px; }
+    .btn-primary-soft, .btn-secondary-soft { min-height:49px; display:inline-flex; align-items:center; justify-content:center; gap:9px; padding:0 19px; border-radius:15px; font-size:.87rem; font-weight:800; text-decoration:none; transition:transform .18s, box-shadow .18s, background .18s; cursor:pointer; }
+    .btn-primary-soft { color:#fff; border:1px solid transparent; background:linear-gradient(135deg,#9872ff,#704ce2); box-shadow:0 11px 25px rgba(112,75,232,.25); }
+    .btn-primary-soft:hover:not(:disabled) { color:#fff; transform:translateY(-2px); box-shadow:0 15px 30px rgba(112,75,232,.34); }
+    .btn-primary-soft:disabled { opacity:.6; cursor:not-allowed; }
+    .btn-secondary-soft { color:var(--text); border:1px solid var(--border); background:var(--surface-soft); }
+    .btn-secondary-soft:hover { color:var(--text); border-color:color-mix(in srgb,var(--brand) 45%,var(--border)); background:var(--brand-soft); }
+    .btn-primary-soft svg, .btn-secondary-soft svg { width:17px; height:17px; }
+    .details-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:22px; }
+    .info-card { padding:22px 24px; border:1px solid var(--border); border-radius:21px; background:var(--surface); }
+    .info-card h2 { margin:0 0 8px; color:var(--text); font-size:.97rem; font-weight:800; }
+    .info-card p { margin:0; color:var(--muted); font-size:.81rem; line-height:1.65; }
+    .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; margin-top:23px; }
+    .step { display:flex; align-items:flex-start; gap:11px; padding:15px; border:1px solid var(--border); border-radius:17px; background:var(--surface-soft); }
+    .step-number { flex:none; width:27px; height:27px; display:grid; place-items:center; color:var(--brand); border-radius:9px; background:var(--brand-soft); font-size:.73rem; font-weight:850; }
+    .step-title { display:block; margin:1px 0 4px; color:var(--text); font-size:.77rem; font-weight:800; }
+    .step-copy { display:block; color:var(--subtle); font-size:.7rem; line-height:1.5; }
+    .notice { display:none; margin:0 0 20px; padding:15px 17px; border:1px solid var(--border); border-radius:16px; background:var(--surface); color:var(--muted); font-size:.85rem; line-height:1.55; }
+    .notice.show { display:flex; align-items:flex-start; gap:11px; }
+    .notice svg { width:19px; height:19px; flex:none; margin-top:1px; }
+    .notice.error { border-color:color-mix(in srgb,var(--danger) 36%,var(--border)); color:var(--danger); background:color-mix(in srgb,var(--danger) 7%,var(--surface)); }
+    .notice.success { border-color:color-mix(in srgb,var(--success) 36%,var(--border)); color:var(--success); background:color-mix(in srgb,var(--success) 7%,var(--surface)); }
+    .skeleton { animation:pulse 1.35s ease-in-out infinite; border-radius:12px; background:linear-gradient(90deg,var(--surface-soft),color-mix(in srgb,var(--muted) 11%,transparent),var(--surface-soft)); background-size:200% 100%; }
+    @keyframes pulse { 0%{background-position:100% 0}100%{background-position:-100% 0} }
+    .loading-wrap { min-height:300px; display:grid; place-items:center; padding:35px; border:1px solid var(--border); border-radius:26px; background:var(--surface); }
+    .loading-content { width:min(420px,100%); text-align:center; }
+    .spinner-orbit { width:47px; height:47px; margin:0 auto 17px; border:3px solid var(--border); border-top-color:var(--brand); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .loading-title { margin:0 0 6px; color:var(--text); font-weight:780; }
+    .loading-copy { color:var(--muted); font-size:.83rem; }
+    .loading-bars { display:grid; gap:9px; margin-top:22px; }
+    .loading-bars span { height:10px; }
+    .loading-bars span:nth-child(2) { width:78%; margin-inline:auto; }
+    .success-panel, .error-panel { display:none; max-width:760px; margin:5vh auto 0; padding:clamp(28px,5vw,52px); text-align:center; border:1px solid var(--border); border-radius:28px; background:var(--surface); box-shadow:var(--shadow); }
+    .success-panel.show, .error-panel.show { display:block; }
+    .state-icon { width:64px; height:64px; display:grid; place-items:center; margin:0 auto 19px; border-radius:21px; }
+    .state-icon svg { width:29px; height:29px; }
+    .state-icon.error-icon { color:var(--danger); background:color-mix(in srgb,var(--danger) 11%,transparent); }
+    .state-icon.success-icon { color:var(--success); background:color-mix(in srgb,var(--success) 11%,transparent); }
+    .state-title { margin:0 0 10px; color:var(--text); font-size:clamp(1.45rem,3vw,2rem); font-weight:820; letter-spacing:-.04em; }
+    .state-copy { max-width:510px; margin:0 auto; color:var(--muted); font-size:.91rem; line-height:1.7; }
+    .state-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:25px; }
+    .page-footer { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:27px; padding-top:19px; border-top:1px solid var(--border); color:var(--subtle); font-size:.72rem; }
+    .footer-links { display:flex; gap:17px; }
+    .footer-links a { color:var(--muted); text-decoration:none; }
+    .footer-links a:hover { color:var(--brand); }
+    .d-none { display:none !important; }
+    @media (max-width: 1050px) {
+      .join-hero { grid-template-columns:1fr; }
+      .hero-copy { max-width:780px; }
+      .invite-card { width:min(600px,100%); }
+    }
+    @media (max-width: 720px) {
+      :root { --rail-width:0px; }
+      .rail { width:76px; transform:translateX(-110%); }
+      body.mobile-nav-active .rail { transform:translateX(0); box-shadow:20px 0 50px rgba(0,0,0,.28); }
+      .app-shell { margin-left:0; }
+      .topbar { min-height:68px; padding:11px 16px; }
+      .mobile-menu { display:inline-grid; }
+      .topbar-context { gap:10px; }
+      .profile-chip { padding-right:5px; border:0; background:transparent; }
+      .profile-copy { display:none; }
+      .page-content { padding:22px 15px 25px; }
+      .breadcrumb { margin-bottom:17px; }
+      .join-hero { gap:26px; padding:24px 18px; border-radius:23px; }
+      .hero-title { margin-top:18px; font-size:clamp(2.2rem,11vw,3.2rem); }
+      .invite-card { min-height:0; padding:20px; border-radius:20px; }
+      .details-grid { grid-template-columns:1fr; }
+      .steps { grid-template-columns:1fr; }
+      .step { padding:13px; }
+      .actions-row { display:grid; grid-template-columns:1fr; }
+      .btn-primary-soft, .btn-secondary-soft { width:100%; }
+      .page-footer { align-items:flex-start; flex-direction:column; }
+      .loading-wrap { min-height:270px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    }
+  </style>
+</head>
+<body
+  data-invite-code="<%= typeof inviteCode !== 'undefined' && inviteCode ? inviteCode : '' %>"
+  data-authenticated="<%= typeof user !== 'undefined' && user ? 'true' : 'false' %>"
+  data-user-name="<%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name) : '' %>"
+  data-user-role="<%= typeof user !== 'undefined' && user && user.role ? user.role : '' %>"
+  data-user-avatar="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '' %>">
+  <div class="ambient-orb" aria-hidden="true"></div>
+
+  <aside class="rail" aria-label="Navegação principal">
+    <a href="/dashboard" class="brand-mark" aria-label="OneKixikila — início" title="OneKixikila">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+    </a>
+    <nav class="rail-nav">
+      <a href="/dashboard" class="rail-link" title="Painel geral" aria-label="Painel geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></a>
+      <a href="/groups" class="rail-link active" title="Grupos" aria-label="Grupos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></a>
+      <a href="/wallet" class="rail-link" title="Carteira" aria-label="Carteira"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4z"></path></svg></a>
+      <a href="/wallet/transfer" class="rail-link" title="Transferências" aria-label="Transferências"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></a>
+      <a href="/notifications" class="rail-link" title="Notificações" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M10 21h4"></path></svg></a>
+    </nav>
+    <div class="rail-bottom">
+      <a href="/profile" class="rail-link" title="Perfil" aria-label="Perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M5 21v-2a7 7 0 0 1 14 0v2"></path></svg></a>
+      <button type="button" class="rail-link" data-action="logout" title="Terminar sessão" aria-label="Terminar sessão"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></button>
+    </div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="topbar-context">
+          <button type="button" class="icon-button mobile-menu" id="sidebar-toggle" aria-label="Abrir menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+          <div><span class="topbar-kicker">OneKixikila</span><span class="topbar-title">Adesão por convite</span></div>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="icon-button" id="theme-toggle" title="Alternar tema" aria-label="Alternar tema claro ou escuro"><svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg></button>
+          <a href="/notifications" class="icon-button" title="Notificações" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M10 21h4"></path></svg></a>
+          <a href="/profile" class="profile-chip" id="profile-link">
+            <span class="avatar" id="profile-avatar"><span id="profile-initial">M</span></span>
+            <span class="profile-copy"><span class="profile-name" id="profile-name">Membro</span><span class="profile-role" id="profile-role">Conta OneKixikila</span></span>
+          </a>
+          <a href="/login" class="btn-secondary-soft d-none" id="top-login" style="min-height:40px;padding:0 14px;font-size:.78rem;">Iniciar sessão</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <nav class="breadcrumb" aria-label="Caminho de navegação">
+        <a href="/groups">Grupos</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"></path></svg><span>Convite</span>
+      </nav>
+
+      <div class="notice" id="notice" role="status" aria-live="polite"></div>
+
+      <section id="loading-state" class="loading-wrap" aria-live="polite">
+        <div class="loading-content">
+          <div class="spinner-orbit" aria-hidden="true"></div>
+          <h1 class="loading-title">A preparar o seu convite</h1>
+          <p class="loading-copy">Estamos a confirmar a validade e os detalhes do grupo.</p>
+          <div class="loading-bars" aria-hidden="true"><span class="skeleton"></span><span class="skeleton"></span><span class="skeleton"></span></div>
+        </div>
+      </section>
+
+      <section id="invite-content" class="d-none" aria-labelledby="hero-title">
+        <div class="join-hero">
+          <div class="hero-copy">
+            <span class="eyebrow"><span class="eyebrow-dot"></span> Convite verificado</span>
+            <h1 class="hero-title" id="hero-title">A sua próxima <span class="accent">Kixikila</span> começa aqui.</h1>
+            <p class="hero-subtitle">Foi convidado para participar num grupo. Consulte as condições abaixo e confirme a adesão quando estiver pronto.</p>
+            <div class="secure-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg><span>Convite validado pelo OneKixikila. A adesão só é concluída após a sua confirmação.</span></div>
+          </div>
+
+          <article class="invite-card" aria-label="Detalhes do grupo e do convite">
+            <div class="card-topline"><span class="card-caption">Resumo do convite</span><span class="status-pill" id="invite-status"><span class="tiny-dot"></span> Válido</span></div>
+            <div class="group-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21v-2a7 7 0 0 1 14 0v2M19 8v6m3-3h-6"></path></svg></div>
+            <h2 class="group-name" id="group-name">—</h2>
+            <p class="inviter-line">Convidado por <strong id="inviter-name">um membro do grupo</strong></p>
+            <div class="group-facts">
+              <div class="fact"><span class="fact-label">Contribuição</span><span class="fact-value" id="contribution">—</span></div>
+              <div class="fact"><span class="fact-label">Periodicidade</span><span class="fact-value" id="frequency">—</span></div>
+              <div class="fact"><span class="fact-label">Participantes</span><span class="fact-value smallish" id="member-range">—</span></div>
+              <div class="fact"><span class="fact-label">Válido até</span><span class="fact-value smallish" id="expiry-date">—</span></div>
+            </div>
+            <div class="code-row"><span class="code-label">Código de convite</span><span class="code-value" id="invite-code-display">—</span></div>
+            <div class="actions-row">
+              <button type="button" class="btn-primary-soft" id="accept-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>Confirmar adesão
+              </button>
+              <a href="/groups" class="btn-secondary-soft">Voltar aos grupos</a>
+              <a href="/login" class="btn-primary-soft d-none" id="login-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><path d="M10 17l5-5-5-5m5 5H3"></path></svg>Entrar para aderir</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="details-grid">
+          <article class="info-card"><h2>O que acontece a seguir?</h2><p>Ao confirmar, o sistema valida novamente o convite, a disponibilidade de vagas e os requisitos da sua conta. Se tudo estiver conforme, a sua participação é registada e poderá consultar o grupo.</p></article>
+          <article class="info-card"><h2>Uma adesão segura e transparente</h2><p>Não será inscrito apenas por abrir esta ligação. A aceitação exige confirmação explícita e fica sujeita às regras, à capacidade e ao estado atual do grupo.</p></article>
+        </div>
+        <div class="steps" aria-label="Etapas da adesão">
+          <div class="step"><span class="step-number">1</span><span><strong class="step-title">Reveja as condições</strong><span class="step-copy">Confirme quota e periodicidade apresentadas.</span></span></div>
+          <div class="step"><span class="step-number">2</span><span><strong class="step-title">Confirme a adesão</strong><span class="step-copy">O convite será validado no momento da aceitação.</span></span></div>
+          <div class="step"><span class="step-number">3</span><span><strong class="step-title">Aceda ao grupo</strong><span class="step-copy">Após aprovação, consulte os detalhes e a conversa.</span></span></div>
+        </div>
+      </section>
+
+      <section id="error-state" class="error-panel" role="alert" aria-live="assertive">
+        <div class="state-icon error-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4m0 4h.01"></path></svg></div>
+        <h1 class="state-title" id="error-title">Não foi possível validar o convite</h1>
+        <p class="state-copy" id="error-copy">A ligação pode estar incompleta, expirada, revogada ou já não aceitar novas adesões. Peça ao emissor que confirme o código.</p>
+        <div class="state-actions"><a href="/groups" class="btn-secondary-soft">Explorar grupos</a><button type="button" class="btn-primary-soft" id="retry-button">Tentar novamente</button></div>
+      </section>
+
+      <section id="success-state" class="success-panel" role="status" aria-live="polite">
+        <div class="state-icon success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></div>
+        <h1 class="state-title">Adesão confirmada</h1>
+        <p class="state-copy" id="success-copy">A sua participação foi registada. Está a ser encaminhado para o grupo.</p>
+        <div class="state-actions"><a href="/groups" id="go-group-link" class="btn-primary-soft">Abrir o grupo</a></div>
+      </section>
+
+      <footer class="page-footer"><span>© <span id="current-year"></span> OneKixikila · Participação consciente, comunidade forte.</span><span class="footer-links"><a href="/terms">Termos</a><a href="/privacy">Privacidade</a><a href="/support">Ajuda</a></span></footer>
+    </main>
+  </div>
+
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      const body = document.body;
+      const inviteCode = String(body.dataset.inviteCode || '').trim();
+      const isAuthenticated = body.dataset.authenticated === 'true';
+      const loadingState = document.getElementById('loading-state');
+      const inviteContent = document.getElementById('invite-content');
+      const errorState = document.getElementById('error-state');
+      const successState = document.getElementById('success-state');
+      const acceptButton = document.getElementById('accept-button');
+      let preview = null;
+      let accepting = false;
+
+      function safeCode(value) {
+        return /^[A-Za-z0-9_-]{6,64}$/.test(String(value || ''));
+      }
+
+      function setNotice(message, kind) {
+        const notice = document.getElementById('notice');
+        notice.className = `notice show ${kind || ''}`;
+        notice.textContent = message;
+      }
+
+      function clearNotice() {
+        const notice = document.getElementById('notice');
+        notice.className = 'notice';
+        notice.textContent = '';
+      }
+
+      function showError(message, title) {
+        loadingState.classList.add('d-none');
+        inviteContent.classList.add('d-none');
+        successState.classList.remove('show');
+        errorState.classList.add('show');
+        if (title) document.getElementById('error-title').textContent = title;
+        if (message) document.getElementById('error-copy').textContent = message;
+      }
+
+      function humanFrequency(value) {
+        const labels = {
+          DAILY: 'Diária', WEEKLY: 'Semanal', BIWEEKLY: 'Quinzenal', MONTHLY: 'Mensal',
+          BIMONTHLY: 'Bimestral', QUARTERLY: 'Trimestral', YEARLY: 'Anual'
+        };
+        const key = String(value || '').toUpperCase();
+        return labels[key] || (key ? key.toLowerCase().replace(/(^|_)([a-z])/g, (_, sep, letter) => `${sep ? ' ' : ''}${letter.toUpperCase()}`) : 'Não indicada');
+      }
+
+      function formatMoney(amount, currency) {
+        const value = Number(amount);
+        if (!Number.isFinite(value)) return 'A confirmar';
+        const code = String(currency || 'AOA').toUpperCase();
+        try {
+          return new Intl.NumberFormat('pt-AO', { style: 'currency', currency: code, maximumFractionDigits: 2 }).format(value);
+        } catch (_) {
+          return `${new Intl.NumberFormat('pt-AO', { maximumFractionDigits: 2 }).format(value)} ${code}`;
+        }
+      }
+
+      function formatDate(value) {
+        if (!value) return 'Não indicada';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return 'Não indicada';
+        return new Intl.DateTimeFormat('pt-PT', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+      }
+
+      function loginUrl() {
+        const login = new URL('/login', window.location.origin);
+        const returnPath = `${window.location.pathname}${window.location.search}`;
+        if (returnPath.startsWith('/groups/join')) login.searchParams.set('redirect', returnPath);
+        return login.toString();
+      }
+
+      function configureAuthenticationActions() {
+        const loginTarget = loginUrl();
+        const loginButton = document.getElementById('login-button');
+        const topLogin = document.getElementById('top-login');
+        const profileLink = document.getElementById('profile-link');
+        const logoutButtons = document.querySelectorAll('[data-action="logout"]');
+        if (!isAuthenticated) {
+          acceptButton.classList.add('d-none');
+          loginButton.href = loginTarget;
+          loginButton.classList.remove('d-none');
+          topLogin.href = loginTarget;
+          topLogin.classList.remove('d-none');
+          profileLink.classList.add('d-none');
+          logoutButtons.forEach((button) => button.classList.add('d-none'));
+        }
+      }
+
+      function renderPreview(response) {
+        const data = response && response.data;
+        const item = data && (data.invitation || data.preview || data);
+        const group = item && item.group;
+        if (!item || !group || !group.name) throw new Error('A resposta do servidor não contém os dados necessários do grupo.');
+
+        preview = item;
+        document.getElementById('group-name').textContent = group.name;
+        document.getElementById('inviter-name').textContent = item.inviterName || 'um membro do grupo';
+        document.getElementById('contribution').textContent = formatMoney(group.contributionAmount, group.currency);
+        document.getElementById('frequency').textContent = humanFrequency(group.frequency);
+        const minMembers = Number(group.minMembers);
+        const maxMembers = Number(group.maxMembers);
+        document.getElementById('member-range').textContent = Number.isFinite(minMembers) && Number.isFinite(maxMembers)
+          ? `${minMembers}–${maxMembers} membros`
+          : 'Vagas conforme disponibilidade';
+        document.getElementById('expiry-date').textContent = formatDate(item.expiresAt);
+        document.getElementById('invite-code-display').textContent = item.inviteCode || inviteCode;
+
+        const groupStatus = String(group.status || '').toUpperCase();
+        const statusPill = document.getElementById('invite-status');
+        if (groupStatus && !['ACTIVE', 'OPEN', 'FORMING'].includes(groupStatus)) {
+          statusPill.innerHTML = '<span class="tiny-dot"></span> Confirmar disponibilidade';
+        }
+
+        loadingState.classList.add('d-none');
+        errorState.classList.remove('show');
+        inviteContent.classList.remove('d-none');
+        if (!isAuthenticated) {
+          setNotice('Para confirmar a adesão, inicie sessão ou crie a sua conta. Depois regressará automaticamente a este convite.', '');
+        } else {
+          clearNotice();
+        }
+      }
+
+      async function loadPreview() {
+        clearNotice();
+        errorState.classList.remove('show');
+        successState.classList.remove('show');
+        inviteContent.classList.add('d-none');
+        loadingState.classList.remove('d-none');
+
+        if (!safeCode(inviteCode)) {
+          showError('O código do convite está ausente ou tem um formato inválido. Abra a ligação completa recebida ou peça ao emissor que a reenvie.', 'Ligação de convite incompleta');
+          return;
+        }
+        if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+          showError('O serviço de ligação não ficou disponível. Atualize a página ou tente novamente dentro de alguns instantes.', 'Não foi possível ligar ao serviço');
+          return;
+        }
+
+        try {
+          const query = new URLSearchParams({ code: inviteCode });
+          const response = await window.apiClient.get(`/groups/join?${query.toString()}`, { redirectOnUnauthorized: false });
+          renderPreview(response);
+        } catch (error) {
+          const message = error && error.message ? error.message : 'O convite não pode ser validado neste momento.';
+          showError(message, 'Convite indisponível');
+        }
+      }
+
+      async function acceptInvitation() {
+        if (accepting || !preview || !safeCode(inviteCode)) return;
+        if (!isAuthenticated) {
+          window.location.assign(loginUrl());
+          return;
+        }
+        if (!window.apiClient || typeof window.apiClient.post !== 'function') {
+          setNotice('O serviço de adesão não está disponível. Atualize a página e tente novamente.', 'error');
+          return;
+        }
+
+        accepting = true;
+        acceptButton.disabled = true;
+        const originalText = acceptButton.textContent.trim();
+        acceptButton.innerHTML = '<span class="spinner-border spinner-border-sm" aria-hidden="true"></span> A confirmar…';
+        clearNotice();
+
+        try {
+          const response = await window.apiClient.post('/groups/invitations/accept', { inviteCode }, { redirectOnUnauthorized: false });
+          const result = response && response.data;
+          const groupId = result && (result.groupId || result.group_id);
+          if (!groupId) throw new Error('A adesão foi processada, mas o servidor não devolveu o identificador do grupo. Contacte o suporte antes de tentar novamente.');
+
+          const groupPath = `/groups/${encodeURIComponent(String(groupId))}`;
+          document.getElementById('go-group-link').href = groupPath;
+          document.getElementById('success-copy').textContent = result.groupName
+            ? `A sua participação no grupo “${result.groupName}” foi registada. Está a ser encaminhado para o grupo.`
+            : 'A sua participação foi registada. Está a ser encaminhado para o grupo.';
+          inviteContent.classList.add('d-none');
+          loadingState.classList.add('d-none');
+          errorState.classList.remove('show');
+          successState.classList.add('show');
+          if (window.Alerts && typeof window.Alerts.success === 'function') {
+            try { await window.Alerts.success('Adesão confirmada', 'A sua participação foi registada com sucesso.'); } catch (_) {}
+          }
+          window.setTimeout(() => window.location.assign(groupPath), 1400);
+        } catch (error) {
+          if (error && error.status === 401) {
+            window.location.assign(loginUrl());
+            return;
+          }
+          setNotice(error && error.message ? error.message : 'Não foi possível confirmar a adesão. O convite pode ter expirado ou atingido o limite de utilizações.', 'error');
+        } finally {
+          accepting = false;
+          if (!successState.classList.contains('show')) {
+            acceptButton.disabled = false;
+            acceptButton.textContent = originalText || 'Confirmar adesão';
+          }
+        }
+      }
+
+      function applyTheme(theme) {
+        const value = theme === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', value);
+        try { localStorage.setItem('ok-theme', value); } catch (_) {}
+      }
+
+      function initHeader() {
+        const name = String(body.dataset.userName || '').trim();
+        const role = String(body.dataset.userRole || '').trim();
+        const avatar = String(body.dataset.userAvatar || '').trim();
+        const profileName = document.getElementById('profile-name');
+        const profileRole = document.getElementById('profile-role');
+        const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase();
+        profileName.textContent = name || (isAuthenticated ? 'Membro' : 'Visitante');
+        profileRole.textContent = role || (isAuthenticated ? 'Conta OneKixikila' : 'Convite recebido');
+        document.getElementById('profile-initial').textContent = initials || 'M';
+        if (avatar && isAuthenticated) {
+          const image = document.createElement('img');
+          image.src = avatar;
+          image.alt = '';
+          image.referrerPolicy = 'no-referrer';
+          image.addEventListener('error', () => image.remove());
+          const avatarNode = document.getElementById('profile-avatar');
+          avatarNode.replaceChildren(image);
+        }
+
+        let storedTheme = null;
+        try { storedTheme = localStorage.getItem('ok-theme'); } catch (_) {}
+        applyTheme(storedTheme || (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+          const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+          applyTheme(next);
+        });
+        document.getElementById('sidebar-toggle').addEventListener('click', () => body.classList.toggle('mobile-nav-active'));
+        document.addEventListener('click', (event) => {
+          if (body.classList.contains('mobile-nav-active') && !event.target.closest('.rail') && !event.target.closest('#sidebar-toggle')) {
+            body.classList.remove('mobile-nav-active');
+          }
+        });
+        document.querySelectorAll('[data-action="logout"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try { if (window.apiClient) await window.apiClient.post('/auth/logout', {}); } catch (_) {}
+            try { if (window.apiClient) window.apiClient.clearSession(); } catch (_) {}
+            window.location.assign('/login');
+          });
+        });
+      }
+
+      document.getElementById('accept-button').addEventListener('click', acceptInvitation);
+      document.getElementById('retry-button').addEventListener('click', loadPreview);
+      document.getElementById('current-year').textContent = String(new Date().getFullYear());
+      configureAuthenticationActions();
+      initHeader();
+      loadPreview();
+    })();
+  </script>
+</body>
+</html>

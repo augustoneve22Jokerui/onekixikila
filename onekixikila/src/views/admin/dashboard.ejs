@@ -1,0 +1,1770 @@
+<%
+  const adminRole = String((typeof user !== 'undefined' && user && user.role) || '').toUpperCase();
+  const canAccessAdminPage = (...roles) => roles.includes(adminRole);
+  const canViewAuditTrail = canAccessAdminPage('ADMIN', 'AUDITOR');
+  const adminDisplayName = (typeof user !== 'undefined' && user && (user.fullName || user.full_name || user.email)) || 'Administrador';
+%>
+<%- include('../partials/head') %>
+
+<!-- Fontes do dashboard normal — identidade visual preservada. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     SISTEMA DE DESIGN — ONEKIXIKILA ADMIN (TEMA ESCURO PADRÃO + TEMA CLARO)
+     Coerente com dashboard/index.ejs: paleta, cards chapados, sidebar slim tech.
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-pill: 9999px;
+    --ok-radius-card: 20px;
+    --ok-radius-md: 12px;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1080px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.25);
+    --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.10);
+    --ok-border-strong: rgba(15, 23, 42, 0.18);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.08);
+    --ok-shadow-card: rgba(15, 23, 42, 0.10);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+      --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-border-strong: rgba(15, 23, 42, 0.18);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ok-bg-canvas);
+    color: var(--ok-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(5, 5, 8, 0) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(244, 245, 249, 0) 70%);
+  }
+
+  /* =========================================================================
+     BARRA LATERAL SLIM TECH (mesma do dashboard normal)
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+  }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    text-decoration: none;
+  }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; width: 100%;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: thin;
+  }
+  .ok-rail-nav::-webkit-scrollbar { width: 3px; }
+  .ok-rail-nav::-webkit-scrollbar-thumb { background: var(--ok-border-subtle); border-radius: 5px; }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: transparent;
+    position: relative;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+  }
+  .ok-rail-link svg { width: 20px; height: 20px; }
+
+  .ok-rail-link .ok-badge-dot {
+    position: absolute; top: 8px; right: 8px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background-color: #ef4444;
+    border: 2px solid var(--ok-bg-surface);
+  }
+
+  .admin-rail-count {
+    position: absolute; top: 2px; right: 1px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    background: #ef4444; color: #fff;
+    border: 2px solid var(--ok-bg-surface);
+    font-size: 9px; font-weight: 800;
+  }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  .admin-empty-nav-search {
+    color: var(--ok-text-muted);
+    font-size: 0.68rem;
+    text-align: center;
+    padding: 0.5rem 0.2rem;
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CENTRALIZADO (corrigido)
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 20px);
+    padding: 20px 20px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+
+  /* Top nav — alinhado ao centro do conteúdo (mesmo padrão do ficheiro de utilizadores) */
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* Barra de pesquisa — alinhada ao início do conteúdo */
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 0;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex; align-items: center;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+  .ok-action-circle[disabled] { opacity: 0.65; cursor: wait; }
+
+  .ok-action-circle .admin-spin { animation: adminSpin 0.8s linear infinite; display: inline-block; }
+  @keyframes adminSpin { to { transform: rotate(360deg); } }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    color: inherit;
+  }
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%; object-fit: cover;
+    background: var(--ok-purple-soft);
+    border: 2px solid var(--ok-purple-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); font-weight: 800; font-size: 0.9rem;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+
+  .ok-page-title-main {
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .admin-hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-btn-pill-soft {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ok-btn-pill-soft:hover {
+    background: var(--ok-purple-vibrant);
+    color: #ffffff;
+  }
+  .ok-btn-pill-soft[disabled] { opacity: 0.65; cursor: wait; }
+
+  .admin-currency-badge {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-muted);
+    font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  .admin-content-section-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .admin-content-section-title h5 {
+    font-size: 1.05rem; font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0; display: flex; align-items: center; gap: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* =========================================================================
+     SESSÃO 1: FAIXA DE 4 CARDS CHAPADOS (ALERTAS + MÉTRICAS)
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 28px auto;
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+  }
+
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+    color: inherit;
+  }
+
+  .ok-flat-card-box.theme-white { background-color: #ffffff; color: #0f172a; }
+  .ok-flat-card-box.theme-lime { background-color: #bef264; color: #0f172a; }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: #ffffff; color: #0f172a;
+    border-left: 1px solid rgba(0,0,0,0.08);
+  }
+  .ok-flat-card-box.theme-purple { background-color: #7c3aed; color: #ffffff; }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: #0f172a; }
+  .theme-purple .ok-flat-icon-container svg { stroke: #ffffff; }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .theme-purple .ok-flat-trend { background: rgba(255,255,255,0.15); color: #ffffff; }
+
+  .ok-flat-trend.danger { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+  .ok-flat-trend.warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+  .ok-flat-trend.info { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+
+  .stat-badge-pulse {
+    animation: okPulseGlow 2.2s infinite;
+  }
+  @keyframes okPulseGlow {
+    0%   { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.35); }
+    70%  { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+  }
+
+  /* =========================================================================
+     SESSÃO 2: VAULT LATERAL EM LARGURA TOTAL (sem redundância)
+     ========================================================================= */
+  .ok-balance-vault-card {
+    background: linear-gradient(160deg, var(--ok-bg-surface) 0%, var(--ok-bg-canvas) 100%);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-card);
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card), 0 0 30px rgba(124, 58, 237, 0.15);
+    color: var(--ok-text-primary);
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+    max-width: var(--ok-content-max);
+    margin: 0 auto 30px auto;
+    width: 100%;
+  }
+  .ok-vault-wave-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.18) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .ok-vault-badge-cluster {
+    display: flex; align-items: center; gap: 8px;
+    position: relative; z-index: 1;
+  }
+  .ok-token-emblem {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #7c3aed, #4c1d95);
+  }
+  .ok-vault-balance-display {
+    margin: 22px 0 16px 0;
+    position: relative; z-index: 1;
+  }
+  .ok-vault-caption {
+    font-size: 0.72rem; font-weight: 700;
+    color: var(--ok-text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .ok-vault-sum {
+    font-size: 1.85rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.03em;
+    margin-top: 6px;
+    color: var(--ok-purple-vibrant);
+  }
+  .ok-vault-action-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: relative; z-index: 1;
+    margin-top: 16px;
+  }
+  .ok-vault-btn {
+    height: 44px; border-radius: var(--ok-radius-pill);
+    font-size: 0.82rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .ok-vault-btn.primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.45);
+  }
+  .ok-vault-btn.primary:hover { transform: translateY(-2px); color: #ffffff; }
+  .ok-vault-btn.ghost {
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border: 1px solid var(--ok-border-subtle);
+  }
+  .ok-vault-btn.ghost:hover { background: var(--ok-pill-bg-hover); color: var(--ok-purple-vibrant); }
+
+  /* =========================================================================
+     SESSÃO 3: GRUPOS + UTILIZADORES (2 CARDS LADO A LADO)
+     ========================================================================= */
+  .ok-bottom-insights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: var(--ok-content-max);
+    margin: 0 auto 30px auto;
+  }
+
+  .ok-groups-roster-card,
+  .ok-users-roster-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-card);
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+  }
+
+  .ok-card-title-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 8px;
+  }
+  .ok-card-title-row h4 {
+    font-size: 1.05rem; font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0; display: flex; align-items: center; gap: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ok-card-title-sub {
+    display: block;
+    font-size: 0.78rem; color: var(--ok-text-muted);
+    margin-top: 2px;
+  }
+
+  .admin-substat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .admin-substat-grid.cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .admin-substat-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .admin-substat {
+    border-radius: var(--ok-radius-md);
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0.9rem 0.65rem;
+    text-align: center;
+    transition: all 0.2s ease;
+  }
+  .admin-substat:hover {
+    border-color: var(--ok-border-strong);
+    transform: translateY(-1px);
+  }
+  .admin-substat-label {
+    font-size: 0.66rem; color: var(--ok-text-muted);
+    font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; display: block;
+  }
+  .admin-substat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem; font-weight: 800;
+    color: var(--ok-text-primary);
+    line-height: 1.1; margin-top: 6px;
+  }
+  .admin-substat-value.text-success { color: var(--ok-accent-emerald) !important; }
+  .admin-substat-value.text-danger  { color: var(--ok-accent-rose) !important; }
+  .admin-substat-value.text-warning { color: var(--ok-accent-amber) !important; }
+  .admin-substat-value.text-info    { color: var(--ok-accent-cyan) !important; }
+
+  /* =========================================================================
+     SESSÃO 4: TABELA DE AUDITORIA (STREAM FLAT LIST DO DASHBOARD)
+     ========================================================================= */
+  .ok-recent-transactions-section {
+    max-width: var(--ok-content-max);
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .ok-stream-flat-list {
+    display: flex; flex-direction: column;
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-card);
+    overflow: hidden;
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+  }
+
+  .ok-stream-flat-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.4fr 1fr 1.2fr;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ok-border-subtle);
+    transition: all 0.2s ease;
+  }
+  .ok-stream-flat-row.header {
+    background: rgba(255, 255, 255, 0.02);
+    font-size: 0.7rem; font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ok-text-muted);
+    padding-top: 12px; padding-bottom: 12px;
+  }
+  .ok-stream-flat-row:last-child { border-bottom: none; }
+  .ok-stream-flat-row:hover:not(.header) {
+    background: var(--ok-stream-hover);
+  }
+
+  .ok-stream-tx-meta {
+    display: flex; align-items: center; gap: 10px; min-width: 0;
+  }
+  .ok-stream-tx-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 0.85rem;
+  }
+  .ok-stream-tx-icon.credit { background: rgba(16,185,129,0.15); color: #10b981; }
+  .ok-stream-tx-icon.debit { background: rgba(244,63,94,0.15); color: #f43f5e; }
+  .ok-stream-tx-icon.info { background: var(--ok-purple-soft); color: var(--ok-purple-vibrant); }
+  .ok-stream-tx-icon.warning { background: rgba(245,158,11,0.15); color: #f59e0b; }
+
+  .ok-stream-tx-desc {
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--ok-text-primary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin: 0;
+  }
+  .ok-stream-tx-meta-line {
+    font-size: 0.72rem; color: var(--ok-text-muted);
+    margin: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ok-stream-tx-date {
+    font-size: 0.8rem;
+    color: var(--ok-text-muted);
+    font-family: 'Space Grotesk', monospace;
+  }
+  .ok-stream-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 10px;
+    border-radius: var(--ok-radius-pill);
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .ok-stream-badge.credit  { background: rgba(16,185,129,0.15); color: #10b981; }
+  .ok-stream-badge.debit   { background: rgba(244,63,94,0.15); color: #f43f5e; }
+  .ok-stream-badge.info    { background: var(--ok-purple-soft); color: var(--ok-purple-vibrant); }
+  .ok-stream-badge.warning { background: rgba(245,158,11,0.15); color: #f59e0b; }
+  .ok-stream-badge.neutral { background: var(--ok-pill-bg); color: var(--ok-text-muted); }
+
+  /* Empty state (idêntico ao dashboard) */
+  .ok-empty-state {
+    text-align: center; padding: 3rem 1rem;
+    color: var(--ok-text-muted);
+    grid-column: 1 / -1;
+  }
+  .ok-empty-state svg {
+    font-size: 2.5rem; opacity: 0.4;
+    margin-bottom: 0.5rem;
+    display: block; margin-inline: auto;
+  }
+  .ok-empty-state h6 {
+    font-weight: 700;
+    color: var(--ok-text-primary);
+    margin-bottom: 4px;
+  }
+
+  /* Loading + erro */
+  .admin-loading-shell {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 5rem 1rem; text-align: center;
+    max-width: var(--ok-content-max);
+    margin: 0 auto;
+    width: 100%;
+  }
+  .admin-loading-shell .spinner-border {
+    width: 2.75rem; height: 2.75rem;
+    color: var(--ok-purple-vibrant) !important;
+    border-width: 0.22em;
+  }
+
+  .admin-footer {
+    border-top: 1px solid var(--ok-border-subtle);
+    background: transparent;
+    padding: 1rem 1.25rem;
+    text-align: center;
+    color: var(--ok-text-muted);
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 1;
+    max-width: var(--ok-content-max);
+    margin: 2rem auto 0;
+    width: 100%;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE — IGUAL AO DASHBOARD NORMAL
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+    .ok-bottom-insights-grid { grid-template-columns: 1fr; }
+    .admin-substat-grid.cols-5 { grid-template-columns: repeat(3, 1fr); }
+    .ok-stream-flat-row {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        "meta badge"
+        "date actor";
+    }
+    .ok-stream-tx-meta { grid-area: meta; }
+    .ok-stream-badge   { grid-area: badge; justify-self: end; }
+    .ok-stream-tx-date { grid-area: date; }
+    .ok-stream-actor   { grid-area: actor; justify-self: end; text-align: right; }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+  }
+  @media (max-width: 767px) {
+    .admin-substat-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .admin-substat-grid,
+    .admin-substat-grid.cols-5,
+    .admin-substat-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+    .ok-stream-flat-row {
+      grid-template-columns: 1fr;
+      grid-template-areas: "meta" "date" "badge" "actor";
+    }
+    .ok-stream-badge, .ok-stream-actor { justify-self: start; text-align: left; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<body>
+  <div class="ok-ambient-glow-core" aria-hidden="true"></div>
+
+  <!-- ======================================================================
+       SIDEBAR SLIM TECH — mesmas cápsulas do dashboard normal,
+       com a navegação administrativa filtrada por permissões.
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila — Administração" aria-label="Painel administrativo OneKixikila">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav" aria-label="Ferramentas de administração">
+      <a href="/admin" class="ok-rail-link active" title="Dashboard executivo" aria-label="Dashboard executivo" data-search-label="dashboard visão geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'SUPPORT_AGENT')) { %>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores" aria-label="Utilizadores" data-search-label="utilizadores contas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila" aria-label="Grupos de Kixikila" data-search-label="grupos kixikila">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão de identidade KYC" aria-label="Revisão KYC" data-search-label="kyc identidade verificação">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2.5"></circle><path d="M5.5 17c.8-2 2-3 3.5-3s2.7 1 3.5 3M15 9h3M15 13h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas" aria-label="Disputas" data-search-label="disputas risco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path><path d="M12 8v4M12 16h.01"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-disputes">0</span>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos e saídas" aria-label="Pagamentos e saídas" data-search-label="pagamentos levantamentos conciliação">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20M6 15h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios financeiros" aria-label="Relatórios financeiros" data-search-label="relatórios financeiros">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path><path d="M14 9h5v5"></path></svg>
+      </a>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas e limites" aria-label="Configurações" data-search-label="configurações tarifas limites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.6-1.4-2.4 1.4-1.1A8 8 0 0 1 7 13l-1.8-.3V9.9L7 9.6a8 8 0 0 1 .7-1.6L6.3 6.8l1.4-2.4 1.7.6a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.6 1.4 2.4-1.4 1.2a8 8 0 0 1 .7 1.6l1.8.3v2.8l-1.8.3a8 8 0 0 1-.7 1.6z"></path></svg>
+      </a>
+      <% } %>
+      <% if (canViewAuditTrail) { %>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria forense" aria-label="Auditoria forense" data-search-label="auditoria forense logs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M8 13h8M8 17h8"></path></svg>
+      </a>
+      <% } %>
+      <div class="admin-empty-nav-search d-none" id="admin-empty-nav-search">Sem ferramentas para esta pesquisa.</div>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/notifications" class="ok-rail-link" title="Notificações" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+      <a href="/profile" class="ok-rail-link" title="Perfil" aria-label="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar sessão" aria-label="Terminar sessão" style="background:transparent;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- TOP BAR (mesma do dashboard, agora centralizada) -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" id="global-dashboard-search" placeholder="Pesquisar ferramentas administrativas..." autocomplete="off" aria-label="Pesquisar ferramentas administrativas">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <button type="button" id="admin-refresh-btn" class="ok-action-circle" title="Atualizar métricas" aria-label="Atualizar métricas">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações" aria-label="Notificações">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill" aria-label="Perfil do administrador">
+          <span class="ok-profile-avatar-nav" aria-hidden="true"><%= String(adminDisplayName).trim().charAt(0).toUpperCase() || 'A' %></span>
+          <div class="d-flex flex-column text-start admin-profile-text">
+            <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1;"><%= adminDisplayName %></span>
+            <span class="text-muted" style="font-size: 0.7rem;"><%= adminRole.replaceAll('_', ' ') || 'ADMIN' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         HERO — mesmo layout do dashboard, adaptado ao contexto admin
+         ==================================================================== -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main" id="admin-dashboard-title">
+          Centro de Controlo <span class="user-highlight">Administrativo</span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            <span id="admin-live-status">A sincronizar</span>
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          <%= new Date().toLocaleDateString('pt-AO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %> &bull; <span id="admin-last-updated">Ainda não sincronizado</span>
+        </p>
+      </div>
+
+      <div class="admin-hero-actions">
+        <button type="button" id="admin-refresh-btn-main" class="ok-btn-pill-soft">
+          <i class="bi bi-arrow-clockwise"></i> Atualizar dados
+        </button>
+      </div>
+    </section>
+
+    <!-- Indicador de Carregamento Inicial -->
+    <div id="admin-loading-screen" class="admin-loading-shell">
+      <div class="spinner-border mb-3" role="status"></div>
+      <h5 class="fw-bold mb-2" style="color: var(--ok-text-primary);">A carregar métricas analíticas em tempo real...</h5>
+      <p class="small mb-0" style="color: var(--ok-text-muted);">A consolidar saldos do livro-razão, filas de conformidade e eventos de risco.</p>
+    </div>
+
+    <!-- Dashboard Completo (Oculto até os dados chegarem da API) -->
+    <div id="admin-dashboard-view" class="d-none">
+
+      <!-- =================================================================
+           SESSÃO 1: FAIXA DE 4 CARDS CHAPADOS — ALERTAS CRÍTICOS
+           ================================================================= -->
+      <div class="ok-flat-quad-strip">
+
+        <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+        <a href="/admin/identity-review" class="ok-flat-card-box theme-white">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+                <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">KYC Pendentes</h5>
+            <p class="ok-flat-desc">Processos de verificação de identidade a aguardar parecer.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="stat-pending-kyc">0</span>
+            <div class="ok-flat-trend">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"></polyline></svg>
+              Fila de conformidade
+            </div>
+          </div>
+        </a>
+        <% } %>
+
+        <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+        <a href="/admin/payments" class="ok-flat-card-box theme-lime">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="14" width="36" height="24" stroke="currentColor" stroke-linecap="square"/>
+                <circle cx="24" cy="26" r="4" stroke="currentColor"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Levantamentos a Autorizar</h5>
+            <p class="ok-flat-desc">Pedidos de saída pendentes de liquidação manual.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="stat-pending-withdrawals">0</span>
+            <div class="ok-flat-trend">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              Fila de tesouraria
+            </div>
+          </div>
+        </a>
+        <% } %>
+
+        <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+        <a href="/admin/disputes" class="ok-flat-card-box theme-white-alt">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+                <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+                <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Disputas em Aberto</h5>
+            <p class="ok-flat-desc">Contestações a aguardar mediação e deliberação.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="stat-active-disputes">0</span>
+            <div class="ok-flat-trend danger">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 1 21h22L12 2zm0 6v6m0 3h.01"/></svg>
+              Risco operacional
+            </div>
+          </div>
+        </a>
+        <% } %>
+
+        <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+        <a href="/admin/payments" class="ok-flat-card-box theme-purple">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="18" cy="18" r="6" stroke="currentColor"/>
+                <circle cx="32" cy="18" r="6" stroke="currentColor"/>
+                <path d="M8 40C8 32 13 26 18 26C21 26 24 28 26 30" stroke="currentColor"/>
+                <path d="M24 30C26 28 29 26 32 26C37 26 40 32 40 40" stroke="currentColor"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Divergências de Conciliação</h5>
+            <p class="ok-flat-desc">Diferenças entre livro-razão e extrato bancário.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="stat-payment-discrepancies">0</span>
+            <div class="ok-flat-trend">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              A rever
+            </div>
+          </div>
+        </a>
+        <% } %>
+
+      </div>
+
+      <!-- =================================================================
+           SESSÃO 1B: FAIXA DE 4 CARDS CHAPADOS — MÉTRICAS FINANCEIRAS
+           Mesmo design chapado dos 4 cards acima, imediatamente abaixo.
+           ================================================================= -->
+      <div class="admin-content-section-title">
+        <h5><i class="bi bi-cash-coin" style="color: var(--ok-accent-emerald);"></i> Tesouraria & Saldos em Custódia</h5>
+        <span class="admin-currency-badge">Moeda: AOA (Kwanza)</span>
+      </div>
+
+      <div class="ok-flat-quad-strip">
+
+        <!-- Saldo Contabilístico Total -->
+        <div class="ok-flat-card-box theme-white">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+                <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+                <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Saldo Contabilístico Total</h5>
+            <p class="ok-flat-desc">Passivo total consolidado em carteiras dos membros.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="fin-total-ledger">0 Kz</span>
+            <div class="ok-flat-trend">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg>
+              Livro-razão
+            </div>
+          </div>
+        </div>
+
+        <!-- Disponível para Saída -->
+        <div class="ok-flat-card-box theme-lime">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+                <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Disponível para Saída</h5>
+            <p class="ok-flat-desc">Saldos desimpedidos, prontos para liquidação.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="fin-total-available">0 Kz</span>
+            <div class="ok-flat-trend">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              Desimpedido
+            </div>
+          </div>
+        </div>
+
+        <!-- Fundos Retidos / Ordens -->
+        <div class="ok-flat-card-box theme-white-alt">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="14" y="22" width="20" height="14" stroke="currentColor" stroke-linecap="square"/>
+                <path d="M18 22V16a6 6 0 0 1 12 0v6" stroke="currentColor" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Fundos Retidos / Ordens</h5>
+            <p class="ok-flat-desc">Montantes em custódia com ordens em liquidação.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="fin-total-locked">0 Kz</span>
+            <div class="ok-flat-trend warning">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              Em custódia
+            </div>
+          </div>
+        </div>
+
+        <!-- Volume de Bolos Entregues -->
+        <div class="ok-flat-card-box theme-purple">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 34V18l14-8 14 8v16" stroke="currentColor" stroke-linecap="square"/>
+                <path d="M18 34V24h12v10" stroke="currentColor" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Volume de Bolos Entregues</h5>
+            <p class="ok-flat-desc">Total acumulado de contemplações da Kixikila.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="fin-total-payouts">0 Kz</span>
+            <div class="ok-flat-trend">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"></path></svg>
+              Contemplações
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Segunda faixa: Depósitos Confirmados + Riscos Elevados -->
+      <div class="ok-flat-quad-strip">
+
+        <!-- Depósitos Confirmados -->
+        <div class="ok-flat-card-box theme-white">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M24 8v24M14 22l10 10 10-10" stroke="currentColor" stroke-linecap="square"/>
+                <line x1="10" y1="40" x2="38" y2="40" stroke="currentColor"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Depósitos Confirmados</h5>
+            <p class="ok-flat-desc">Volume total de carregamentos validados e liquidados.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="fin-total-deposits">0 Kz</span>
+            <div class="ok-flat-trend">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"></path></svg>
+              Carregamentos
+            </div>
+          </div>
+        </div>
+
+        <% if (canViewAuditTrail) { %>
+        <!-- Riscos Elevados por Rever -->
+        <a href="/admin/audit" class="ok-flat-card-box theme-white-alt">
+          <div>
+            <div class="ok-flat-icon-container">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+                <path d="M24 14v12m0 6h.01" stroke="currentColor" stroke-linecap="square"/>
+              </svg>
+            </div>
+            <h5 class="ok-flat-title">Riscos Elevados por Rever</h5>
+            <p class="ok-flat-desc">Eventos sinalizados pelo motor de deteção aguardam revisão forense.</p>
+          </div>
+          <div>
+            <span class="ok-flat-metric-data" id="stat-severe-risks">0</span>
+            <div class="ok-flat-trend danger">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 1 21h22L12 2zm0 6v6m0 3h.01"/></svg>
+              Requer atenção
+            </div>
+          </div>
+        </a>
+        <% } else { %>
+        <!-- Placeholder invisível para manter grelha de 4 colunas -->
+        <div class="ok-flat-card-box theme-white-alt" style="visibility: hidden;" aria-hidden="true"></div>
+        <% } %>
+
+        <!-- Espaços reservados para completar a grelha de 4 -->
+        <div class="ok-flat-card-box theme-lime" style="visibility: hidden;" aria-hidden="true"></div>
+        <div class="ok-flat-card-box theme-purple" style="visibility: hidden;" aria-hidden="true"></div>
+
+      </div>
+
+      <!-- =================================================================
+           SESSÃO 2: VAULT LATERAL EM LARGURA TOTAL (sem redundância)
+           ================================================================= -->
+      <div class="ok-balance-vault-card">
+        <div class="ok-vault-wave-bg"></div>
+
+        <div>
+          <div class="ok-vault-badge-cluster">
+            <div class="ok-token-emblem">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <span class="fw-bold" style="font-size: 0.78rem; color: var(--ok-text-primary);">Livro-Razão Consolidado</span>
+            <span class="badge ms-auto" style="background: rgba(139,92,246,0.15); color: var(--ok-purple-vibrant); font-size: 0.7rem; font-weight: 800;" id="wallet-status-badge">Ativa</span>
+          </div>
+
+          <div class="ok-vault-balance-display">
+            <span class="ok-vault-caption">
+              Saldo Contabilístico Total
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <div class="ok-vault-sum" id="fin-total-ledger-kpi">0 Kz</div>
+            <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Disponível para saída:</span>
+              <strong style="color: var(--ok-text-primary);" id="fin-total-available-inline">0 Kz</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Fundos retidos / ordens:</span>
+              <strong style="color: var(--ok-text-primary);" id="fin-total-locked-inline">0 Kz</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="ok-vault-action-row">
+          <a href="/admin/payments" class="ok-vault-btn primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Pagamentos
+          </a>
+          <a href="/admin/reports" class="ok-vault-btn ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            Relatórios
+          </a>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           SESSÃO 3: UTILIZADORES + GRUPOS
+           ================================================================= -->
+      <div class="ok-bottom-insights-grid">
+
+        <!-- Utilizadores -->
+        <div class="ok-users-roster-card">
+          <div class="ok-card-title-row">
+            <div>
+              <h4><i class="bi bi-people" style="color: var(--ok-purple-vibrant);"></i> Utilizadores & Contas</h4>
+              <span class="ok-card-title-sub">Distribuição de contas por estado operacional</span>
+            </div>
+            <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'SUPPORT_AGENT')) { %>
+            <a href="/admin/users" class="ok-btn-pill-soft">Ver Todos <i class="bi bi-arrow-right"></i></a>
+            <% } %>
+          </div>
+
+          <div class="admin-substat-grid cols-3">
+            <div class="admin-substat">
+              <span class="admin-substat-label">Total Registados</span>
+              <div class="admin-substat-value" id="users-stat-total">0</div>
+            </div>
+            <div class="admin-substat">
+              <span class="admin-substat-label">Contas Ativas</span>
+              <div class="admin-substat-value text-success" id="users-stat-active">0</div>
+            </div>
+            <div class="admin-substat">
+              <span class="admin-substat-label">Restritas / Bloqueadas</span>
+              <div class="admin-substat-value text-danger" id="users-stat-restricted">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grupos -->
+        <div class="ok-groups-roster-card">
+          <div class="ok-card-title-row">
+            <div>
+              <h4><i class="bi bi-diagram-3" style="color: var(--ok-accent-cyan);"></i> Grupos de Kixikila</h4>
+              <span class="ok-card-title-sub">Distribuição por estado de ciclo de vida</span>
+            </div>
+            <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+            <a href="/admin/groups" class="ok-btn-pill-soft">Ver Todos <i class="bi bi-arrow-right"></i></a>
+            <% } %>
+          </div>
+
+          <div class="admin-substat-grid cols-5">
+            <div class="admin-substat">
+              <span class="admin-substat-label">Total</span>
+              <div class="admin-substat-value" id="groups-stat-total">0</div>
+            </div>
+            <div class="admin-substat">
+              <span class="admin-substat-label">Ativos</span>
+              <div class="admin-substat-value text-success" id="groups-stat-active">0</div>
+            </div>
+            <div class="admin-substat">
+              <span class="admin-substat-label">Formação</span>
+              <div class="admin-substat-value text-warning" id="groups-stat-formation">0</div>
+            </div>
+            <div class="admin-substat">
+              <span class="admin-substat-label">Concluídos</span>
+              <div class="admin-substat-value text-info" id="groups-stat-completed">0</div>
+            </div>
+            <div class="admin-substat">
+              <span class="admin-substat-label">Pausados / Suspensos</span>
+              <div class="admin-substat-value text-warning" id="groups-stat-paused">0</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- =================================================================
+           SESSÃO 4: TABELA DE AUDITORIA (STREAM FLAT LIST)
+           ================================================================= -->
+      <% if (canViewAuditTrail) { %>
+      <section class="ok-recent-transactions-section">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <div>
+            <h4 class="fw-bold mb-1" style="font-size: 1.15rem; color: var(--ok-text-primary);">
+              <i class="bi bi-activity" style="color: var(--ok-purple-vibrant);"></i> Últimos Eventos de Auditoria
+            </h4>
+            <span style="font-size: 0.78rem; color: var(--ok-text-muted);">Registos imutáveis com correlação de Request-ID e expurgo de dados sensíveis.</span>
+          </div>
+          <a href="/admin/audit" class="ok-btn-pill-soft">
+            Ver Trilha Completa <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="ok-stream-flat-list" id="audit-table-body">
+          <div class="ok-stream-flat-row header">
+            <div>Ação</div>
+            <div>Recurso</div>
+            <div>Ator</div>
+            <div>IP / Origem</div>
+            <div>Data & Hora (UTC)</div>
+          </div>
+          <div class="ok-empty-state">
+            <div class="spinner-border spinner-border-sm mb-2" role="status" style="color: var(--ok-purple-vibrant);"></div>
+            <p class="small mb-0">A carregar eventos de auditoria...</p>
+          </div>
+        </div>
+      </section>
+      <% } else { %>
+      <div class="ok-bottom-insights-grid" style="grid-template-columns: 1fr;">
+        <div class="ok-users-roster-card">
+          <div class="ok-card-title-row">
+            <div>
+              <h4><i class="bi bi-shield-lock" style="color: var(--ok-purple-vibrant);"></i> Acesso operacional por função</h4>
+              <span class="ok-card-title-sub">A trilha forense é reservada às funções ADMIN e AUDITOR. As filas e os indicadores apresentados respeitam as permissões do seu perfil.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+
+    </div>
+
+    <footer class="admin-footer">
+      <span>&copy; <%= typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear() %> OneKixikila Admin Engine. Todos os direitos reservados. Protocolos em conformidade com o Banco Nacional de Angola (BNA).</span>
+    </footer>
+
+  </div>
+
+  <!-- Scripts do Ecossistema (mesma ordem do dashboard) -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const CAN_VIEW_AUDIT = <%- JSON.stringify(canViewAuditTrail) %>;
+      const loadingScreen = document.getElementById('admin-loading-screen');
+      const dashboardView = document.getElementById('admin-dashboard-view');
+      const THEME_KEY = 'ok-theme';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO (mesma lógica do dashboard)
+         ==================================================================== */
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS (mesma lógica do dashboard)
+         ==================================================================== */
+      function setupGlobalActions() {
+        const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+        sidebarToggle?.addEventListener('click', () => {
+          const active = document.body.classList.toggle('mobile-nav-active');
+          sidebarToggle.setAttribute('aria-expanded', String(active));
+        });
+        document.querySelectorAll('.ok-rail-link[href]').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 991px)').matches) {
+              document.body.classList.remove('mobile-nav-active');
+            }
+          });
+        });
+
+        const search = document.getElementById('global-dashboard-search');
+        const navLinks = Array.from(document.querySelectorAll('.ok-rail-link[data-search-label]'));
+        const empty = document.getElementById('admin-empty-nav-search');
+        search?.addEventListener('input', () => {
+          const term = search.value.trim().toLocaleLowerCase('pt');
+          let visible = 0;
+          navLinks.forEach((link) => {
+            const match = !term || `${link.dataset.searchLabel || ''} ${link.title || ''}`.toLocaleLowerCase('pt').includes(term);
+            link.classList.toggle('d-none', !match);
+            if (match) visible += 1;
+          });
+          empty?.classList.toggle('d-none', visible !== 0);
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (search) { event.preventDefault(); search.focus(); }
+          }
+        });
+
+        document.querySelectorAll('[data-action="logout"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            button.disabled = true;
+            try {
+              if (window.apiClient && typeof window.apiClient.post === 'function') await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') window.apiClient.clearSession();
+            } catch (_) { /* A sessão é encerrada localmente mesmo se a rede falhar. */ }
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         HELPERS (idênticos ao dashboard)
+         ==================================================================== */
+      const refreshButtons = [
+        document.getElementById('admin-refresh-btn'),
+        document.getElementById('admin-refresh-btn-main')
+      ].filter(Boolean);
+      let hasLoaded = false;
+      let refreshInFlight = false;
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[char]));
+      }
+
+      function setRefreshState(isRefreshing) {
+        refreshButtons.forEach((button) => {
+          button.disabled = isRefreshing;
+          const icon = button.querySelector('.bi-arrow-clockwise');
+          if (icon) icon.classList.toggle('admin-spin', isRefreshing);
+        });
+      }
+
+      function writeMetric(id, value, fallback = '0') {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value == null || value === '' ? fallback : String(value);
+      }
+
+      function setQueueBadge(id, value) {
+        const badge = document.getElementById(id);
+        if (!badge) return;
+        const count = Math.max(0, Number(value) || 0);
+        badge.textContent = count > 99 ? '99+' : String(count);
+        badge.classList.toggle('d-none', count === 0);
+      }
+
+      function formatMoney(value) {
+        const amount = Number(value);
+        if (!Number.isFinite(amount)) return '0 Kz';
+        if (window.App && typeof window.App.formatMoney === 'function') return window.App.formatMoney(amount);
+        return `${new Intl.NumberFormat('pt-AO', { maximumFractionDigits: 0 }).format(amount)} Kz`;
+      }
+
+      function updateLastRefreshed() {
+        const label = document.getElementById('admin-last-updated');
+        const status = document.getElementById('admin-live-status');
+        if (label) label.textContent = new Intl.DateTimeFormat('pt-AO', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
+        if (status) status.textContent = 'Dados sincronizados';
+      }
+
+      /* ====================================================================
+         CARREGAMENTO PRINCIPAL DO DASHBOARD
+         ==================================================================== */
+      async function loadDashboardData() {
+        if (refreshInFlight) return;
+        refreshInFlight = true;
+        setRefreshState(true);
+        try {
+          if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+            throw new Error('O cliente da API não foi inicializado. Recarregue a página.');
+          }
+
+          const response = await window.apiClient.get('/admin/dashboard');
+          const overview = response && response.data && response.data.overview
+            ? response.data.overview
+            : (response && response.data);
+          if (!overview || typeof overview !== 'object') {
+            throw new Error('A API não devolveu métricas válidas para o painel.');
+          }
+
+          const queues = overview.pendingQueues || {};
+          writeMetric('stat-pending-kyc', queues.pendingKycReviews);
+          writeMetric('stat-pending-withdrawals', queues.pendingWithdrawals);
+          writeMetric('stat-active-disputes', queues.activeDisputes);
+          writeMetric('stat-payment-discrepancies', queues.discrepancyReconciliations);
+          writeMetric('stat-severe-risks', queues.severeUnreviewedRisks);
+          setQueueBadge('sidebar-badge-kyc', queues.pendingKycReviews);
+          setQueueBadge('sidebar-badge-disputes', queues.activeDisputes);
+          setQueueBadge('sidebar-badge-withdrawals', queues.pendingWithdrawals);
+
+          const finances = overview.finances || {};
+          writeMetric('fin-total-ledger', formatMoney(finances.totalLedgerBalance));
+          writeMetric('fin-total-ledger-kpi', formatMoney(finances.totalLedgerBalance));
+          writeMetric('fin-total-available', formatMoney(finances.totalAvailableBalance));
+          writeMetric('fin-total-available-inline', formatMoney(finances.totalAvailableBalance));
+          writeMetric('fin-total-locked', formatMoney(finances.totalLockedBalance));
+          writeMetric('fin-total-locked-inline', formatMoney(finances.totalLockedBalance));
+          writeMetric('fin-total-payouts', formatMoney(finances.totalPayoutsVolume));
+          writeMetric('fin-total-deposits', formatMoney(finances.totalDepositedVolume));
+
+          const users = overview.users || {};
+          writeMetric('users-stat-total', users.total);
+          writeMetric('users-stat-active', users.active);
+          writeMetric('users-stat-restricted', users.restricted);
+
+          const groups = overview.groups || {};
+          writeMetric('groups-stat-total', groups.total);
+          writeMetric('groups-stat-active', groups.active);
+          writeMetric('groups-stat-formation', groups.formation);
+          writeMetric('groups-stat-completed', groups.completed);
+          writeMetric('groups-stat-paused', groups.pausedOrSuspended);
+
+          if (CAN_VIEW_AUDIT) await loadRecentAuditLogs();
+          updateLastRefreshed();
+          loadingScreen?.classList.add('d-none');
+          dashboardView?.classList.remove('d-none');
+          hasLoaded = true;
+        } catch (error) {
+          const message = error && error.message ? error.message : 'Falha de comunicação com os serviços administrativos.';
+          const status = document.getElementById('admin-live-status');
+          if (status) status.textContent = hasLoaded ? 'Atualização indisponível' : 'Sem ligação';
+          if (hasLoaded) {
+            const label = document.getElementById('admin-last-updated');
+            if (label) label.textContent = 'A mostrar os últimos dados carregados';
+            if (window.Alerts && typeof window.Alerts.toast === 'function') window.Alerts.toast(message, 'warning');
+          } else if (loadingScreen) {
+            loadingScreen.innerHTML = `
+              <div class="alert alert-danger mx-auto text-start" style="max-width:520px;">
+                <h5 class="fw-bold mb-2"><i class="bi bi-x-octagon-fill me-2"></i>Não foi possível carregar o painel</h5>
+                <p class="small mb-3">${escapeHtml(message)}</p>
+                <button type="button" id="admin-retry-btn" class="btn btn-sm btn-outline-danger"><i class="bi bi-arrow-clockwise me-1"></i>Tentar novamente</button>
+              </div>`;
+            document.getElementById('admin-retry-btn')?.addEventListener('click', loadDashboardData, { once: true });
+          }
+        } finally {
+          refreshInFlight = false;
+          setRefreshState(false);
+        }
+      }
+
+      /* ====================================================================
+         TABELA DE AUDITORIA (STREAM FLAT LIST)
+         ==================================================================== */
+      async function loadRecentAuditLogs() {
+        const tbody = document.getElementById('audit-table-body');
+        if (!tbody || !CAN_VIEW_AUDIT) return;
+        try {
+          const response = await window.apiClient.get('/admin/audit-logs?limit=6');
+          const logs = Array.isArray(response && response.data) ? response.data : [];
+
+          const headerRow = `
+            <div class="ok-stream-flat-row header">
+              <div>Ação</div>
+              <div>Recurso</div>
+              <div>Ator</div>
+              <div>IP / Origem</div>
+              <div>Data & Hora (UTC)</div>
+            </div>`;
+
+          if (logs.length === 0) {
+            tbody.innerHTML = headerRow + `
+              <div class="ok-empty-state">
+                <p class="small mb-0">Nenhum evento registado na trilha.</p>
+              </div>`;
+            return;
+          }
+
+          const rows = logs.map((log) => {
+            const time = window.App && typeof window.App.formatDate === 'function'
+              ? window.App.formatDate(log.created_at, true)
+              : (log.created_at ? new Date(log.created_at).toLocaleString('pt-AO', { timeZone: 'UTC' }) : '—');
+            const actor = log.actor_name || log.actor_email || 'Sistema / Automático';
+            const actionBadge = getActionBadge(log.action);
+            return `
+              <div class="ok-stream-flat-row">
+                <div class="ok-stream-tx-meta">
+                  <div class="ok-stream-tx-icon info">
+                    <i class="bi bi-activity"></i>
+                  </div>
+                  <span>${actionBadge}</span>
+                </div>
+                <div>
+                  <span class="ok-stream-badge neutral">${escapeHtml(log.resource_type || '—')}</span>
+                </div>
+                <div class="ok-stream-actor">
+                  <p class="ok-stream-tx-desc">${escapeHtml(actor)}</p>
+                </div>
+                <div class="ok-stream-tx-date">${escapeHtml(log.ip_address || '—')}</div>
+                <div class="ok-stream-tx-date">${escapeHtml(time)}</div>
+              </div>`;
+          }).join('');
+
+          tbody.innerHTML = headerRow + rows;
+        } catch (error) {
+          tbody.innerHTML = `
+            <div class="ok-stream-flat-row header">
+              <div>Ação</div>
+              <div>Recurso</div>
+              <div>Ator</div>
+              <div>IP / Origem</div>
+              <div>Data & Hora (UTC)</div>
+            </div>
+            <div class="ok-empty-state">
+              <p class="small mb-0" style="color: #f59e0b;">Não foi possível carregar os eventos recentes. Tente atualizar o painel.</p>
+            </div>`;
+        }
+      }
+
+      function getActionBadge(action) {
+        const value = String(action || '').toUpperCase();
+        const known = {
+          LOGIN: 'credit',
+          FINANCIAL_TRANSACTION: 'info',
+          STATUS_CHANGE: 'warning',
+          ROLE_CHANGE: 'warning',
+          KYC_REVIEW: 'info',
+          DELETE: 'debit'
+        };
+        const cls = known[value] || 'neutral';
+        return `<span class="ok-stream-badge ${cls}">${escapeHtml(value || 'AÇÃO')}</span>`;
+      }
+
+      /* ====================================================================
+         INICIALIZAÇÃO
+         ==================================================================== */
+      refreshButtons.forEach((button) => button.addEventListener('click', loadDashboardData));
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        loadDashboardData();
+        window.setInterval(() => { if (!document.hidden) loadDashboardData(); }, 60000);
+      });
+    })();
+  </script>
+</body>
+</html>

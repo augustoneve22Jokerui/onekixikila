@@ -1,0 +1,1531 @@
+<%- include('../partials/head') %>
+<% const adminUser = (typeof user !== 'undefined' && user) ? user : {}; const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador'; const adminRoleForPage = String(adminUser.role || '').toUpperCase(); %>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     ONEKIXIKILA ADMIN — SISTEMA DE DESIGN UNIFICADO (dashboard + admin)
+     Coerente com o dashboard do membro: roxo, Space Grotesk, rail slim tech.
+     Fontes: Plus Jakarta Sans (corpo) + Space Grotesk (títulos)
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+    --ok-bg-sidebar: #08080e;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+    --ok-shadow-navbar: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-card: 18px;
+    --ok-radius-pill: 9999px;
+    --ok-radius-md: 12px;
+    --ok-sidebar-width: 86px;
+    --ok-sidebar-width-wide: 264px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1440px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+    --ok-bg-sidebar: #ffffff;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.25);
+    --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.10);
+    --ok-border-strong: rgba(15, 23, 42, 0.18);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.08);
+    --ok-shadow-card: rgba(15, 23, 42, 0.10);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+      --ok-bg-sidebar: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+      --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-border-strong: rgba(15, 23, 42, 0.18);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body.admin-body {
+    background-color: var(--ok-bg-canvas) !important;
+    color: var(--ok-text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(5, 5, 8, 0) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(244, 245, 249, 0) 70%);
+  }
+
+  /* =========================================================================
+     RAIL SIDEBAR
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .ok-rail-sidebar::-webkit-scrollbar { width: 0; }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+  .ok-brand-emblem:hover { transform: translateY(-2px); }
+  .ok-brand-emblem svg { width: 24px; height: 24px; stroke: #ffffff; }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  .ok-rail-group-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ok-text-muted);
+    margin: 10px 0 2px 0;
+    text-align: center;
+    width: 100%;
+    opacity: 0.7;
+  }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: transparent;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+  }
+  .ok-rail-link.active svg { stroke: #ffffff; }
+  .ok-rail-link .ok-badge-dot {
+    position: absolute; top: 8px; right: 8px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background-color: #ef4444;
+    border: 2px solid var(--ok-bg-surface);
+  }
+  .ok-rail-link .ok-badge-count {
+    position: absolute;
+    top: 4px; right: 4px;
+    min-width: 16px; height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #f43f5e;
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--ok-bg-surface);
+    line-height: 1;
+  }
+  .ok-rail-link .ok-badge-count.badge-warn { background: #f59e0b; color: #1a1a1a; }
+  .ok-rail-link .ok-badge-count.badge-info { background: #06b6d4; color: #052029; }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+    padding-top: 14px;
+    margin-top: 8px;
+    border-top: 1px solid var(--ok-border-subtle);
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CENTRALIZADO
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 20px);
+    padding: 20px 20px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 0;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    transition: all 0.2s ease;
+    color: inherit;
+  }
+  .ok-profile-pill:hover { border-color: var(--ok-purple-border); }
+
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.85rem;
+    border: 2px solid var(--ok-purple-border);
+    flex-shrink: 0;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .ok-status-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .ok-clock {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.78rem;
+    color: var(--ok-text-muted);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* =========================================================================
+     HERO ADMIN
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+  .ok-page-title-main {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .ok-eyebrow {
+    color: var(--ok-purple-vibrant);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.3);
+    color: #f43f5e;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: #f43f5e;
+    box-shadow: 0 0 8px #f43f5e;
+    animation: okPulseDot 1.6s infinite;
+  }
+  @keyframes okPulseDot {
+    0%   { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.55); }
+    70%  { box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+  }
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* =========================================================================
+     SESSÃO 1: 4 CARDS RESUMO
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 28px auto;
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+    width: 100%;
+  }
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+  }
+  .ok-flat-card-box.theme-white { background-color: #ffffff; color: #0f172a; }
+  .ok-flat-card-box.theme-lime { background-color: #bef264; color: #0f172a; }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: #ffffff; color: #0f172a;
+    border-left: 1px solid rgba(0,0,0,0.08);
+  }
+  .ok-flat-card-box.theme-purple { background-color: #7c3aed; color: #ffffff; }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: #0f172a; }
+  .theme-purple .ok-flat-icon-container svg { stroke: #ffffff; }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .theme-purple .ok-flat-trend { background: rgba(255,255,255,0.15); color: #ffffff; }
+
+  /* =========================================================================
+     SESSÃO 2: ASIDE ESQUERDO (VAULT) + MÓDULO DIREITO (CONFIG)
+     ========================================================================= */
+  .ok-canvas-asides-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    max-width: var(--ok-content-max);
+    margin: 0 auto 30px auto;
+    align-items: start;
+    width: 100%;
+  }
+
+  .ok-balance-vault-card {
+    background: linear-gradient(160deg, var(--ok-bg-surface) 0%, var(--ok-bg-canvas) 100%);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card), 0 0 30px rgba(124, 58, 237, 0.15);
+    color: var(--ok-text-primary);
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .ok-vault-wave-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.18) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .ok-vault-badge-cluster {
+    display: flex; align-items: center; gap: 8px;
+    position: relative; z-index: 1;
+    flex-wrap: wrap;
+  }
+  .ok-token-emblem {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok-vault-balance-display {
+    margin: 22px 0 16px 0;
+    position: relative; z-index: 1;
+  }
+  .ok-vault-caption {
+    font-size: 0.72rem; font-weight: 700;
+    color: var(--ok-text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+  }
+  .ok-vault-sum {
+    font-size: 1.85rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.03em;
+    margin-top: 6px;
+    color: var(--ok-purple-vibrant);
+  }
+  .ok-vault-action-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: relative; z-index: 1;
+    margin-top: 16px;
+  }
+  .ok-vault-btn {
+    height: 44px; border-radius: var(--ok-radius-pill);
+    font-size: 0.82rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0 14px;
+    font-family: inherit;
+  }
+  .ok-vault-btn.primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.45);
+  }
+  .ok-vault-btn.primary:hover { transform: translateY(-2px); color: #ffffff; }
+  .ok-vault-btn.ghost {
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border: 1px solid var(--ok-border-subtle);
+  }
+  .ok-vault-btn.ghost:hover { background: var(--ok-pill-bg-hover); color: var(--ok-purple-vibrant); }
+
+  .ok-config-module-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    display: flex; flex-direction: column; justify-content: flex-start;
+    gap: 16px;
+  }
+  .ok-chart-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 4px; flex-wrap: wrap; gap: 12px;
+  }
+  .ok-chart-tagline { display: flex; align-items: center; gap: 12px; }
+  .ok-chart-tag-emblem {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: var(--ok-purple-soft); color: var(--ok-purple-vibrant);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok-chart-title { font-size: 1.02rem; font-weight: 800; color: var(--ok-text-primary); margin: 0; font-family: 'Space Grotesk', sans-serif; }
+  .ok-chart-sub { font-size: 0.75rem; color: var(--ok-text-muted); }
+
+  /* =========================================================================
+     BOTÕES E PILLS (admin)
+     ========================================================================= */
+  .admin-btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: var(--ok-radius-pill);
+    border: 1px solid var(--ok-border-subtle);
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .admin-btn-pill:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    background: var(--ok-pill-bg-hover);
+    transform: translateY(-1px);
+  }
+  .admin-btn-pill-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: var(--ok-radius-pill);
+    border: 1px solid var(--ok-border-subtle);
+    background: transparent;
+    color: var(--ok-text-primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .admin-btn-pill-outline:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-1px);
+  }
+
+  /* =========================================================================
+     CONTEÚDO ADMIN — SECÇÕES (set-*)
+     ========================================================================= */
+  .set-page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.45rem;
+    flex-wrap: wrap;
+  }
+  .set-eyebrow {
+    color: var(--ok-purple-vibrant);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+  }
+  .set-title {
+    color: var(--ok-text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.55rem, 2.4vw, 2.15rem);
+    font-weight: 800;
+    letter-spacing: -.04em;
+    margin: .3rem 0 .35rem;
+  }
+  .set-subtitle {
+    color: var(--ok-text-muted);
+    margin: 0;
+    max-width: 800px;
+    line-height: 1.6;
+  }
+  .set-notice {
+    background: rgba(6,182,212,.06);
+    border: 1px solid rgba(6,182,212,.18);
+    border-radius: 12px;
+    color: #b6e7ee;
+    font-size: .78rem;
+    line-height: 1.6;
+    padding: .9rem 1rem;
+  }
+  html[data-theme="light"] .set-notice { color: #0e7490; }
+  .set-status {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-card);
+    color: var(--ok-text-muted);
+    padding: 2.3rem 1rem;
+    text-align: center;
+  }
+  .set-status i {
+    color: var(--ok-purple-vibrant);
+    display: block;
+    font-size: 1.6rem;
+    margin-bottom: .55rem;
+  }
+
+  .set-section {
+    margin-bottom: 1rem;
+    overflow: hidden;
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 16px;
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+  .set-section:hover {
+    border-color: var(--ok-purple-border);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px var(--ok-shadow-card);
+  }
+  .set-section:last-child { margin-bottom: 0; }
+  .set-section-head {
+    align-items: center;
+    border-bottom: 1px solid var(--ok-border-subtle);
+    display: flex;
+    gap: .85rem;
+    padding: 1.1rem 1.2rem;
+  }
+  .set-section-icon {
+    align-items: center;
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: 12px;
+    color: #c4b5fd;
+    display: flex;
+    font-size: 1rem;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+    flex-shrink: 0;
+  }
+  .set-section-title {
+    color: var(--ok-text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .98rem;
+    font-weight: 800;
+    margin: 0;
+  }
+  .set-section-subtitle {
+    color: var(--ok-text-muted);
+    font-size: .72rem;
+    margin: .2rem 0 0;
+  }
+  .set-section-body { padding: 1.2rem; }
+
+  .set-value-grid {
+    display: grid;
+    gap: .7rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .set-value {
+    background: rgba(255,255,255,.025);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 12px;
+    min-width: 0;
+    padding: .8rem .9rem;
+    transition: border-color 0.2s ease;
+  }
+  .set-value:hover { border-color: var(--ok-purple-border); }
+  html[data-theme="light"] .set-value { background: var(--ok-pill-bg); }
+  .set-value-label {
+    color: var(--ok-text-muted);
+    display: block;
+    font-size: .65rem;
+    font-weight: 750;
+    letter-spacing: .07em;
+    margin-bottom: .28rem;
+    text-transform: uppercase;
+  }
+  .set-value-text {
+    color: var(--ok-text-primary);
+    font-size: .84rem;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .set-object {
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 12px;
+    margin: 0;
+    padding: .25rem .9rem;
+    background: rgba(255,255,255,.015);
+  }
+  html[data-theme="light"] .set-object { background: rgba(15, 23, 42, 0.02); }
+  .set-object-row {
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(255,255,255,.055);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+    justify-content: space-between;
+    padding: .7rem 0;
+  }
+  html[data-theme="light"] .set-object-row { border-bottom-color: rgba(15, 23, 42, 0.06); }
+  .set-object-row:last-child { border-bottom: 0; }
+  .set-object-key {
+    color: var(--ok-text-secondary);
+    font-size: .76rem;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  .set-object-value {
+    color: var(--ok-text-primary);
+    font-size: .77rem;
+    font-weight: 750;
+    max-width: 65%;
+    overflow-wrap: anywhere;
+    text-align: right;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .set-pill {
+    border: 1px solid transparent;
+    border-radius: 999px;
+    display: inline-flex;
+    font-size: .66rem;
+    font-weight: 800;
+    padding: .34rem .6rem;
+    align-items: center;
+    gap: 4px;
+  }
+  .set-pill-on {
+    background: rgba(16,185,129,.1);
+    border-color: rgba(16,185,129,.24);
+    color: #6ee7b7;
+  }
+  .set-pill-off {
+    background: rgba(148,163,184,.1);
+    border-color: rgba(148,163,184,.2);
+    color: #cbd5e1;
+  }
+  html[data-theme="light"] .set-pill-on { color: #047857; }
+  html[data-theme="light"] .set-pill-off { color: #475569; }
+
+  .set-provider {
+    background: rgba(255,255,255,.02);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 14px;
+    height: 100%;
+    padding: 1rem;
+    transition: border-color 0.2s ease;
+  }
+  .set-provider:hover { border-color: var(--ok-purple-border); }
+  html[data-theme="light"] .set-provider { background: var(--ok-pill-bg); }
+  .set-provider-name {
+    color: var(--ok-text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: .9rem;
+    font-weight: 800;
+  }
+
+  .set-subheading {
+    color: var(--ok-text-muted);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .09em;
+    margin: 1.15rem 0 .6rem;
+    text-transform: uppercase;
+  }
+  .set-subheading.mt-0 { margin-top: 0; }
+
+  .set-sensitive { color: var(--ok-text-muted); font-size: .68rem; }
+  .set-meta { color: var(--ok-text-muted); font-size: .72rem; }
+  .set-updated { color: var(--ok-text-muted); font-size: .7rem; }
+  .set-hidden { display: none !important; }
+
+  /* =========================================================================
+     FOOTER ADMIN
+     ========================================================================= */
+  .admin-footer {
+    border-top: 1px solid var(--ok-border-subtle);
+    background: var(--ok-bg-surface);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    color: var(--ok-text-muted);
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 1;
+    margin-top: 2rem;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+    .ok-canvas-asides-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+    .set-page-heading { align-items: flex-start; flex-direction: column; }
+    .set-page-heading .btn { width: 100%; }
+  }
+  @media (max-width: 767px) {
+    .set-value-grid { grid-template-columns: 1fr; }
+    .set-section-head, .set-section-body { padding: 1rem; }
+    .set-object-value { max-width: 100%; text-align: left; }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<body class="admin-body d-flex flex-column min-vh-100" data-admin-role="<%= adminRoleForPage %>">
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       RAIL SIDEBAR ADMINISTRATIVO
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="admin-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila Admin Engine">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        <polyline points="9 12 11 14 15 10"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <div class="ok-rail-group-label">Visão</div>
+      <a href="/admin" class="ok-rail-link" title="Dashboard Admin">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+      </a>
+
+      <div class="ok-rail-group-label">Risco</div>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="m9 12 2 2 4-4"></path></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão KYC">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span class="ok-badge-count d-none" data-badge-mirror="sidebar-badge-kyc" id="rail-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span class="ok-badge-count badge-warn d-none" data-badge-mirror="sidebar-badge-disputes" id="rail-badge-disputes">0</span>
+      </a>
+
+      <div class="ok-rail-group-label">Tesouro</div>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos & Saídas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+        <span class="ok-badge-count badge-info d-none" data-badge-mirror="sidebar-badge-withdrawals" id="rail-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios Financeiros">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+      </a>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria Forense">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <div class="ok-rail-group-label">Config</div>
+      <a href="/admin/settings" class="ok-rail-link active" title="Tarifas & Limites" aria-current="page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/dashboard" class="ok-rail-link" title="Painel do Membro">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <a href="/logout" class="ok-rail-link text-danger" title="Terminar Sessão">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior -->
+    <header class="ok-top-nav">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="ok-search-capsule">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input type="search" id="global-admin-search" placeholder="Pesquisar utilizadores, grupos, transacções..." autocomplete="off">
+          <kbd class="shortcut-hint">Ctrl K</kbd>
+        </div>
+        <div class="d-none d-md-flex align-items-center gap-2">
+          <span class="ok-status-pill">
+            <span class="dot"></span> Sistema Operacional
+          </span>
+          <span id="admin-utc-clock" class="ok-clock">--:--:-- UTC</span>
+        </div>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/admin/audit" class="ok-action-circle" title="Trilha de Auditoria">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        </a>
+
+        <div class="dropdown">
+          <a href="#" class="ok-profile-pill dropdown-toggle" id="dropdownUserAdmin" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="ok-profile-avatar-nav"><%= String(adminUserName).trim().charAt(0).toUpperCase() || 'A' %></div>
+            <div class="d-flex flex-column text-start admin-profile-text">
+              <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1; color: var(--ok-text-primary);"><%= user ? user.fullName || 'Administrador' : 'Admin' %></span>
+              <span class="text-muted" style="font-size: 0.7rem; color: var(--ok-text-muted);">Acesso Restrito</span>
+            </div>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownUserAdmin" style="background: var(--ok-bg-elevated); border: 1px solid var(--ok-border-subtle) !important; border-radius: 14px; padding: 0.5rem;">
+            <li><h6 class="dropdown-header text-uppercase small text-muted" style="letter-spacing: 0.08em; font-size: 0.65rem;">Acesso Restrito</h6></li>
+            <li><a class="dropdown-item small rounded-3" href="/admin/settings"><i class="bi bi-sliders me-2"></i>Configurações</a></li>
+            <li><a class="dropdown-item small rounded-3" href="/admin/audit"><i class="bi bi-journal-text me-2"></i>Trilha de Auditoria</a></li>
+            <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+            <li><a class="dropdown-item small rounded-3 text-danger" href="/logout"><i class="bi bi-power me-2"></i>Terminar Sessão</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <div class="ok-eyebrow">Administração · Parâmetros operacionais</div>
+        <h1 class="ok-page-title-main">
+          Configurações do sistema
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Somente Leitura
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          <%= new Date().toLocaleDateString('pt-AO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %> &bull; Consulte parâmetros vigentes de aplicação, armazenamento, pagamentos e limites.
+        </p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="admin-btn-pill-outline" id="settings-refresh">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          Atualizar
+        </button>
+        <a href="/dashboard" class="admin-btn-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          Painel do Membro
+        </a>
+      </div>
+    </section>
+
+    <!-- SESSÃO 1: 4 CARDS RESUMO -->
+    <div class="ok-flat-quad-strip">
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Ambiente</h5>
+          <p class="ok-flat-desc">Identificação do ambiente de execução.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="kpi-environment">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            Ativo
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="14" width="36" height="24" stroke="currentColor" stroke-linecap="square"/>
+              <circle cx="24" cy="26" r="4" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Moeda</h5>
+          <p class="ok-flat-desc">Moeda padrão de pagamentos.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="kpi-currency">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Padrão
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+              <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Prestadores</h5>
+          <p class="ok-flat-desc">Canais de pagamento integrados.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="kpi-providers">—</span>
+          <div class="ok-flat-trend" id="kpi-providers-trend">Configurado</div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="6" stroke="currentColor"/>
+              <circle cx="32" cy="18" r="6" stroke="currentColor"/>
+              <path d="M8 40C8 32 13 26 18 26C21 26 24 28 26 30" stroke="currentColor"/>
+              <path d="M24 30C26 28 29 26 32 26C37 26 40 32 40 40" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Armazenamento</h5>
+          <p class="ok-flat-desc">Fornecedor e buckets configurados.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="kpi-storage">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            Cloud
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSÃO 2: VAULT + MÓDULO CONFIG -->
+    <div class="ok-canvas-asides-grid">
+
+      <div class="ok-balance-vault-card">
+        <div class="ok-vault-wave-bg"></div>
+
+        <div>
+          <div class="ok-vault-badge-cluster">
+            <div class="ok-token-emblem" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <span class="fw-bold" style="font-size: 0.78rem; color: var(--ok-text-primary);">Sessão Administrativa</span>
+            <span class="badge ms-auto" style="background: rgba(244,63,94,0.15); color: #f43f5e; font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 999px;" id="admin-access-badge"><%= adminRoleForPage || 'ADMIN' %></span>
+          </div>
+
+          <div class="ok-vault-balance-display">
+            <span class="ok-vault-caption">
+              Administrador
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <div class="ok-vault-sum" style="font-size: 1.35rem;"><%= adminUserName %></div>
+            <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Modo de acesso:</span>
+              <strong style="color: var(--ok-text-primary);">Somente leitura</strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Última consulta:</span>
+              <strong style="color: var(--ok-text-primary);" id="vault-last-seen">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="ok-vault-action-row">
+          <button type="button" class="ok-vault-btn primary" id="settings-refresh-vault">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Recarregar
+          </button>
+          <a href="/admin/audit" class="ok-vault-btn ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            Auditoria
+          </a>
+        </div>
+      </div>
+
+      <div class="ok-config-module-card">
+        <div class="ok-chart-header">
+          <div class="ok-chart-tagline">
+            <div class="ok-chart-tag-emblem">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </div>
+            <div>
+              <h5 class="ok-chart-title">Configuração Segura do Sistema</h5>
+              <span class="ok-chart-sub">Vista de somente leitura — sem controlos de alteração nem segredos</span>
+            </div>
+          </div>
+          <span class="set-pill set-pill-on" id="environment-badge">—</span>
+        </div>
+
+        <div class="set-notice">
+          <i class="bi bi-shield-lock me-2" aria-hidden="true"></i>
+          Vista de <strong>somente leitura</strong>: a API disponibiliza apenas consulta de configurações. Não são apresentados controlos de alteração nem segredos, chaves de API ou credenciais.
+        </div>
+
+        <div id="settings-loading" class="set-status" role="status" aria-live="polite">
+          <span class="spinner-border spinner-border-sm text-primary me-2" aria-hidden="true"></span>
+          A carregar configuração segura do sistema…
+        </div>
+
+        <div id="settings-error" class="set-status d-none" role="alert"></div>
+
+        <div id="settings-content" class="d-none">
+          <section class="set-section" aria-labelledby="system-section-title">
+            <div class="set-section-head">
+              <span class="set-section-icon"><i class="bi bi-cpu" aria-hidden="true"></i></span>
+              <div class="flex-grow-1">
+                <h2 class="set-section-title" id="system-section-title">Aplicação e ambiente</h2>
+                <p class="set-section-subtitle">Identificação geral e moeda operacional.</p>
+              </div>
+            </div>
+            <div class="set-section-body">
+              <div class="set-value-grid" id="system-values"></div>
+            </div>
+          </section>
+
+          <section class="set-section" aria-labelledby="storage-section-title">
+            <div class="set-section-head">
+              <span class="set-section-icon"><i class="bi bi-cloud-check" aria-hidden="true"></i></span>
+              <div>
+                <h2 class="set-section-title" id="storage-section-title">Armazenamento</h2>
+                <p class="set-section-subtitle">Fornecedor, buckets e limites de armazenamento configurados.</p>
+              </div>
+            </div>
+            <div class="set-section-body">
+              <div id="storage-values"></div>
+            </div>
+          </section>
+
+          <section class="set-section" aria-labelledby="payments-section-title">
+            <div class="set-section-head">
+              <span class="set-section-icon"><i class="bi bi-credit-card-2-front" aria-hidden="true"></i></span>
+              <div>
+                <h2 class="set-section-title" id="payments-section-title">Pagamentos</h2>
+                <p class="set-section-subtitle">Moeda predefinida e canais ativos dos prestadores integrados.</p>
+              </div>
+            </div>
+            <div class="set-section-body">
+              <div id="payments-values"></div>
+            </div>
+          </section>
+
+          <section class="set-section" aria-labelledby="limits-section-title">
+            <div class="set-section-head">
+              <span class="set-section-icon"><i class="bi bi-sliders2" aria-hidden="true"></i></span>
+              <div>
+                <h2 class="set-section-title" id="limits-section-title">Limites e escalões</h2>
+                <p class="set-section-subtitle">Limites financeiros, regras de grupo e restrições de carregamento expostos pelo serviço administrativo.</p>
+              </div>
+            </div>
+            <div class="set-section-body">
+              <div id="limits-values"></div>
+            </div>
+          </section>
+
+          <div class="d-flex flex-wrap justify-content-between gap-2 mt-3">
+            <span class="set-meta"><i class="bi bi-eye me-1" aria-hidden="true"></i>Valores devolvidos pela configuração ativa no servidor.</span>
+            <span class="set-updated" id="settings-updated"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer class="admin-footer">
+    <div class="container-fluid">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Parâmetros operacionais em modo de consulta.</span>
+    </div>
+  </footer>
+
+  <%- include('../partials/sweet-alert') %>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function(){
+      'use strict';
+      const role = String(document.body.dataset.adminRole || '').toUpperCase(),
+            allowed = ['ADMIN','AUDITOR','FINANCIAL_OPERATOR'].includes(role),
+            loading = document.getElementById('settings-loading'),
+            errorBox = document.getElementById('settings-error'),
+            content = document.getElementById('settings-content'),
+            refresh = document.getElementById('settings-refresh');
+      const secretKey = /(secret|password|passwd|token|credential|private.?key|api.?key|access.?key|authorization|cookie)/i;
+      function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
+      function label(v){return String(v||'').replace(/([a-z0-9])([A-Z])/g,'$1 $2').replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim().replace(/^./,m=>m.toUpperCase())}
+      function scalar(v){if(v===null||v===undefined||v==='')return'—';if(typeof v==='boolean')return v?'Sim':'Não';if(typeof v==='number')return new Intl.NumberFormat('pt-PT',{maximumFractionDigits:4}).format(v);return String(v)}
+      function flatRows(obj,depth){if(obj==null||typeof obj!=='object')return'<div class="set-object-row"><span class="set-object-key">Valor</span><span class="set-object-value">'+esc(scalar(obj))+'</span></div>';if(Array.isArray(obj)){if(!obj.length)return'<div class="set-meta py-2">Sem valores configurados.</div>';return obj.map((v,i)=>'<div class="set-object-row"><span class="set-object-key">'+(i+1)+'</span><span class="set-object-value">'+esc(scalar(v))+'</span></div>').join('')}const entries=Object.entries(obj).filter(([k])=>!secretKey.test(k));if(!entries.length)return'<div class="set-meta py-2">Não há parâmetros seguros para apresentar.</div>';return entries.map(([k,v])=>{const nested=v&&typeof v==='object'?'<div class="mt-2 w-100"><span class="set-object-key">'+esc(label(k))+'</span><div class="set-object mt-2">'+flatRows(v,(depth||0)+1)+'</div></div>':'<span class="set-object-value">'+esc(scalar(v))+'</span>';return'<div class="set-object-row"><span class="set-object-key">'+(v&&typeof v==='object'?'':esc(label(k)))+'</span>'+nested+'</div>'}).join('')}
+      function setKpiValue(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = value && String(value).trim() ? String(value).toUpperCase() : '—';
+      }
+      function renderSettings(s){
+        if(!s||typeof s!=='object')throw new Error('A API não devolveu uma configuração válida.');
+        document.getElementById('environment-badge').textContent=String(s.environment||'Ambiente não informado').toUpperCase();
+        document.getElementById('environment-badge').className='set-pill '+(['production','prod'].includes(String(s.environment||'').toLowerCase())?'set-pill-on':'set-pill-off');
+        document.getElementById('system-values').innerHTML=[['Nome da aplicação',s.appName],['Ambiente',s.environment],['Moeda padrão',s.currency]].map(([k,v])=>'<div class="set-value"><span class="set-value-label">'+esc(k)+'</span><span class="set-value-text">'+esc(scalar(v))+'</span></div>').join('');
+
+        const storage=s.storage||{};
+        document.getElementById('storage-values').innerHTML='<div class="row g-3 mb-3"><div class="col-12 col-md-6"><div class="set-value"><span class="set-value-label">Fornecedor</span><span class="set-value-text">'+esc(scalar(storage.provider))+'</span></div></div><div class="col-12"><div class="set-subheading mt-0">Buckets configurados</div></div></div><div class="row g-3"><div class="col-12 col-xl-6"><div class="set-subheading mt-0">Buckets</div>'+objectOrEmpty(storage.buckets)+'</div><div class="col-12 col-xl-6"><div class="set-subheading mt-0">Limites de armazenamento</div>'+objectOrEmpty(storage.limits)+'</div></div>';
+
+        const pay=s.payments||{};
+        const providers=Array.isArray(pay.providers)?pay.providers:[];
+        document.getElementById('payments-values').innerHTML='<div class="set-value mb-3"><span class="set-value-label">Moeda padrão de pagamentos</span><span class="set-value-text">'+esc(scalar(pay.defaultCurrency))+'</span></div><div class="row g-3">'+(providers.length?providers.map(p=>'<div class="col-12 col-lg-6"><article class="set-provider"><div class="d-flex justify-content-between align-items-start gap-2"><div><div class="set-eyebrow">Prestador integrado</div><h3 class="set-provider-name mt-1 mb-0">'+esc(p.name||p.id||'Prestador')+'</h3><span class="set-meta">'+esc(p.id||'—')+'</span></div><span class="set-pill '+(p.enabled?'set-pill-on':'set-pill-off')+'">'+(p.enabled?'Ativo':'Inativo')+'</span></div><div class="set-subheading">Canais suportados</div>'+(Array.isArray(p.supportedChannels)&&p.supportedChannels.length?'<div class="d-flex flex-wrap gap-2">'+p.supportedChannels.map(c=>'<span class="set-pill set-pill-off">'+esc(c)+'</span>').join('')+'</div>':'<span class="set-meta">Não especificados</span>')+'</article></div>').join(''):'<div class="col-12"><div class="set-status">Nenhum prestador foi devolvido pela configuração.</div></div>')+'</div>';
+
+        const limits=s.limits||{};
+        document.getElementById('limits-values').innerHTML='<div class="row g-3"><div class="col-12 col-xl-4"><div class="set-subheading mt-0">Escalões financeiros</div>'+objectOrEmpty(limits.financialTiers)+'</div><div class="col-12 col-xl-4"><div class="set-subheading mt-0">Limites de grupos</div>'+objectOrEmpty(limits.groups)+'</div><div class="col-12 col-xl-4"><div class="set-subheading mt-0">Limites de uploads</div>'+objectOrEmpty(limits.uploads)+'</div></div>';
+
+        document.getElementById('settings-updated').textContent='Consultado em '+new Intl.DateTimeFormat('pt-PT',{dateStyle:'medium',timeStyle:'short'}).format(new Date());
+        const lastSeen = document.getElementById('vault-last-seen');
+        if (lastSeen) lastSeen.textContent = new Intl.DateTimeFormat('pt-PT',{timeStyle:'short'}).format(new Date());
+
+        setKpiValue('kpi-environment', s.environment);
+        setKpiValue('kpi-currency', s.currency);
+        setKpiValue('kpi-storage', storage.provider);
+        const provCount = providers.length;
+        const enabledCount = providers.filter(p => p && p.enabled).length;
+        const kpiProv = document.getElementById('kpi-providers');
+        if (kpiProv) kpiProv.textContent = provCount ? enabledCount + '/' + provCount : '—';
+        const kpiProvTrend = document.getElementById('kpi-providers-trend');
+        if (kpiProvTrend) kpiProvTrend.textContent = provCount ? (enabledCount === provCount ? 'Todos Ativos' : enabledCount + ' Ativos') : 'Sem prestadores';
+
+        const accessBadge = document.getElementById('admin-access-badge');
+        if (accessBadge) accessBadge.textContent = role || 'ADMIN';
+      }
+      function objectOrEmpty(v){return v&&typeof v==='object'&&Object.keys(v).length?'<div class="set-object">'+flatRows(v,0)+'</div>':'<div class="set-meta">Sem valores configurados.</div>'}
+      async function load(){
+        if(!allowed){
+          loading.classList.add('d-none');
+          content.classList.add('d-none');
+          errorBox.innerHTML='<i class="bi bi-shield-lock" aria-hidden="true"></i><strong class="d-block text-white mb-2">Acesso restrito</strong><span>Esta página requer ADMIN, AUDITOR ou FINANCIAL_OPERATOR.</span>';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+        if(!window.apiClient||typeof window.apiClient.get!=='function'){
+          loading.classList.add('d-none');
+          content.classList.add('d-none');
+          errorBox.innerHTML='<i class="bi bi-plug" aria-hidden="true"></i><strong class="d-block text-white mb-2">Cliente da API indisponível</strong><span>Não é seguro apresentar parâmetros presumidos. Confirme o carregamento do cliente autenticado e tente novamente.</span><div class="mt-3"><button type="button" class="btn btn-sm btn-outline-light" id="settings-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          errorBox.classList.remove('d-none');
+          return;
+        }
+        errorBox.classList.add('d-none');
+        content.classList.add('d-none');
+        loading.classList.remove('d-none');
+        loading.innerHTML='<span class="spinner-border spinner-border-sm text-primary me-2" aria-hidden="true"></span>A carregar configuração segura do sistema…';
+        try{
+          const response=await window.apiClient.get('/admin/settings');
+          if(!response||response.success===false||!response.data||!response.data.settings)throw new Error(response&&response.message||'A API não devolveu configurações.');
+          renderSettings(response.data.settings);
+          loading.classList.add('d-none');
+          content.classList.remove('d-none');
+        }catch(e){
+          loading.classList.add('d-none');
+          content.classList.add('d-none');
+          errorBox.innerHTML='<i class="bi bi-exclamation-triangle" aria-hidden="true"></i><strong class="d-block text-white mb-2">Não foi possível carregar as configurações</strong><span>'+esc(e&&e.message?e.message:'Falha de comunicação com o servidor.')+'</span><div class="mt-3"><button type="button" class="btn btn-sm btn-outline-light" id="settings-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          errorBox.classList.remove('d-none');
+        }
+      }
+      refresh.addEventListener('click',load);
+      const refreshVault = document.getElementById('settings-refresh-vault');
+      if (refreshVault) refreshVault.addEventListener('click', load);
+      errorBox.addEventListener('click', e => { if(e.target.closest('#settings-retry')) load(); });
+
+      /* ====================================================================
+         RELÓGIO UTC
+         ==================================================================== */
+      const clock=document.getElementById('admin-utc-clock');
+      function tick(){if(clock)clock.textContent=new Intl.DateTimeFormat('pt-PT',{timeZone:'UTC',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date())+' UTC'}
+      tick();window.setInterval(tick,1000);
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        themeBtn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         SIDEBAR MOBILE TOGGLE
+         ==================================================================== */
+      const toggleBtn = document.getElementById('sidebar-toggle-btn');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          document.body.classList.toggle('mobile-nav-active');
+        });
+      }
+
+      /* ====================================================================
+         SINCRONIZA BADGES RAIL
+         ==================================================================== */
+      function mirrorBadges() {
+        ['kyc', 'disputes', 'withdrawals'].forEach((key) => {
+          const original = document.getElementById('sidebar-badge-' + key);
+          const mirror = document.getElementById('rail-badge-' + key);
+          if (!original || !mirror) return;
+          const hidden = original.classList.contains('d-none');
+          mirror.classList.toggle('d-none', hidden);
+          if (!hidden) {
+            const txt = (original.textContent || '').trim();
+            if (txt) mirror.textContent = txt;
+          }
+        });
+      }
+      mirrorBadges();
+      const badgeObserver = new MutationObserver(mirrorBadges);
+      ['kyc', 'disputes', 'withdrawals'].forEach((key) => {
+        const el = document.getElementById('sidebar-badge-' + key);
+        if (el) badgeObserver.observe(el, { attributes: true, childList: true, characterData: true, subtree: true });
+      });
+
+      /* ====================================================================
+         CTRL+K PESQUISA
+         ==================================================================== */
+      document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+          const input = document.getElementById('global-admin-search');
+          if (input) { e.preventDefault(); input.focus(); }
+        }
+      });
+
+      load();
+    })();
+  </script>
+</body>
+</html>

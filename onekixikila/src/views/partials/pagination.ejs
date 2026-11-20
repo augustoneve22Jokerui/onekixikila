@@ -1,0 +1,271 @@
+<%
+  /**
+   * Partial de Paginação Reutilizável
+   * Espera receber a variável `pagination` (objeto com currentPage, totalPages,
+   * hasNextPage, hasPrevPage, totalItems) e opcionalmente `baseUrl` (string)
+   * para preservar filtros existentes na query string.
+   *
+   * Exemplo de uso no EJS:
+   *   <%- include('../partials/pagination', { pagination: pagination, baseUrl: '/wallet/statement' }) %>
+   */
+
+  const pg = typeof pagination !== 'undefined' && pagination ? pagination : null;
+  const base = typeof baseUrl !== 'undefined' && baseUrl ? baseUrl : (typeof path !== 'undefined' ? path : '');
+  const showPagination = pg && pg.totalPages && pg.totalPages > 1;
+
+  // Constrói a URL preservando parâmetros da query string, exceto 'page'
+  function buildPageUrl(targetPage) {
+    let url = base || '#';
+    const separator = url.includes('?') ? '&' : '?';
+    return url + separator + 'page=' + targetPage;
+  }
+
+  // Gera uma lista compacta de páginas com elipses
+  function buildPageRange(current, total) {
+    const pages = [];
+    const delta = 1;
+    const left = Math.max(2, current - delta);
+    const right = Math.min(total - 1, current + delta);
+
+    pages.push(1);
+    if (left > 2) pages.push('...');
+
+    for (let i = left; i <= right; i++) {
+      pages.push(i);
+    }
+
+    if (right < total - 1) pages.push('...');
+    if (total > 1) pages.push(total);
+
+    return pages;
+  }
+%>
+
+<% if (showPagination) { %>
+  <nav class="ok-pagination-wrapper" aria-label="Navegação de páginas">
+    <div class="ok-pagination-info">
+      <span class="ok-pagination-info-text">
+        Página <strong><%= pg.currentPage %></strong> de <strong><%= pg.totalPages %></strong>
+        <span class="ok-pagination-total">
+          (<%= pg.totalItems %> <%= pg.totalItems === 1 ? 'registo' : 'registos' %>)
+        </span>
+      </span>
+    </div>
+
+    <ul class="ok-pagination">
+      <!-- Botão Anterior -->
+      <li class="ok-page-item <%= pg.hasPrevPage ? '' : 'disabled' %>">
+        <a
+          href="<%= pg.hasPrevPage ? buildPageUrl(pg.currentPage - 1) : '#' %>"
+          class="ok-page-link ok-page-nav"
+          aria-label="Página anterior"
+          <%= !pg.hasPrevPage ? 'aria-disabled="true" tabindex="-1"' : '' %>
+        >
+          <i class="bi bi-chevron-left"></i>
+        </a>
+      </li>
+
+      <!-- Números de Página -->
+      <% buildPageRange(pg.currentPage, pg.totalPages).forEach(function (p) { %>
+        <% if (p === '...') { %>
+          <li class="ok-page-item disabled">
+            <span class="ok-page-link ok-page-ellipsis">…</span>
+          </li>
+        <% } else if (p === pg.currentPage) { %>
+          <li class="ok-page-item active">
+            <span class="ok-page-link ok-page-active" aria-current="page"><%= p %></span>
+          </li>
+        <% } else { %>
+          <li class="ok-page-item">
+            <a href="<%= buildPageUrl(p) %>" class="ok-page-link"><%= p %></a>
+          </li>
+        <% } %>
+      <% }); %>
+
+      <!-- Botão Próximo -->
+      <li class="ok-page-item <%= pg.hasNextPage ? '' : 'disabled' %>">
+        <a
+          href="<%= pg.hasNextPage ? buildPageUrl(pg.currentPage + 1) : '#' %>"
+          class="ok-page-link ok-page-nav"
+          aria-label="Página seguinte"
+          <%= !pg.hasNextPage ? 'aria-disabled="true" tabindex="-1"' : '' %>
+        >
+          <i class="bi bi-chevron-right"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+<% } %>
+
+<style>
+  .ok-pagination-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 4px 4px;
+    margin-top: 16px;
+    border-top: 1px solid var(--ok-border-color);
+  }
+
+  .ok-pagination-info-text {
+    font-size: 0.85rem;
+    color: var(--ok-text-muted);
+    font-weight: 500;
+  }
+
+  .ok-pagination-info-text strong {
+    color: var(--ok-text-main);
+    font-weight: 700;
+  }
+
+  .ok-pagination-total {
+    margin-left: 4px;
+    opacity: 0.8;
+  }
+
+  .ok-pagination {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+  }
+
+  .ok-page-item {
+    display: inline-block;
+  }
+
+  .ok-page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    border-radius: var(--ok-border-radius-pill);
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--ok-text-main);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+    user-select: none;
+  }
+
+  .ok-page-link:hover:not(.ok-page-active):not(.ok-page-ellipsis):not(.disabled) {
+    background-color: var(--ok-bg-body);
+    border-color: var(--ok-border-color);
+    color: var(--ok-text-main);
+    transform: translateY(-1px);
+  }
+
+  .ok-page-link:focus-visible {
+    outline: 2px solid var(--btn-purple);
+    outline-offset: 2px;
+  }
+
+  .ok-page-active {
+    background-color: var(--ok-text-main);
+    color: var(--ok-bg-card);
+    border-color: var(--ok-text-main);
+    cursor: default;
+    font-weight: 700;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ok-page-active {
+      background-color: var(--ok-accent-green);
+      color: #14532d;
+      border-color: var(--ok-accent-green);
+    }
+  }
+
+  .ok-page-nav {
+    color: var(--ok-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .ok-page-nav i {
+    font-size: 0.85rem;
+  }
+
+  .ok-page-ellipsis {
+    color: var(--ok-text-muted);
+    cursor: default;
+    letter-spacing: 2px;
+  }
+
+  .ok-page-item.disabled .ok-page-link {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  /* Responsividade */
+  @media (max-width: 640px) {
+    .ok-pagination-wrapper {
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ok-pagination {
+      gap: 4px;
+      justify-content: center;
+    }
+
+    .ok-page-link {
+      min-width: 32px;
+      height: 32px;
+      font-size: 0.8rem;
+      padding: 0 8px;
+    }
+
+    .ok-pagination-info-text {
+      font-size: 0.8rem;
+      text-align: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ok-page-link {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    document.addEventListener('DOMContentLoaded', function () {
+      /**
+       * Intercepta o clique nas páginas e navega preservando o scroll natural
+       * (o browser faz o reload completo; isto apenas melhora a experiência
+       * visual ao rolar para o topo da lista após navegar).
+       */
+      const paginationLinks = document.querySelectorAll('.ok-pagination .ok-page-link[href]');
+
+      paginationLinks.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          const href = link.getAttribute('href');
+          if (!href || href === '#') {
+            e.preventDefault();
+            return;
+          }
+
+          // Rola suavemente para o topo antes da navegação
+          if (window.scrollY > 80) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      });
+    });
+  })();
+</script>

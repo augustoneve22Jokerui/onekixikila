@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Calendário & Rodadas — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Sidebar + Top Bar: arredondados. Cards centrais: quadrados.
+       Cores 100% roxo.
+       Escala MAIOR (igual ao Perfil / Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+      --ok-content-max-width: 1280px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL — ARREDONDADA
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+    .ok-badge-dot {
+      position: absolute; top: 10px; right: 10px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background-color: #ef4444;
+      border: 2px solid var(--ok-bg-surface);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* =========================================================================
+       TOP BAR — ARREDONDADA — CENTRALIZADA AO EIXO DO CONTEÚDO
+       ========================================================================= */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 0 auto 26px auto;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      padding: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+      flex-shrink: 1;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO — ARREDONDADO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 30px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-breadcrumb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      font-size: 0.86rem; font-weight: 700;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .ok-breadcrumb-btn:hover {
+      background: var(--ok-pill-bg-hover);
+      color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-border);
+      transform: translateX(-2px);
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-purple-soft);
+      border: 1px solid var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 10px var(--ok-purple-vibrant);
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+    }
+
+    /* Botões estampados do hero */
+    .ok-btn-confirm-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff; border: none;
+      font-size: 0.86rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-confirm-pill:hover { transform: translateY(-2px); color: #ffffff; }
+
+    .ok-btn-ghost-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.86rem; font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-ghost-pill:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Nav pills internas do grupo */
+    .ok-group-nav-pills {
+      display: flex; gap: 8px;
+      padding: 8px;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      overflow-x: auto;
+      margin-bottom: 30px;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin-left: auto; margin-right: auto;
+      scrollbar-width: none;
+    }
+    .ok-group-nav-pills::-webkit-scrollbar { display: none; }
+    .ok-group-nav-pill {
+      padding: 10px 20px;
+      border-radius: var(--ok-radius-pill);
+      font-size: 0.84rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .ok-group-nav-pill:hover {
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+    }
+    .ok-group-nav-pill.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+    }
+
+    /* =========================================================================
+       LAYOUT CENTRAL — CARDS QUADRADOS
+       ========================================================================= */
+    .ok-schedule-layout {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .ok-stat-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 1.5rem;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+      height: 100%;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+
+    .ok-stat-label {
+      font-size: 0.74rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin: 0 0 10px 0;
+    }
+    .ok-stat-value {
+      font-size: 1.6rem; font-weight: 800;
+      font-family: 'Space Grotesk', sans-serif;
+      color: var(--ok-text-primary);
+      margin: 0;
+      line-height: 1.1;
+    }
+    .ok-stat-sub {
+      font-size: 0.78rem;
+      color: var(--ok-text-muted);
+      margin: 8px 0 0 0;
+    }
+
+    .ok-stat-icon {
+      width: 42px; height: 42px; border-radius: 0;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .ok-stat-icon svg { width: 20px; height: 20px; }
+
+    /* Barra de progresso */
+    .ok-progress-track {
+      height: 6px;
+      background: var(--ok-meter-bg);
+      border-radius: 0;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .ok-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #8b5cf6, #6d28d9);
+      border-radius: 0;
+      transition: width 0.4s ease;
+    }
+
+    /* Card principal de cronograma */
+    .ok-schedule-main-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 0;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+      overflow: hidden;
+    }
+    .ok-schedule-main-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .ok-schedule-main-header h5 {
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ok-schedule-filter {
+      height: 40px;
+      padding: 0 18px;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+    .ok-schedule-filter option { color: #0f172a; }
+
+    /* Tabela quadrada */
+    .ok-schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ok-schedule-table thead {
+      background: var(--ok-pill-bg);
+    }
+    .ok-schedule-table thead th {
+      padding: 14px 16px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ok-text-muted);
+      text-align: left;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      white-space: nowrap;
+    }
+    .ok-schedule-table tbody tr {
+      border-bottom: 1px solid var(--ok-border-subtle);
+      transition: background 0.2s ease;
+    }
+    .ok-schedule-table tbody tr:hover {
+      background: var(--ok-stream-hover);
+    }
+    .ok-schedule-table tbody tr:last-child { border-bottom: none; }
+    .ok-schedule-table tbody tr.active-round {
+      background: rgba(139, 92, 246, 0.08);
+      border-left: 3px solid var(--ok-purple-vibrant);
+    }
+    .ok-schedule-table tbody td {
+      padding: 14px 16px;
+      font-size: 0.86rem;
+      color: var(--ok-text-primary);
+      vertical-align: middle;
+    }
+
+    /* Badges e pills dentro dos cards */
+    .ok-badge-purple {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px;
+      border-radius: 0;
+      font-size: 0.72rem; font-weight: 800;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-badge-soft {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px;
+      border-radius: 0;
+      font-size: 0.72rem; font-weight: 700;
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-muted);
+      border: 1px solid var(--ok-border-subtle);
+    }
+
+    /* Botões de ação em linha */
+    .ok-row-action-btn {
+      width: 32px; height: 32px; border-radius: 0;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      color: var(--ok-text-primary);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 4px;
+    }
+    .ok-row-action-btn:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-purple-soft);
+    }
+
+    /* Empty state */
+    .ok-empty-state {
+      text-align: center; padding: 3rem 1.5rem;
+      color: var(--ok-text-muted);
+    }
+    .ok-empty-state svg {
+      opacity: 0.4; margin-bottom: 1rem;
+      display: block; margin-inline: auto;
+    }
+    .ok-empty-state h6 {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    /* Modais quadrados */
+    .modal-content {
+      background: var(--ok-bg-surface) !important;
+      border: 1px solid var(--ok-border-subtle) !important;
+      border-radius: 0 !important;
+      color: var(--ok-text-primary) !important;
+    }
+    .modal-header, .modal-footer { border-color: var(--ok-border-subtle) !important; }
+    .modal-title { color: var(--ok-text-primary) !important; }
+    .form-label { color: var(--ok-text-primary); font-size: 0.86rem; font-weight: 700; }
+    .form-control, .form-select {
+      background: var(--ok-input-bg) !important;
+      border: 1px solid var(--ok-border-subtle) !important;
+      color: var(--ok-text-primary) !important;
+      border-radius: 0 !important;
+      height: 48px;
+      font-size: 0.9rem;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--ok-purple-vibrant) !important;
+      box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+      background: var(--ok-bg-surface) !important;
+    }
+    .form-control::placeholder { color: var(--ok-text-muted) !important; }
+    .form-select option { color: #0f172a; }
+    textarea.form-control { height: auto; min-height: 100px; padding: 12px 16px; }
+    .btn-close { filter: invert(1); }
+    html[data-theme="light"] .btn-close { filter: none; }
+
+    /* Responsividade */
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.7rem; }
+      .ok-schedule-table { font-size: 0.78rem; }
+      .ok-schedule-table thead th,
+      .ok-schedule-table tbody td { padding: 10px 8px; }
+      .ok-search-capsule { width: 100%; }
+      .ok-top-nav { gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      .ok-top-nav { flex-wrap: wrap; height: auto; padding: 10px 0; }
+      .ok-nav-actions { margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link active" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Top Bar — Centralizada ao eixo do conteúdo -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar rodadas, membros..." autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" style="font-size: 0.92rem; line-height: 1.15;" id="ok-nav-fullname"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" style="font-size: 0.76rem;" id="ok-nav-role"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <a href="/groups/<%= groupId %>" class="ok-breadcrumb-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Voltar ao Grupo
+        </a>
+        <h1 class="ok-page-title-main">
+          Calendário de Rotação
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Ciclo <span id="cycle-badge">1</span>
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <span id="group-name-badge">Grupo</span> &bull; Gestão de rodadas, quotas e beneficiários da Kixikila
+        </p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="ok-btn-ghost-pill d-none" id="btn-request-swap-trigger" data-bs-toggle="modal" data-bs-target="#modal-request-swap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+          Permutar Turno
+        </button>
+
+        <button type="button" class="ok-btn-confirm-pill d-none" id="btn-generate-schedule-action" data-action="generate-schedule" data-group-id="<%= groupId %>">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 8v8M8 12h8"></path></svg>
+          Gerar Cronograma
+        </button>
+
+        <button type="button" class="ok-btn-ghost-pill d-none" id="btn-generate-rotations-action" data-action="generate-rotations" data-group-id="<%= groupId %>">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="3" y1="3" x2="9" y2="9"></line></svg>
+          Ordenar Beneficiários
+        </button>
+      </div>
+    </section>
+
+    <!-- Nav pills internas do grupo -->
+    <div class="ok-group-nav-pills">
+      <a href="/groups/<%= groupId %>" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Visão Geral
+      </a>
+      <a href="/groups/<%= groupId %>/members" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        Membros
+      </a>
+      <a href="/groups/<%= groupId %>/schedule" class="ok-group-nav-pill active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        Calendário
+      </a>
+      <a href="/groups/<%= groupId %>/rules" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Regras
+      </a>
+      <a href="/groups/<%= groupId %>/invitations" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        Convites
+      </a>
+      <a href="/groups/<%= groupId %>/chat" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        Chat
+      </a>
+    </div>
+
+    <!-- Loading state -->
+    <div id="schedule-loading-state" class="ok-empty-state" style="max-width:var(--ok-content-max-width);margin:0 auto;">
+      <div class="spinner-border mb-3" role="status" style="color: var(--ok-purple-vibrant); width: 3rem; height: 3rem;"></div>
+      <h6>A carregar cronograma do grupo...</h6>
+      <p class="small">A sincronizar datas de vencimento, tolerâncias e contemplações da vez.</p>
+    </div>
+
+    <!-- Conteúdo principal (oculto até hidratação) -->
+    <div id="schedule-content-wrapper" class="d-none ok-schedule-layout" data-group-id="<%= groupId %>">
+
+      <!-- Métricas de topo (4 cards quadrados) -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+          <div class="ok-stat-card">
+            <div>
+              <div class="ok-stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              </div>
+              <p class="ok-stat-label">Total de Rodadas</p>
+              <h3 class="ok-stat-value" id="metric-total-rounds">0</h3>
+            </div>
+            <p class="ok-stat-sub">1 rodada por participante ativo</p>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+          <div class="ok-stat-card">
+            <div>
+              <div class="ok-stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <p class="ok-stat-label">Rodada Atual</p>
+              <h3 class="ok-stat-value" id="metric-active-round-label">—</h3>
+            </div>
+            <p class="ok-stat-sub" id="metric-active-round-sub">Aguardando início</p>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+          <div class="ok-stat-card">
+            <div>
+              <div class="ok-stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              </div>
+              <p class="ok-stat-label">Arrecadação de Quotas</p>
+              <h3 class="ok-stat-value" id="metric-collection-progress" style="color: var(--ok-purple-vibrant);">0%</h3>
+            </div>
+            <div class="ok-progress-track">
+              <div class="ok-progress-fill" id="metric-collection-progress-bar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-sm-6 col-xl-3">
+          <div class="ok-stat-card">
+            <div>
+              <div class="ok-stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect width="20" height="5" x="2" y="7"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
+              </div>
+              <p class="ok-stat-label">O Meu Recebimento</p>
+              <h3 class="ok-stat-value" id="metric-my-turn-label">—</h3>
+            </div>
+            <p class="ok-stat-sub" id="metric-my-turn-date">Data estimada: —</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty schedule card -->
+      <div class="ok-schedule-main-card d-none mb-4" id="empty-schedule-card">
+        <div class="ok-empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <line x1="9" y1="16" x2="15" y2="16"></line>
+          </svg>
+          <h6>Cronograma Ainda Não Estruturado</h6>
+          <p class="small mx-auto mb-4" style="max-width: 500px;">
+            Este grupo encontra-se em fase de admissão e quórum. Quando o quórum for atingido, a liderança poderá gerar o cronograma de rodadas e ordenar os beneficiários.
+          </p>
+          <div class="d-flex justify-content-center gap-2 flex-wrap" id="empty-schedule-actions"></div>
+        </div>
+      </div>
+
+      <!-- Tabela principal de rodadas -->
+      <div class="ok-schedule-main-card" id="schedule-table-card">
+        <div class="ok-schedule-main-header">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Cronograma de Rodadas & Beneficiários
+          </h5>
+
+          <select class="ok-schedule-filter" id="filter-round-status">
+            <option value="">Todas as Rodadas</option>
+            <option value="ACTIVE" selected>Em Curso</option>
+            <option value="SCHEDULED">Agendadas</option>
+            <option value="COMPLETED">Concluídas</option>
+          </select>
+        </div>
+
+        <div class="table-responsive">
+          <table class="ok-schedule-table">
+            <thead>
+              <tr>
+                <th>Rodada</th>
+                <th>Vencimento</th>
+                <th>Tolerância</th>
+                <th>Quota</th>
+                <th>Beneficiário</th>
+                <th>Progresso</th>
+                <th>Estado</th>
+                <th class="text-end">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="schedule-table-body">
+              <!-- Linhas preenchidas dinamicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL: DETALHES DA RODADA
+       ====================================================================== -->
+  <div class="modal fade" id="modal-round-details" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <h5 class="modal-title fw-bold" id="modalRoundDetailsLabel">
+              Quotas da Rodada
+            </h5>
+            <span class="text-muted small" id="modal-round-subtitle">A carregar dados...</span>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body py-4">
+          <div class="table-responsive">
+            <table class="ok-schedule-table" style="font-size: 0.82rem;">
+              <thead>
+                <tr>
+                  <th class="ps-3">Membro</th>
+                  <th>Quota Prevista</th>
+                  <th>Multa</th>
+                  <th>Estado</th>
+                  <th>Liquidação</th>
+                </tr>
+              </thead>
+              <tbody id="modal-obligations-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: PERMUTA DE TURNO
+       ====================================================================== -->
+  <div class="modal fade" id="modal-request-swap" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="modalRequestSwapLabel">
+            Permutar Meu Turno de Recebimento
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="form-request-turn-swap" data-group-id="<%= groupId %>">
+          <div class="modal-body py-4">
+            <p class="text-muted small mb-3">
+              A permuta permite trocar a sua data de recebimento do bolo com outro participante elegível do ciclo atual. A troca exige homologação da liderança.
+            </p>
+
+            <div class="mb-3">
+              <label class="form-label">Trocar com o Participante <span class="text-danger">*</span></label>
+              <select class="form-select" name="targetUserId" id="swap-target-user-select" required>
+                <option value="">A carregar participantes...</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Justificativa da Permuta <span class="text-danger">*</span></label>
+              <textarea class="form-control" name="reason" rows="3" placeholder="Indique o motivo consensual da troca..." required minlength="5" maxlength="255"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary px-4" id="btn-submit-swap">
+              Enviar Solicitação
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         HELPERS DE AVATAR (replicados do Perfil para consistência total)
+         ==================================================================== */
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForSave(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          return trimmed;
+        }
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const normalized = resolveAvatarUrlForSave(rawUrl);
+        if (!normalized) return null;
+        if (normalized === DEFAULT_AVATAR) return null;
+        return normalized;
+      }
+
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      function pickAvatarField(obj) {
+        if (!obj) return null;
+        return obj.avatarUrl || obj.avatar_url || obj.avatar || null;
+      }
+
+      /**
+       * Busca o perfil do utilizador e atualiza o avatar do navbar com a foto real.
+       * Replica o comportamento do Perfil (fetch /users/profile → resolveAvatarUrlForRender → applyAvatarToImg).
+       * Silencioso em caso de erro: o EJS já renderizou um fallback inicial.
+       */
+      async function hydrateNavbarAvatar() {
+        const navAvatar = document.getElementById('ok-nav-avatar');
+        const navName = document.getElementById('ok-nav-fullname');
+        const navRole = document.getElementById('ok-nav-role');
+        if (!navAvatar || !window.apiClient) return;
+
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          if (!raw) return;
+
+          const avatarField = pickAvatarField(raw);
+          const normalizedAvatar = resolveAvatarUrlForRender(avatarField);
+          applyAvatarToImg(navAvatar, normalizedAvatar);
+
+          const fullName = raw.fullName || raw.full_name || '';
+          const role = raw.role || 'Utilizador';
+          if (navName && fullName) navName.textContent = String(fullName).split(' ')[0];
+          if (navRole) navRole.textContent = role;
+        } catch (err) {
+          // Silencioso: EJS já tem fallback. Apenas loga em modo debug.
+          console.warn('[NAV:AVATAR_HYDRATE_WARN]', err && err.message ? err.message : err);
+        }
+      }
+
+      function initAvatarFallback() {
+        const img = document.getElementById('ok-nav-avatar');
+        if (!img) return;
+        // Garante que o handler de fallback está ligado já no load inicial
+        // (antes mesmo do hydrateNavbarAvatar completar).
+        applyAvatarToImg(img, resolveAvatarUrlForRender(img.getAttribute('src')));
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient) window.apiClient.clearSession();
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         LÓGICA DO CALENDÁRIO — PRESERVADA INTEGRALMENTE
+         ==================================================================== */
+      const groupId = '<%= groupId %>';
+      let activeGroup = null;
+      let allSchedules = [];
+      let allRotations = [];
+      let currentUserId = null;
+      let isLeaderOrAdmin = false;
+
+      const loadingEl = document.getElementById('schedule-loading-state');
+      const contentEl = document.getElementById('schedule-content-wrapper');
+      const tableBody = document.getElementById('schedule-table-body');
+      const emptyScheduleCard = document.getElementById('empty-schedule-card');
+      const scheduleTableCard = document.getElementById('schedule-table-card');
+      const filterStatusSelect = document.getElementById('filter-round-status');
+      const swapTriggerBtn = document.getElementById('btn-request-swap-trigger');
+      const genScheduleBtn = document.getElementById('btn-generate-schedule-action');
+      const genRotationsBtn = document.getElementById('btn-generate-rotations-action');
+
+      async function initializePage() {
+        try {
+          if (!window.apiClient) return;
+
+          currentUserId = window.App && window.App.resolveCurrentUserId ? window.App.resolveCurrentUserId() : null;
+
+          const groupRes = await window.apiClient.get('/groups/' + groupId);
+          activeGroup = groupRes.data && groupRes.data.group ? groupRes.data.group : groupRes.data;
+
+          document.getElementById('group-name-badge').textContent = activeGroup.name || 'Grupo';
+          document.getElementById('cycle-badge').textContent = activeGroup.current_cycle || 1;
+
+          isLeaderOrAdmin = Boolean(
+            activeGroup.leader_id === currentUserId ||
+            activeGroup.creator_id === currentUserId ||
+            (window.App && window.App.user && (window.App.user.role === 'ADMIN' || window.App.user.role === 'AUDITOR'))
+          );
+
+          await loadScheduleAndRotations();
+
+          loadingEl.classList.add('d-none');
+          contentEl.classList.remove('d-none');
+        } catch (err) {
+          loadingEl.innerHTML = `
+            <div class="alert alert-danger mx-auto" style="max-width: 500px; border-radius: 0;">
+              <i class="bi bi-exclamation-triangle-fill fs-3 d-block mb-2"></i>
+              <h5 class="fw-bold">Erro ao Carregar Calendário</h5>
+              <p class="small mb-3">${err.message || 'Falha ao consultar o cronograma de rodadas.'}</p>
+              <a href="/groups/${groupId}" class="btn btn-outline-danger btn-sm">Voltar ao Grupo</a>
+            </div>
+          `;
+        }
+      }
+
+      async function loadScheduleAndRotations() {
+        try {
+          const schedRes = await window.apiClient.get(`/groups/${groupId}/schedules`);
+          allSchedules = schedRes.data || [];
+
+          const rotRes = await window.apiClient.get(`/groups/${groupId}/rotations`);
+          allRotations = rotRes.data || [];
+
+          if (allSchedules.length === 0) {
+            scheduleTableCard.classList.add('d-none');
+            emptyScheduleCard.classList.remove('d-none');
+
+            if (isLeaderOrAdmin) {
+              genScheduleBtn.classList.remove('d-none');
+              genScheduleBtn.classList.add('d-flex');
+              document.getElementById('empty-schedule-actions').innerHTML = `
+                <button type="button" class="ok-btn-confirm-pill" data-action="generate-schedule" data-group-id="${groupId}">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 8v8M8 12h8"></path></svg>
+                  Gerar Cronograma de Rodadas
+                </button>
+              `;
+            }
+            return;
+          }
+
+          if (allRotations.length === 0 && isLeaderOrAdmin) {
+            genRotationsBtn.classList.remove('d-none');
+            genRotationsBtn.classList.add('d-flex');
+          }
+
+          emptyScheduleCard.classList.add('d-none');
+          scheduleTableCard.classList.remove('d-none');
+
+          updateHeaderMetrics();
+          renderScheduleTable();
+          setupSwapModal();
+        } catch (error) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center py-4" style="color: #f43f5e; font-size: 0.86rem;">
+                <i class="bi bi-exclamation-circle me-1"></i> Falha ao sincronizar rodadas.
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      function updateHeaderMetrics() {
+        document.getElementById('metric-total-rounds').textContent = allSchedules.length;
+
+        const activeRound = allSchedules.find(s => s.status === 'ACTIVE');
+        if (activeRound) {
+          document.getElementById('metric-active-round-label').textContent = 'Rodada ' + activeRound.round_number;
+          document.getElementById('metric-active-round-sub').textContent = 'Vencimento: ' + (window.App ? window.App.formatDate(activeRound.due_date, false) : activeRound.due_date);
+        } else {
+          document.getElementById('metric-active-round-label').textContent = 'Concluído';
+          document.getElementById('metric-active-round-sub').textContent = 'Todas as rodadas finalizadas';
+        }
+
+        let totalObligations = 0;
+        let totalPaid = 0;
+        allSchedules.forEach(s => {
+          totalObligations += Number(s.total_obligations_count || 0);
+          totalPaid += Number(s.paid_obligations_count || 0);
+        });
+
+        const progressPercent = totalObligations > 0 ? Math.round((totalPaid / totalObligations) * 100) : 0;
+        document.getElementById('metric-collection-progress').textContent = progressPercent + '%';
+        const pBar = document.getElementById('metric-collection-progress-bar');
+        pBar.style.width = progressPercent + '%';
+
+        const myTurn = allRotations.find(r => r.beneficiary_user_id === currentUserId);
+        if (myTurn) {
+          document.getElementById('metric-my-turn-label').textContent = 'Turno #' + myTurn.position_order;
+          document.getElementById('metric-my-turn-date').textContent = 'Previsão: ' + (window.App ? window.App.formatDate(myTurn.estimated_payout_date, false) : myTurn.estimated_payout_date);
+          swapTriggerBtn.classList.remove('d-none');
+          swapTriggerBtn.classList.add('d-flex');
+        } else {
+          document.getElementById('metric-my-turn-label').textContent = 'Não atribuído';
+          document.getElementById('metric-my-turn-date').textContent = 'Sem turno ativo';
+        }
+      }
+
+      function renderScheduleTable() {
+        const filterStatus = filterStatusSelect.value;
+        let filtered = [...allSchedules];
+
+        if (filterStatus) filtered = filtered.filter(s => s.status === filterStatus);
+
+        if (filtered.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center py-4" style="color: var(--ok-text-muted); font-size: 0.86rem;">
+                Nenhuma rodada corresponde ao filtro selecionado.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        let html = '';
+        filtered.forEach(s => {
+          const matchingRotation = allRotations.find(r => r.position_order === s.round_number);
+          const beneficiaryName = matchingRotation ? (matchingRotation.beneficiary_name || matchingRotation.beneficiary_preferred_name || 'Participante') : 'A definir';
+          const isMyTurn = matchingRotation && matchingRotation.beneficiary_user_id === currentUserId;
+          const statusBadge = getScheduleStatusBadge(s.status);
+          const quotaFormatted = window.App ? window.App.formatMoney(s.expected_amount_per_member) : s.expected_amount_per_member + ' Kz';
+          const dueDate = window.App ? window.App.formatDate(s.due_date, false) : s.due_date;
+          const graceDate = window.App ? window.App.formatDate(s.grace_period_end_date, false) : s.grace_period_end_date;
+
+          const paidCount = Number(s.paid_obligations_count || 0);
+          const totalCount = Number(s.total_obligations_count || 0);
+          const ratioPercent = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0;
+
+          html += `
+            <tr class="${s.status === 'ACTIVE' ? 'active-round' : ''}">
+              <td>
+                <span class="ok-badge-purple">#${s.round_number}</span>
+              </td>
+              <td style="font-weight: 700;">${dueDate}</td>
+              <td style="color: var(--ok-text-muted);">${graceDate}</td>
+              <td style="font-weight: 700;">${quotaFormatted}</td>
+              <td>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span style="font-weight: 700;">${beneficiaryName}</span>
+                  ${isMyTurn ? '<span class="ok-badge-purple">Seu Turno</span>' : ''}
+                </div>
+              </td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="ok-progress-track" style="flex: 1; min-width: 60px; margin: 0;">
+                    <div class="ok-progress-fill" style="width: ${ratioPercent}%;"></div>
+                  </div>
+                  <span style="font-size: 0.75rem; color: var(--ok-text-muted); white-space: nowrap;">${paidCount}/${totalCount}</span>
+                </div>
+              </td>
+              <td>${statusBadge}</td>
+              <td class="text-end">
+                <button type="button" class="ok-row-action-btn" onclick="window.viewRoundDetails('${s.id}', ${s.round_number})" title="Ver Quotas">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                ${isLeaderOrAdmin && s.status === 'SCHEDULED' ? `
+                  <button type="button" class="ok-row-action-btn" onclick="window.activateRoundAction('${s.id}')" title="Ativar Rodada">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  </button>
+                ` : ''}
+                ${isLeaderOrAdmin && s.status === 'ACTIVE' ? `
+                  <button type="button" class="ok-row-action-btn" onclick="window.completeRoundAction('${s.id}')" title="Concluir Rodada">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </button>
+                ` : ''}
+              </td>
+            </tr>
+          `;
+        });
+
+        tableBody.innerHTML = html;
+      }
+
+      function getScheduleStatusBadge(status) {
+        switch (status) {
+          case 'ACTIVE':
+            return '<span class="ok-badge-purple">Em Curso</span>';
+          case 'COMPLETED':
+            return '<span class="ok-badge-soft">Concluída</span>';
+          case 'SCHEDULED':
+            return '<span class="ok-badge-soft">Agendada</span>';
+          default:
+            return '<span class="ok-badge-soft">' + status + '</span>';
+        }
+      }
+
+      function setupSwapModal() {
+        const select = document.getElementById('swap-target-user-select');
+        if (!select) return;
+
+        const eligible = allRotations.filter(r => r.beneficiary_user_id !== currentUserId && r.status !== 'PAID_OUT');
+
+        if (eligible.length === 0) {
+          select.innerHTML = '<option value="">Nenhum outro participante elegível para troca no ciclo</option>';
+          select.disabled = true;
+          return;
+        }
+
+        select.disabled = false;
+        let optHtml = '<option value="">Selecione um participante...</option>';
+        eligible.forEach(r => {
+          const dateStr = window.App ? window.App.formatDate(r.estimated_payout_date, false) : r.estimated_payout_date;
+          optHtml += `<option value="${r.beneficiary_user_id}">Turno #${r.position_order} — ${r.beneficiary_name} (${dateStr})</option>`;
+        });
+        select.innerHTML = optHtml;
+      }
+
+      window.viewRoundDetails = async function (scheduleId, roundNumber) {
+        document.getElementById('modal-round-subtitle').textContent = `Rodada #${roundNumber} — Detalhes das Obrigações de Quota`;
+        const tbody = document.getElementById('modal-obligations-table-body');
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3" style="color: var(--ok-text-muted); font-size: 0.85rem;">A carregar quotas...</td></tr>';
+
+        const modal = new bootstrap.Modal(document.getElementById('modal-round-details'));
+        modal.show();
+
+        try {
+          const res = await window.apiClient.get(`/groups/schedules/${scheduleId}`);
+          const obligations = res.data && res.data.obligations ? res.data.obligations : [];
+
+          if (obligations.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3" style="color: var(--ok-text-muted); font-size: 0.85rem;">Nenhuma obrigação gerada para esta rodada.</td></tr>';
+            return;
+          }
+
+          let html = '';
+          obligations.forEach(o => {
+            const isPaid = o.status === 'PAID';
+            const statusLabel = isPaid
+              ? '<span class="ok-badge-soft">Liquidada</span>'
+              : o.status === 'LATE'
+              ? '<span class="ok-badge-purple">Em Atraso</span>'
+              : '<span class="ok-badge-soft">Pendente</span>';
+
+            const amount = window.App ? window.App.formatMoney(o.expected_amount) : o.expected_amount + ' Kz';
+            const fee = o.late_fee_assessed > 0 ? (window.App ? window.App.formatMoney(o.late_fee_assessed) : o.late_fee_assessed + ' Kz') : '0 Kz';
+            const paidDate = o.paid_at ? (window.App ? window.App.formatDate(o.paid_at, true) : o.paid_at) : '—';
+
+            html += `
+              <tr>
+                <td class="ps-3" style="font-weight: 700;">${o.full_name || o.preferred_name || 'Membro'}</td>
+                <td>${amount}</td>
+                <td style="color: #f43f5e;">${fee}</td>
+                <td>${statusLabel}</td>
+                <td style="color: var(--ok-text-muted);">${paidDate}</td>
+              </tr>
+            `;
+          });
+
+          tbody.innerHTML = html;
+        } catch (e) {
+          tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3" style="color: #f43f5e; font-size: 0.85rem;">Erro ao consultar quotas.</td></tr>';
+        }
+      };
+
+      window.activateRoundAction = async function (scheduleId) {
+        if (window.Alerts) {
+          const confirm = await window.Alerts.confirm({
+            title: 'Ativar Rodada?',
+            text: 'As quotas desta rodada serão emitidas e cobradas aos participantes ativos.',
+            confirmButtonText: 'Sim, ativar rodada'
+          });
+          if (!confirm) return;
+        }
+
+        try {
+          if (window.Alerts) window.Alerts.showLoading('A ativar rodada...', 'Emitindo obrigações de quota.');
+          await window.apiClient.post(`/groups/schedules/${scheduleId}/activate`, {});
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.success('Rodada Ativada!', 'As quotas da rodada foram abertas para liquidação.');
+          }
+          await loadScheduleAndRotations();
+        } catch (err) {
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.error(err.message || 'Falha ao ativar rodada.');
+          }
+        }
+      };
+
+      window.completeRoundAction = async function (scheduleId) {
+        if (window.Alerts) {
+          const confirm = await window.Alerts.confirm({
+            title: 'Concluir Rodada?',
+            text: 'Apenas conclua após certificar-se de que todas as quotas foram quitadas.',
+            confirmButtonText: 'Sim, concluir rodada'
+          });
+          if (!confirm) return;
+        }
+
+        try {
+          if (window.Alerts) window.Alerts.showLoading('A concluir rodada...', 'Finalizando a rodada no sistema.');
+          await window.apiClient.post(`/groups/schedules/${scheduleId}/complete`, {});
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.success('Rodada Concluída!', 'A rodada foi encerrada com sucesso.');
+          }
+          await loadScheduleAndRotations();
+        } catch (err) {
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.error(err.message || 'Falha ao concluir rodada. Verifique se há quotas pendentes.');
+          }
+        }
+      };
+
+      filterStatusSelect?.addEventListener('change', renderScheduleTable);
+
+      /* ====================================================================
+         INIT
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        initAvatarFallback();
+        // Hidrata o avatar do navbar com a foto real do backend (igual ao Perfil).
+        hydrateNavbarAvatar();
+        setupGlobalActions();
+        initializePage();
+      });
+    })();
+  </script>
+</body>
+</html>

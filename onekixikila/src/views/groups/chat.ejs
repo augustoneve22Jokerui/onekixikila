@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Chat do Grupo — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS + Icons + SweetAlert2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Sidebar + Top Bar: arredondados. Cards centrais: quadrados.
+       Cores 100% roxo.
+       Escala MAIOR (igual ao Perfil / Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.06);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+      --ok-content-max-width: 1280px;
+
+      /* Bolhas de Conversa */
+      --ok-bubble-mine: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      --ok-bubble-other: #111118;
+      --ok-bubble-other-border: rgba(255, 255, 255, 0.08);
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.08);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bubble-mine: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      --ok-bubble-other: #ffffff;
+      --ok-bubble-other-border: rgba(15, 23, 42, 0.10);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.08);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+        --ok-bubble-mine: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+        --ok-bubble-other: #ffffff;
+        --ok-bubble-other-border: rgba(15, 23, 42, 0.10);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL — ARREDONDADA
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL & TOPBAR
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 40px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* Navbar Superior — Centralizada ao conteúdo (max-width 1280px) */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 0 auto 26px auto;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+      flex-shrink: 1;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle svg { width: 20px; height: 20px; }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       WORKSPACE DO CHAT — 2 COLUNAS
+       ========================================================================= */
+    .ok-chat-workspace {
+      max-width: var(--ok-content-max-width);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 24px;
+      height: calc(100vh - var(--ok-navbar-height) - 90px);
+      min-height: 600px;
+    }
+
+    /* =========================================================================
+       COLUNA ESQUERDA — LISTA DE MEMBROS — QUADRADA
+       ========================================================================= */
+    .ok-chat-members-sidebar {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 32px var(--ok-shadow-card);
+      overflow: hidden;
+    }
+
+    .ok-members-sidebar-header {
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      margin-bottom: 14px;
+    }
+    .ok-members-sidebar-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: var(--ok-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .ok-members-sidebar-groupname {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--ok-text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 8px;
+    }
+
+    .ok-chat-nav-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ok-purple-vibrant);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .ok-chat-nav-back-link:hover {
+      text-decoration: underline;
+      transform: translateX(-2px);
+    }
+
+    .ok-chat-members-stream {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 4px;
+    }
+    .ok-chat-members-stream::-webkit-scrollbar { width: 5px; }
+    .ok-chat-members-stream::-webkit-scrollbar-thumb { background: var(--ok-border-subtle); }
+
+    .ok-chat-member-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 0;
+      transition: background 0.2s;
+    }
+    .ok-chat-member-row:hover {
+      background: var(--ok-pill-bg-hover);
+    }
+    .ok-chat-member-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.8rem;
+      color: #ffffff;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .ok-chat-member-avatar.online::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--ok-purple-vibrant);
+      border: 2px solid var(--ok-bg-surface);
+    }
+    .ok-chat-member-info {
+      min-width: 0;
+      flex: 1;
+    }
+    .ok-chat-member-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ok-chat-member-role {
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      margin: 0;
+    }
+
+    /* =========================================================================
+       COLUNA DIREITA — SALA PRINCIPAL — QUADRADA
+       ========================================================================= */
+    .ok-chat-main-pane {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 32px var(--ok-shadow-card);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .ok-chat-pane-header {
+      padding: 1.25rem 1.75rem;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      background: var(--ok-bg-surface);
+      z-index: 2;
+    }
+    .ok-chat-header-identity {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+    .ok-chat-group-emblem {
+      width: 48px;
+      height: 48px;
+      border-radius: 0;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+      flex-shrink: 0;
+    }
+    .ok-chat-pane-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ok-chat-pane-subtitle {
+      font-size: 0.8rem;
+      color: var(--ok-text-muted);
+      margin: 2px 0 0 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ok-live-indicator-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--ok-purple-vibrant);
+      box-shadow: 0 0 8px var(--ok-purple-vibrant);
+    }
+
+    .ok-chat-header-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .ok-chat-tool-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 0;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-chat-tool-btn:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    /* STREAM DE MENSAGENS */
+    .ok-messages-stream-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+      background: var(--ok-bg-surface);
+    }
+    .ok-messages-stream-box::-webkit-scrollbar { width: 6px; }
+    .ok-messages-stream-box::-webkit-scrollbar-thumb { background: var(--ok-border-subtle); }
+
+    /* BOLHAS DE CONVERSA — QUADRADAS */
+    .chat-bubble {
+      padding: 12px 18px;
+      border-radius: 0;
+      font-size: 0.94rem;
+      line-height: 1.5;
+      position: relative;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      transition: all 0.2s ease;
+    }
+    .chat-bubble-mine {
+      background: var(--ok-bubble-mine);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3);
+    }
+    .chat-bubble-other {
+      background: var(--ok-bubble-other);
+      color: var(--ok-text-primary);
+      border: 1px solid var(--ok-bubble-other-border);
+      box-shadow: 0 4px 14px var(--ok-shadow-card);
+    }
+
+    .chat-document-wrapper {
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 12px 14px;
+      margin-top: 6px;
+    }
+
+    /* BOTÃO ROLAR PARA O FUNDO — mantém redondo (é um FAB flutuante) */
+    #chat-scroll-bottom-btn {
+      position: absolute;
+      bottom: 95px;
+      right: 25px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--ok-purple-vibrant);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      transition: all 0.2s ease;
+    }
+    #chat-scroll-bottom-btn:hover { transform: scale(1.08); }
+
+    /* INDICADOR DE DIGITAÇÃO */
+    .ok-typing-indicator-bar {
+      padding: 6px 20px;
+      font-size: 0.78rem;
+      color: var(--ok-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-style: italic;
+    }
+    .ok-typing-dots span {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--ok-purple-vibrant);
+      animation: okTyping 1.4s infinite;
+    }
+    .ok-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .ok-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes okTyping {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* PAINEL DE GRAVAÇÃO — QUADRADO */
+    .ok-recording-panel-active {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 20px;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      border-radius: 0;
+      margin-bottom: 10px;
+    }
+
+    /* DOCK INFERIOR — QUADRADO */
+    .ok-chat-bottom-dock {
+      padding: 1rem 1.75rem 1.25rem 1.75rem;
+      border-top: 1px solid var(--ok-border-subtle);
+      background: var(--ok-bg-surface);
+      position: relative;
+      z-index: 2;
+    }
+
+    .ok-input-toolbar-flex {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .ok-tool-circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 0;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      color: var(--ok-text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .ok-tool-circle-btn:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+    }
+
+    .ok-input-dispatch-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .ok-chat-textarea {
+      flex: 1;
+      min-height: 50px;
+      max-height: 140px;
+      padding: 12px 22px;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1.5px solid var(--ok-border-subtle);
+      color: var(--ok-text-primary);
+      font-size: 0.94rem;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      line-height: 1.5;
+      transition: all 0.2s ease;
+    }
+    .ok-chat-textarea:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 3px var(--ok-purple-soft);
+      background: var(--ok-bg-surface);
+    }
+    .ok-chat-textarea::placeholder { color: var(--ok-text-muted); }
+
+    .ok-btn-dispatch-send {
+      width: 50px;
+      height: 50px;
+      border-radius: 0;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.45);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .ok-btn-dispatch-send:hover {
+      transform: scale(1.06);
+      box-shadow: 0 8px 24px rgba(124, 58, 237, 0.65);
+    }
+
+    /* EMOJI PICKER — QUADRADO */
+    .ok-emoji-picker-box {
+      position: absolute;
+      bottom: 90px;
+      left: 20px;
+      width: 320px;
+      height: 260px;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      box-shadow: 0 12px 36px var(--ok-shadow-card);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    .ok-emoji-picker-box button {
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      border-radius: 0;
+      padding: 4px;
+      transition: transform 0.15s ease;
+    }
+    .ok-emoji-picker-box button:hover {
+      background: var(--ok-pill-bg);
+      transform: scale(1.2);
+    }
+
+    /* Responsividade */
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 16px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-chat-workspace { grid-template-columns: 1fr; height: calc(100vh - 120px); }
+      .ok-chat-members-sidebar { display: none; }
+      .ok-search-capsule { width: 100%; }
+      .ok-top-nav { gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      .ok-top-nav { flex-wrap: wrap; height: auto; padding: 10px 0; }
+      .ok-nav-actions { margin-left: auto; }
+    }
+    .ok-chat-access-banner {
+      margin: 24px;
+      padding: 18px 20px;
+      border: 1px solid rgba(244, 63, 94, 0.32);
+      background: rgba(244, 63, 94, 0.08);
+      color: var(--ok-text-primary);
+      line-height: 1.5;
+    }
+    .ok-chat-access-banner strong { display: block; margin-bottom: 4px; }
+    .chat-access-denied .ok-chat-bottom-dock,
+    .chat-access-denied #chat-typing-indicator,
+    .chat-access-denied #chat-scroll-bottom-btn { display: none !important; }
+  </style>
+</head>
+<body data-chat-group-id="<%= typeof groupId !== 'undefined' ? groupId : '' %>">
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link active" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Top Bar — Centralizada ao conteúdo -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar mensagens ou comprovativos..." autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" style="font-size: 0.92rem; line-height: 1.15;"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" style="font-size: 0.76rem;"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         WORKSPACE DO CHAT
+         ==================================================================== -->
+    <div class="ok-chat-workspace" id="chat-container">
+
+      <!-- COLUNA ESQUERDA — MEMBROS -->
+      <aside class="ok-chat-members-sidebar">
+        <div class="ok-members-sidebar-header">
+          <p class="ok-members-sidebar-title">Comunicação do Grupo</p>
+          <h4 class="ok-members-sidebar-groupname" id="sidebar-group-title">A carregar...</h4>
+          <a href="/groups/<%= typeof groupId !== 'undefined' ? groupId : '' %>" class="ok-chat-nav-back-link">
+            Voltar ao Grupo
+          </a>
+        </div>
+
+        <div class="ok-chat-members-stream" id="chat-members-stream">
+          <div class="text-center py-4 text-muted small">
+            <span class="spinner-border spinner-border-sm me-2"></span> A carregar participantes...
+          </div>
+        </div>
+      </aside>
+
+      <!-- COLUNA DIREITA — SALA DE CHAT -->
+      <main class="ok-chat-main-pane">
+
+        <!-- Cabeçalho da conversa -->
+        <header class="ok-chat-pane-header">
+          <div class="ok-chat-header-identity">
+            <div class="ok-chat-group-emblem">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <div>
+              <h2 class="ok-chat-pane-title" id="chat-pane-group-name">Chat da Kixikila</h2>
+              <div class="ok-chat-pane-subtitle">
+                <span class="ok-live-indicator-dot"></span>
+                <span id="chat-active-members-count">0 membros ativos</span>
+                <span>&bull;</span>
+                <span id="chat-socket-status-label" style="color: var(--ok-purple-vibrant); font-weight: 700;">A validar acesso…</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ok-chat-header-tools">
+            <a href="/groups/<%= typeof groupId !== 'undefined' ? groupId : '' %>/schedule" class="ok-chat-tool-btn" title="Ver Calendário de Rodadas">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </a>
+            <a href="/groups/<%= typeof groupId !== 'undefined' ? groupId : '' %>/invitations" class="ok-chat-tool-btn" title="Convidar Membros">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+            </a>
+            <a href="/groups/<%= typeof groupId !== 'undefined' ? groupId : '' %>" class="ok-chat-tool-btn" title="Regras e Informações">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            </a>
+          </div>
+        </header>
+
+        <!-- Banner de aviso fixado -->
+        <div id="chat-pinned-banner" class="d-none"></div>
+
+        <!-- Mensagens -->
+        <div class="ok-messages-stream-box" id="chat-messages-list">
+          <div class="text-center py-5 text-muted small">
+            <div class="spinner-border spinner-border-sm mb-2" role="status" style="color: var(--ok-purple-vibrant);"></div>
+            <p class="mb-0">A validar a sua participação no grupo…</p>
+          </div>
+        </div>
+
+        <!-- FAB scroll bottom -->
+        <button type="button" id="chat-scroll-bottom-btn" class="d-none" title="Ir para as mensagens mais recentes">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
+        <!-- Indicador de digitação -->
+        <div class="ok-typing-indicator-bar d-none" id="chat-typing-indicator">
+          <div class="ok-typing-dots"><span></span><span></span><span></span></div>
+          <span>Um participante está a escrever...</span>
+        </div>
+
+        <!-- Dock inferior -->
+        <div class="ok-chat-bottom-dock">
+          
+          <!-- Painel de gravação -->
+          <div class="ok-recording-panel-active d-none" id="chat-recording-panel">
+            <div class="d-flex align-items-center gap-2">
+              <span class="spinner-grow spinner-grow-sm" style="color: var(--ok-purple-vibrant);" role="status"></span>
+              <span style="color: var(--ok-purple-vibrant); font-weight: 700;" class="small">A gravar nota de voz:</span>
+              <strong id="chat-recording-timer" class="font-monospace" style="color: var(--ok-purple-vibrant);">00:00</strong>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="ok-tool-circle-btn" id="chat-recording-pause-btn" title="Pausar" style="width: 34px; height: 34px;" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+              </button>
+              <button type="button" class="ok-tool-circle-btn" id="chat-recording-cancel-btn" style="width: auto; padding: 0 14px; height: 34px; font-size: 0.82rem; font-weight: 700; color: #f43f5e; border-color: rgba(244,63,94,0.3);" disabled>
+                Cancelar
+              </button>
+              <button type="button" class="ok-btn-dispatch-send" id="chat-recording-send-btn" style="width: auto; height: 34px; padding: 0 16px; font-size: 0.82rem; font-weight: 700; border-radius: 0;" disabled>
+                Enviar Áudio
+              </button>
+            </div>
+          </div>
+
+          <!-- Toolbar de anexos -->
+          <div class="ok-input-toolbar-flex">
+            <button type="button" class="ok-tool-circle-btn" id="chat-attach-document-btn" title="Anexar Documento (máx. 5 MB)" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+            </button>
+            <input type="file" id="chat-document-file-input" class="d-none" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.webp">
+
+            <button type="button" class="ok-tool-circle-btn" id="chat-start-record-btn" title="Gravar Nota de Voz" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+            </button>
+
+            <button type="button" class="ok-tool-circle-btn" id="chat-emoji-toggle-btn" title="Inserir Emoji" disabled>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+            </button>
+          </div>
+
+          <!-- Formulário de texto -->
+          <form id="chat-input-form" novalidate>
+            <div class="ok-input-dispatch-row" id="chat-text-input-wrapper">
+              <textarea 
+                id="chat-message-input" 
+                class="ok-chat-textarea" 
+                placeholder="Escreva uma mensagem para o grupo de Kixikila..." 
+                rows="1"
+                maxlength="2000"
+               disabled></textarea>
+              <button type="submit" id="chat-send-btn" class="ok-btn-dispatch-send" title="Enviar Mensagem" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+          </form>
+
+          <!-- Emoji picker -->
+          <div class="ok-emoji-picker-box d-none" id="chat-emoji-picker"></div>
+
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      function initAvatarFallback() {
+        const img = document.getElementById('ok-nav-avatar');
+        if (!img) return;
+        img.addEventListener('error', function onErr() {
+          img.removeEventListener('error', onErr);
+          const fb = img.getAttribute('data-fallback');
+          if (fb && img.src !== fb) img.src = fb;
+        });
+      }
+
+      function escapeHtml(value) {
+        const element = document.createElement('span');
+        element.textContent = value == null ? '' : String(value);
+        return element.innerHTML;
+      }
+
+      function setChatControlsEnabled(enabled) {
+        document.querySelectorAll(
+          '#chat-message-input, #chat-send-btn, #chat-attach-document-btn, #chat-start-record-btn, ' +
+          '#chat-emoji-toggle-btn, #chat-recording-pause-btn, #chat-recording-cancel-btn, #chat-recording-send-btn'
+        ).forEach((element) => { element.disabled = !enabled; });
+      }
+
+      function showChatAccessError(message) {
+        setChatControlsEnabled(false);
+        const container = document.getElementById('chat-container');
+        const messages = document.getElementById('chat-messages-list');
+        const status = document.getElementById('chat-socket-status-label');
+        if (container) container.classList.add('chat-access-denied');
+        if (status) {
+          status.textContent = 'Acesso não autorizado';
+          status.style.color = '#f43f5e';
+        }
+        if (messages) {
+          messages.innerHTML = `
+            <div class="ok-chat-access-banner" role="alert">
+              <strong>Chat indisponível</strong>
+              <span>${escapeHtml(message || 'Não foi possível confirmar uma filiação ativa neste grupo. Por segurança, a sala não foi iniciada.')}</span>
+              <div class="mt-3"><a class="ok-chat-nav-back-link" href="/groups">Voltar à lista de grupos</a></div>
+            </div>`;
+        }
+      }
+
+      function loadScriptAfterAuthorization(src) {
+        return new Promise((resolve, reject) => {
+          const existing = document.querySelector(`script[data-authorized-chat-script="${src}"]`);
+          if (existing) {
+            if (existing.dataset.loaded === 'true') return resolve();
+            existing.addEventListener('load', resolve, { once: true });
+            existing.addEventListener('error', () => reject(new Error(`Falha ao carregar ${src}`)), { once: true });
+            return;
+          }
+          const script = document.createElement('script');
+          script.src = src;
+          script.async = false;
+          script.dataset.authorizedChatScript = src;
+          script.addEventListener('load', () => {
+            script.dataset.loaded = 'true';
+            resolve();
+          }, { once: true });
+          script.addEventListener('error', () => reject(new Error(`Falha ao carregar ${src}`)), { once: true });
+          document.body.appendChild(script);
+        });
+      }
+
+      async function loadProtectedChatScripts() {
+        // Ordem deliberada: as dependências de áudio/documentos devem existir antes do ChatManager.
+        for (const src of ['/js/audio-recorder.js', '/js/document-upload.js', '/js/chat.js']) {
+          await loadScriptAfterAuthorization(src);
+        }
+      }
+
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient) window.apiClient.clearSession();
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         EMOJI PICKER
+         ==================================================================== */
+      const COMMON_EMOJIS = [
+        '👍', '👏', '🤝', '🙌', '💰', '💵', '💸', '🏦',
+        '✅', '🎉', '🔥', '⭐', '❤️', '😊', '🙏', '💯',
+        '🎯', '📊', '📈', '🚀', '💡', '🔔', '📅', '💬'
+      ];
+
+      function initEmojiPickerBox() {
+        const pickerBox = document.getElementById('chat-emoji-picker');
+        const toggleBtn = document.getElementById('chat-emoji-toggle-btn');
+        const messageInput = document.getElementById('chat-message-input');
+        if (!pickerBox || !toggleBtn || !messageInput) return;
+
+        pickerBox.innerHTML = COMMON_EMOJIS.map(e => `<button type="button" data-emoji="${e}">${e}</button>`).join('');
+
+        toggleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          pickerBox.classList.toggle('d-none');
+        });
+
+        pickerBox.addEventListener('click', (e) => {
+          const btn = e.target.closest('button[data-emoji]');
+          if (!btn) return;
+          const emoji = btn.getAttribute('data-emoji');
+          messageInput.value += emoji;
+          messageInput.focus();
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!pickerBox.contains(e.target) && e.target !== toggleBtn) {
+            pickerBox.classList.add('d-none');
+          }
+        });
+      }
+
+      /* ====================================================================
+         CARREGAR SIDEBAR DO CHAT
+         ==================================================================== */
+      async function loadChatGroupSidebar(groupId) {
+        const stream = document.getElementById('chat-members-stream');
+        const sidebarTitle = document.getElementById('sidebar-group-title');
+        const paneTitle = document.getElementById('chat-pane-group-name');
+        const activeCount = document.getElementById('chat-active-members-count');
+        const statusLabel = document.getElementById('chat-socket-status-label');
+
+        try {
+          // A rota de membros exige membership ativo; ambos os pedidos são necessários
+          // antes de carregar chat.js, Socket.IO, gravador ou uploader.
+          const [groupRes, membersRes] = await Promise.all([
+            window.apiClient.get(`/groups/${encodeURIComponent(groupId)}`),
+            window.apiClient.get(`/groups/${encodeURIComponent(groupId)}/members`)
+          ]);
+
+          const groupPayload = groupRes && groupRes.data;
+          const group = groupPayload && (groupPayload.group || groupPayload);
+          const membersPayload = membersRes && membersRes.data;
+          const members = membersPayload && (membersPayload.members || membersPayload);
+          if (!group || !Array.isArray(members)) {
+            throw new Error('A resposta do servidor não confirmou o acesso ao grupo.');
+          }
+
+          const activeMembers = members.filter((member) => String(member.status || '').toUpperCase() === 'ACTIVE');
+          if (sidebarTitle) sidebarTitle.textContent = group.name || 'Grupo de Kixikila';
+          if (paneTitle) paneTitle.textContent = group.name || 'Chat da Kixikila';
+          if (activeCount) activeCount.textContent = `${activeMembers.length} membro(s) ativo(s)`;
+          if (statusLabel) statusLabel.textContent = 'Acesso validado • a iniciar ligação…';
+
+          if (stream) {
+            if (activeMembers.length === 0) {
+              stream.innerHTML = '<div class="text-center py-4 text-muted small">Sem membros ativos para apresentar.</div>';
+            } else {
+              stream.innerHTML = activeMembers.map((member) => {
+                const name = member.preferred_name || member.full_name || member.fullName || 'Participante';
+                const safeName = escapeHtml(name);
+                const roleValue = String(member.role || '').toUpperCase();
+                const role = roleValue === 'PRIMARY_LEADER' || roleValue === 'LEADER'
+                  ? 'Líder Titular'
+                  : roleValue === 'VICE_LEADER' ? 'Vice-Líder' : 'Membro';
+                const initials = String(name).split(' ').filter(Boolean).slice(0, 2).map((word) => word[0]).join('').toUpperCase() || 'M';
+                return `
+                  <div class="ok-chat-member-row">
+                    <div class="ok-chat-member-avatar online" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">
+                      ${escapeHtml(initials)}
+                    </div>
+                    <div class="ok-chat-member-info">
+                      <p class="ok-chat-member-name">${safeName}</p>
+                      <p class="ok-chat-member-role">${escapeHtml(role)}</p>
+                    </div>
+                  </div>`;
+              }).join('');
+            }
+          }
+          return true;
+        } catch (error) {
+          if (stream) stream.innerHTML = '<div class="text-center py-4 small" style="color: #f43f5e;">Membership ativo não confirmado.</div>';
+          showChatAccessError(error && error.message ? error.message : 'É necessário ser membro ativo do grupo para aceder ao chat.');
+          return false;
+        }
+      }
+
+      /* ====================================================================
+         INIT
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', async () => {
+        initThemeToggle();
+        initAvatarFallback();
+        setupGlobalActions();
+        initEmojiPickerBox();
+        setChatControlsEnabled(false);
+
+        const pathSegments = window.location.pathname.split('/').filter(Boolean);
+        const groupIndex = pathSegments.indexOf('groups');
+        const resolvedGroupId = groupIndex >= 0
+          ? pathSegments[groupIndex + 1]
+          : document.body.getAttribute('data-chat-group-id');
+
+        if (!resolvedGroupId || !window.apiClient) {
+          showChatAccessError('Não foi possível validar o grupo. Volte à lista de grupos e tente novamente.');
+          return;
+        }
+
+        document.body.setAttribute('data-chat-group-id', resolvedGroupId);
+        const authorized = await loadChatGroupSidebar(resolvedGroupId);
+        if (!authorized) return;
+
+        try {
+          await loadProtectedChatScripts();
+          // chat.js auto-inicializa depois de ser carregado; não chamar init() outra vez.
+          if (!window.chatManager) throw new Error('O módulo de chat não ficou disponível.');
+          setChatControlsEnabled(true);
+        } catch (error) {
+          showChatAccessError('O acesso foi validado, mas os componentes do chat não puderam ser iniciados. Atualize a página.');
+          console.error('[CHAT:BOOTSTRAP_ERROR]', error);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

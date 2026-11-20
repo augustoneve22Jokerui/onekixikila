@@ -1,0 +1,1640 @@
+<%- include('../partials/head') %>
+<%
+  const adminUser = (typeof user !== 'undefined' && user) ? user : {};
+  const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador';
+  const adminRoleForPage = String(adminUser.role || '').toUpperCase();
+  const adminIdForPage = String(adminUser.id || '');
+  const canAccessAdminPage = (...roles) => roles.includes(adminRoleForPage);
+  const canViewAuditTrail = canAccessAdminPage('ADMIN', 'AUDITOR');
+  const adminDisplayName = adminUserName || 'Administrador';
+%>
+
+<!-- Fontes do dashboard normal — identidade visual preservada. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     SISTEMA DE DESIGN — ONEKIXIKILA ADMIN (TEMA ESCURO PADRÃO + TEMA CLARO)
+     Fontes: Plus Jakarta Sans (corpo) + Space Grotesk (títulos) — identidade
+     visual única em todo o sistema administrativo.
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-pill: 9999px;
+    --ok-radius-card: 20px;
+    --ok-radius-md: 12px;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1180px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.25);
+    --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.10);
+    --ok-border-strong: rgba(15, 23, 42, 0.18);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.08);
+    --ok-shadow-card: rgba(15, 23, 42, 0.10);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+      --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-border-strong: rgba(15, 23, 42, 0.18);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ok-bg-canvas);
+    color: var(--ok-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(5, 5, 8, 0) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(244, 245, 249, 0) 70%);
+  }
+
+  /* =========================================================================
+     SIDEBAR SLIM TECH
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+  }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    text-decoration: none;
+  }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; width: 100%;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: thin;
+  }
+  .ok-rail-nav::-webkit-scrollbar { width: 3px; }
+  .ok-rail-nav::-webkit-scrollbar-thumb { background: var(--ok-border-subtle); border-radius: 5px; }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: transparent;
+    position: relative;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+  }
+  .ok-rail-link svg { width: 20px; height: 20px; }
+
+  .admin-rail-count {
+    position: absolute; top: 2px; right: 1px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    background: #ef4444; color: #fff;
+    border: 2px solid var(--ok-bg-surface);
+    font-size: 9px; font-weight: 800;
+  }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CENTRALIZADO (igual ao ficheiro de utilizadores)
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 20px);
+    padding: 20px 20px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+
+  /* Top nav — alinhado ao centro do conteúdo */
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* Barra de pesquisa — alinhada ao início do conteúdo */
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 0;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex; align-items: center;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    color: inherit;
+  }
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%; object-fit: cover;
+    background: var(--ok-purple-soft);
+    border: 2px solid var(--ok-purple-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); font-weight: 800; font-size: 0.9rem;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+
+  .ok-page-title-main {
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 780px;
+  }
+
+  .admin-hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-btn-pill-soft {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ok-btn-pill-soft:hover {
+    background: var(--ok-purple-vibrant);
+    color: #ffffff;
+  }
+  .ok-btn-pill-soft[disabled] { opacity: 0.65; cursor: wait; }
+
+  .admin-currency-badge {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-muted);
+    font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* =========================================================================
+     FAIXA DE 4 CARDS CHAPADOS (KPIs)
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 24px auto;
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+    width: 100%;
+  }
+
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+    color: inherit;
+  }
+
+  .ok-flat-card-box.theme-white { background-color: #ffffff; color: #0f172a; }
+  .ok-flat-card-box.theme-lime { background-color: #bef264; color: #0f172a; }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: #ffffff; color: #0f172a;
+    border-left: 1px solid rgba(0,0,0,0.08);
+  }
+  .ok-flat-card-box.theme-purple { background-color: #7c3aed; color: #ffffff; }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: #0f172a; }
+  .theme-purple .ok-flat-icon-container svg { stroke: #ffffff; }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .theme-purple .ok-flat-trend { background: rgba(255,255,255,0.15); color: #ffffff; }
+  .ok-flat-trend.warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+  .ok-flat-trend.danger { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+  .ok-flat-trend.info { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+
+  /* =========================================================================
+     CARDS BASE
+     ========================================================================= */
+  .admin-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-card);
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 20px auto;
+    width: 100%;
+  }
+
+  .admin-note {
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-text-secondary);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    padding: 0.85rem 1rem;
+    display: flex; align-items: flex-start; gap: 8px;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+  .admin-note i { color: var(--ok-purple-vibrant); flex-shrink: 0; }
+  .admin-note.warning {
+    background: rgba(6, 182, 212, 0.08);
+    border-color: rgba(6, 182, 212, 0.22);
+    color: #b6e7ee;
+  }
+  .admin-note.warning i { color: #67e8f9; }
+  .admin-note.alert {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.22);
+    color: #fde68a;
+  }
+  .admin-note.alert i { color: #fcd34d; }
+
+  /* =========================================================================
+     FILTROS
+     ========================================================================= */
+  .disp-filter { padding: 1.15rem 1.25rem; }
+  .disp-filter h2 {
+    font-size: 0.95rem; font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0; font-family: 'Space Grotesk', sans-serif;
+  }
+  .disp-filter .form-label,
+  .disp-modal .form-label {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+  }
+  .disp-filter .form-control,
+  .disp-filter .form-select,
+  .disp-modal .form-control,
+  .disp-modal .form-select {
+    background: var(--ok-bg-elevated) !important;
+    border: 1px solid var(--ok-border-strong) !important;
+    color: var(--ok-text-primary) !important;
+    min-height: 43px;
+    border-radius: var(--ok-radius-md);
+  }
+  .disp-filter .form-control::placeholder,
+  .disp-modal textarea::placeholder { color: var(--ok-text-muted); }
+  .disp-filter .form-control:focus,
+  .disp-filter .form-select:focus,
+  .disp-modal .form-control:focus,
+  .disp-modal .form-select:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 3px var(--ok-purple-soft) !important;
+  }
+  .disp-filter option,
+  .disp-modal option {
+    background: var(--ok-bg-elevated);
+    color: var(--ok-text-primary);
+  }
+
+  .btn-primary-ok {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    border: none; color: #ffffff;
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
+  }
+  .btn-primary-ok:hover { transform: translateY(-1px); color: #fff; }
+  .btn-primary-ok[disabled] { opacity: 0.65; cursor: wait; }
+  .btn-warning-ok {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: none; color: #ffffff;
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3);
+    transition: all 0.2s ease;
+  }
+  .btn-warning-ok:hover { transform: translateY(-1px); color: #fff; }
+  .btn-ghost-ok {
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-primary);
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .btn-ghost-ok:hover {
+    background: var(--ok-pill-bg-hover);
+    color: var(--ok-purple-vibrant);
+  }
+
+  /* =========================================================================
+     TABELA
+     ========================================================================= */
+  .disp-table-wrap {
+    overflow: auto;
+    border-radius: var(--ok-radius-card);
+  }
+  .disp-table { min-width: 920px; margin: 0; }
+  .disp-table thead th {
+    color: var(--ok-text-muted);
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--ok-border-subtle);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.95rem 0.85rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .disp-table tbody td {
+    border-bottom: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-secondary);
+    padding: 0.95rem 0.85rem;
+    vertical-align: middle;
+    font-size: 0.84rem;
+  }
+  .disp-table tbody tr:last-child td { border-bottom: 0; }
+  .disp-table tbody tr { transition: background 0.15s ease; }
+  .disp-table tbody tr:hover { background: var(--ok-stream-hover); }
+
+  .disp-avatar {
+    align-items: center;
+    background: linear-gradient(140deg, rgba(139, 92, 246, 0.28), rgba(6, 182, 212, 0.14));
+    border: 1px solid var(--ok-purple-border);
+    border-radius: 13px;
+    color: #ddd6fe;
+    display: inline-flex;
+    flex: 0 0 40px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+  }
+  .disp-name {
+    color: var(--ok-text-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .disp-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.72rem;
+    margin-top: 0.2rem;
+    overflow-wrap: anywhere;
+  }
+
+  .disp-badge {
+    border: 1px solid transparent;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.025em;
+    padding: 0.34rem 0.58rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  .disp-state-open { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.25); color: #fcd34d; }
+  .disp-state-investigation { background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.25); color: #67e8f9; }
+  .disp-state-initiator { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #6ee7b7; }
+  .disp-state-respondent { background: rgba(139, 92, 246, 0.14); border-color: rgba(139, 92, 246, 0.3); color: #c4b5fd; }
+  .disp-state-dismissed { background: var(--ok-pill-bg); border-color: var(--ok-border-subtle); color: var(--ok-text-secondary); }
+
+  .disp-actions { display: flex; justify-content: flex-end; gap: 0.35rem; }
+  .disp-actions .btn {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 36px;
+    border-radius: var(--ok-radius-md);
+    transition: all 0.15s ease;
+  }
+  .disp-actions .btn:hover { transform: translateY(-1px); }
+
+  /* =========================================================================
+     PAGINAÇÃO + FOOTER
+     ========================================================================= */
+  .disp-footer {
+    align-items: center;
+    border-top: 1px solid var(--ok-border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+  }
+  .disp-pagination {
+    display: flex; flex-wrap: wrap; gap: 0.35rem;
+    list-style: none; margin: 0; padding: 0;
+  }
+  .disp-pagination button {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 9px;
+    color: var(--ok-text-secondary);
+    min-width: 36px;
+    padding: 0.4rem 0.65rem;
+    font-weight: 700;
+    transition: all 0.15s ease;
+  }
+  .disp-pagination button:hover:not(:disabled),
+  .disp-pagination button.is-current {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+  }
+  .disp-pagination button:disabled { cursor: not-allowed; opacity: 0.4; }
+
+  /* =========================================================================
+     ESTADOS
+     ========================================================================= */
+  .disp-state-box {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-card);
+    color: var(--ok-text-muted);
+    padding: 2.75rem 1rem;
+    text-align: center;
+    background: var(--ok-bg-surface);
+  }
+  .disp-state-box i {
+    color: var(--ok-purple-vibrant);
+    display: block;
+    font-size: 1.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  /* =========================================================================
+     MODAIS
+     ========================================================================= */
+  .disp-modal .modal-content {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-strong);
+    border-radius: 18px;
+    color: var(--ok-text-primary);
+  }
+  .disp-modal .modal-header,
+  .disp-modal .modal-footer { border-color: var(--ok-border-subtle); }
+  .disp-modal .modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+  }
+  .disp-modal .btn-close { filter: invert(1) grayscale(1) brightness(2); }
+  html[data-theme="light"] .disp-modal .btn-close { filter: none; }
+
+  .disp-detail {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-md);
+    height: 100%;
+    padding: 0.8rem 0.9rem;
+  }
+  .disp-detail-label {
+    color: var(--ok-text-muted);
+    display: block;
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.28rem;
+    text-transform: uppercase;
+  }
+  .disp-detail-value {
+    color: var(--ok-text-primary);
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+
+  /* =========================================================================
+     ALERTA INLINE
+     ========================================================================= */
+  #disp-alert {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 16px auto;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.85rem;
+    width: 100%;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+    .admin-hero-actions { width: 100%; justify-content: space-between; }
+    .disp-footer { flex-direction: column; align-items: flex-start; }
+    .disp-pagination { width: 100%; }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<body data-admin-role="<%= adminRoleForPage %>" data-admin-user-id="<%= adminIdForPage %>">
+  <div class="ok-ambient-glow-core" aria-hidden="true"></div>
+
+  <!-- ======================================================================
+       SIDEBAR SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila — Administração" aria-label="Painel administrativo OneKixikila">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav" aria-label="Ferramentas de administração">
+      <a href="/admin" class="ok-rail-link" title="Dashboard executivo" aria-label="Dashboard executivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'SUPPORT_AGENT')) { %>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores" aria-label="Utilizadores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila" aria-label="Grupos de Kixikila">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão de identidade KYC" aria-label="Revisão KYC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2.5"></circle><path d="M5.5 17c.8-2 2-3 3.5-3s2.7 1 3.5 3M15 9h3M15 13h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link active" title="Disputas" aria-label="Disputas" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path><path d="M12 8v4M12 16h.01"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-disputes">0</span>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos e saídas" aria-label="Pagamentos e saídas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20M6 15h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios financeiros" aria-label="Relatórios financeiros">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path><path d="M14 9h5v5"></path></svg>
+      </a>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas e limites" aria-label="Configurações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.6-1.4-2.4 1.4-1.1A8 8 0 0 1 7 13l-1.8-.3V9.9L7 9.6a8 8 0 0 1 .7-1.6L6.3 6.8l1.4-2.4 1.7.6a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.6 1.4 2.4-1.4 1.2a8 8 0 0 1 .7 1.6l1.8.3v2.8l-1.8.3a8 8 0 0 1-.7 1.6z"></path></svg>
+      </a>
+      <% } %>
+      <% if (canViewAuditTrail) { %>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria forense" aria-label="Auditoria forense">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M8 13h8M8 17h8"></path></svg>
+      </a>
+      <% } %>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/notifications" class="ok-rail-link" title="Notificações" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+      <a href="/profile" class="ok-rail-link" title="Perfil" aria-label="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar sessão" aria-label="Terminar sessão" style="background:transparent;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- TOP BAR -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" id="global-dashboard-search" placeholder="Pesquisar contestações..." autocomplete="off" aria-label="Pesquisar contestações">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <span class="admin-currency-badge d-none d-md-inline-flex" id="admin-utc-clock" style="font-family:'Space Grotesk',monospace;letter-spacing:0.02em;">--:--:-- UTC</span>
+
+        <a href="/dashboard" class="ok-action-circle d-none d-sm-inline-flex" title="Painel do Membro" aria-label="Painel do Membro">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill" aria-label="Perfil do administrador">
+          <span class="ok-profile-avatar-nav" aria-hidden="true"><%= String(adminDisplayName).trim().charAt(0).toUpperCase() || 'A' %></span>
+          <div class="d-flex flex-column text-start admin-profile-text">
+            <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1;"><%= adminDisplayName %></span>
+            <span class="text-muted" style="font-size: 0.7rem;"><%= adminRoleForPage.replaceAll('_', ' ') || 'ADMIN' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Contestações <span class="user-highlight">e Disputas</span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Mediação & Conformidade
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          Analise reclamações formais, consulte os autos e registe decisões fundamentadas. Ações de investigação e arbitragem são restritas a ADMIN/AUDITOR e bloqueadas em caso de conflito de interesses.
+        </p>
+      </div>
+
+      <div class="admin-hero-actions">
+        <button type="button" id="disp-refresh" class="ok-btn-pill-soft">
+          <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Atualizar fila
+        </button>
+      </div>
+    </section>
+
+    <!-- Alertas inline -->
+    <div id="disp-alert" class="alert d-none" role="alert" aria-live="polite"></div>
+
+    <!-- Aviso -->
+    <div class="admin-note" style="max-width:var(--ok-content-max);margin:0 auto 20px auto;">
+      <i class="bi bi-shield-lock" aria-hidden="true"></i>
+      <span>Os autos podem conter dados pessoais e informação financeira. A consulta e as deliberações são autorizadas e registadas; um árbitro que seja parte na disputa não pode conduzi-la.</span>
+    </div>
+
+    <!-- ====================================================================
+         FAIXA DE 4 CARDS CHAPADOS — RESUMO
+         ==================================================================== -->
+    <div class="ok-flat-quad-strip" aria-label="Resumo da página atual">
+
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+              <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Contestações nesta página</h5>
+          <p class="ok-flat-desc">Resultados conforme os filtros aplicados.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-total">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Fila total
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Abertas</h5>
+          <p class="ok-flat-desc">A aguardar instrução ou deliberação.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-open">—</span>
+          <div class="ok-flat-trend warning">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Em fila
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M24 14v12m0 6h.01" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Em investigação</h5>
+          <p class="ok-flat-desc">Processos sob análise aprofundada.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-investigation">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Em análise
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 8h20v32H14z" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M18 16h12M18 22h12M18 28h8" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Encerradas</h5>
+          <p class="ok-flat-desc">Decisão final ou arquivamento.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-closed">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Concluídas
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ====================================================================
+         FILTROS
+         ==================================================================== -->
+    <section class="admin-card disp-filter" aria-labelledby="disp-filter-title">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-funnel" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>
+        <h2 id="disp-filter-title">Filtros da fila</h2>
+      </div>
+      <form id="disp-filter-form" class="row g-2 align-items-end">
+        <div class="col-12 col-md-5">
+          <label for="disp-status" class="form-label">Estado</label>
+          <select id="disp-status" class="form-select">
+            <option value="">Todos os estados</option>
+            <option value="OPEN">Aberta</option>
+            <option value="UNDER_INVESTIGATION">Em investigação</option>
+            <option value="RESOLVED_FAVOR_INITIATOR">Resolvida a favor do requerente</option>
+            <option value="RESOLVED_FAVOR_RESPONDENT">Resolvida a favor da parte reclamada</option>
+            <option value="CLOSED_DISMISSED">Encerrada sem provimento</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-5">
+          <label for="disp-category" class="form-label">Categoria</label>
+          <select id="disp-category" class="form-select">
+            <option value="">Todas as categorias</option>
+            <option value="CONTRIBUTION_UNACKNOWLEDGED">Contribuição não reconhecida</option>
+            <option value="ROTATION_ORDER_DISPUTE">Ordem de rotação contestada</option>
+            <option value="UNAUTHORIZED_TRANSACTION">Transação não autorizada</option>
+            <option value="WALLET_DISCREPANCY">Divergência de carteira</option>
+            <option value="LEADERSHIP_ABUSE">Abuso de liderança</option>
+            <option value="OTHER">Outra</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-1">
+          <label for="disp-limit" class="form-label">Por pág.</label>
+          <select id="disp-limit" class="form-select">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-1 d-flex gap-2">
+          <button type="submit" class="btn btn-primary-ok flex-grow-1" aria-label="Aplicar filtros">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+          <button type="reset" class="btn btn-ghost-ok" aria-label="Limpar filtros" title="Limpar filtros">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Loading / Erro -->
+    <div id="disp-loading" class="admin-card disp-state-box mb-4" role="status" aria-live="polite">
+      <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+      A carregar a fila de contestações…
+    </div>
+    <div id="disp-error" class="admin-card disp-state-box d-none mb-4" role="alert"></div>
+
+    <!-- ====================================================================
+         TABELA
+         ==================================================================== -->
+    <section class="admin-card mb-4 d-none" id="disp-table-card" aria-labelledby="disp-table-title">
+      <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom:1px solid var(--ok-border-subtle);">
+        <div>
+          <h2 id="disp-table-title" style="font-size:1.05rem;font-weight:800;color:var(--ok-text-primary);margin:0;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;">
+            <i class="bi bi-shield-exclamation" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>
+            Fila de mediação
+          </h2>
+          <p class="mb-0" style="font-size:0.78rem;color:var(--ok-text-muted);">As ações disponíveis dependem do estado da contestação e da ausência de conflito.</p>
+        </div>
+        <span class="admin-currency-badge" id="disp-total-pill"></span>
+      </div>
+
+      <div class="disp-table-wrap">
+        <table class="table disp-table">
+          <thead>
+            <tr>
+              <th class="ps-4">Contestação</th>
+              <th>Requerente</th>
+              <th>Parte reclamada</th>
+              <th>Categoria</th>
+              <th>Montante</th>
+              <th>Estado</th>
+              <th>Aberta em</th>
+              <th class="text-end pe-4">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="disp-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="disp-footer">
+        <span class="small" style="color:var(--ok-text-muted);" id="disp-pagination-info">—</span>
+        <ul class="disp-pagination" id="disp-pagination" aria-label="Paginação"></ul>
+      </div>
+    </section>
+
+    <div class="admin-note alert" style="max-width:var(--ok-content-max);margin:0 auto 20px auto;">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      <span>As decisões finais são irreversíveis no fluxo atual. Reveja descrição, evidências e partes antes de deliberar; o servidor rejeitará transições inválidas.</span>
+    </div>
+
+    <footer class="admin-footer" style="border-top:1px solid var(--ok-border-subtle);background:transparent;padding:1rem 1.25rem;text-align:center;color:var(--ok-text-muted);font-size:0.78rem;max-width:var(--ok-content-max);margin:2rem auto 0;width:100%;">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Mediação sujeita à imparcialidade e auditoria.</span>
+    </footer>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL — Autos da contestação
+       ====================================================================== -->
+  <div class="modal fade disp-modal" id="modal-disp-details" tabindex="-1" aria-labelledby="modalDispDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="modalDispDetailsLabel"><i class="bi bi-folder2-open me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>Autos da contestação</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body" id="disp-details-body">
+          <div class="disp-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost-ok" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL — Deliberação de arbitragem
+       ====================================================================== -->
+  <div class="modal fade disp-modal" id="modal-disp-resolve" tabindex="-1" aria-labelledby="modalDispResolveLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="modalDispResolveLabel"><i class="bi bi-gavel me-2" style="color:var(--ok-accent-amber);" aria-hidden="true"></i>Deliberação de arbitragem</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="form-disp-resolve">
+          <input type="hidden" id="resolve-dispute-id">
+          <div class="modal-body">
+            <div class="admin-note alert mb-3">
+              <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+              <span>A decisão encerrará definitivamente a disputa. Registe um parecer fundamentado e imparcial.</span>
+            </div>
+            <label for="resolve-status" class="form-label small fw-semibold">Decisão final</label>
+            <select id="resolve-status" class="form-select" required>
+              <option value="" selected disabled>Selecione uma decisão…</option>
+              <option value="RESOLVED_FAVOR_INITIATOR">A favor do requerente</option>
+              <option value="RESOLVED_FAVOR_RESPONDENT">A favor da parte reclamada</option>
+              <option value="CLOSED_DISMISSED">Encerrar sem provimento</option>
+            </select>
+            <label for="resolve-notes" class="form-label small fw-semibold mt-3">Parecer fundamentado <span class="text-danger">*</span></label>
+            <textarea id="resolve-notes" class="form-control" rows="5" minlength="10" maxlength="2000" required placeholder="Registe os factos considerados, evidências avaliadas e fundamentação da decisão (10–2000 caracteres)."></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost-ok" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-warning-ok" id="resolve-submit">Confirmar decisão final</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/sweet-alert') %>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+        sidebarToggle?.addEventListener('click', () => {
+          const active = document.body.classList.toggle('mobile-nav-active');
+          sidebarToggle.setAttribute('aria-expanded', String(active));
+        });
+        document.querySelectorAll('.ok-rail-link[href]').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 991px)').matches) {
+              document.body.classList.remove('mobile-nav-active');
+            }
+          });
+        });
+        const search = document.getElementById('global-dashboard-search');
+        document.addEventListener('keydown', (event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (search) { event.preventDefault(); search.focus(); }
+          }
+        });
+        document.querySelectorAll('[data-action="logout"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            button.disabled = true;
+            try {
+              if (window.apiClient && typeof window.apiClient.post === 'function') await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') window.apiClient.clearSession();
+            } catch (_) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         ESTADO E HELPERS
+         ==================================================================== */
+      const role = String(document.body.dataset.adminRole || '').toUpperCase();
+      const actorId = String(document.body.dataset.adminUserId || '');
+      const canArbitrate = ['ADMIN', 'AUDITOR'].includes(role);
+
+      const el = {
+        loading: document.getElementById('disp-loading'),
+        error: document.getElementById('disp-error'),
+        card: document.getElementById('disp-table-card'),
+        body: document.getElementById('disp-table-body'),
+        pagination: document.getElementById('disp-pagination'),
+        alert: document.getElementById('disp-alert'),
+        status: document.getElementById('disp-status'),
+        category: document.getElementById('disp-category'),
+        limit: document.getElementById('disp-limit')
+      };
+      let page = 1, pages = 1, seq = 0, records = [];
+
+      function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+      function errMsg(e, f) { return e && typeof e.message === 'string' && e.message.trim() ? e.message : f; }
+      function alertPage(text, type) {
+        el.alert.className = 'alert alert-' + (type || 'danger');
+        el.alert.textContent = String(text || 'Ocorreu um erro.');
+        el.alert.classList.remove('d-none');
+        el.alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      function clearAlert() { el.alert.classList.add('d-none'); el.alert.textContent = ''; }
+      function dateFmt(v) {
+        if (!v) return '—';
+        const d = new Date(v);
+        return Number.isNaN(d.getTime()) ? '—' : new Intl.DateTimeFormat('pt-PT', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+      }
+      function money(v, c) {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return '—';
+        try { return new Intl.NumberFormat('pt-AO', { style: 'currency', currency: String(c || 'AOA'), maximumFractionDigits: 2 }).format(n); }
+        catch (_) { return new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 2 }).format(n) + ' ' + String(c || 'AOA'); }
+      }
+
+      function statusBadge(s) {
+        const v = String(s || 'UNKNOWN').toUpperCase();
+        const labels = { OPEN: 'Aberta', UNDER_INVESTIGATION: 'Em investigação', RESOLVED_FAVOR_INITIATOR: 'A favor do requerente', RESOLVED_FAVOR_RESPONDENT: 'A favor da parte reclamada', CLOSED_DISMISSED: 'Encerrada sem provimento' };
+        const cls = { OPEN: 'disp-state-open', UNDER_INVESTIGATION: 'disp-state-investigation', RESOLVED_FAVOR_INITIATOR: 'disp-state-initiator', RESOLVED_FAVOR_RESPONDENT: 'disp-state-respondent', CLOSED_DISMISSED: 'disp-state-dismissed' };
+        return '<span class="disp-badge ' + (cls[v] || 'disp-state-dismissed') + '" title="' + esc(v) + '">' + esc(labels[v] || v) + '</span>';
+      }
+      function categoryLabel(c) {
+        return ({ CONTRIBUTION_UNACKNOWLEDGED: 'Contribuição não reconhecida', ROTATION_ORDER_DISPUTE: 'Ordem de rotação', UNAUTHORIZED_TRANSACTION: 'Transação não autorizada', WALLET_DISCREPANCY: 'Divergência de carteira', LEADERSHIP_ABUSE: 'Abuso de liderança', OTHER: 'Outra' })[String(c || '').toUpperCase()] || String(c || '—');
+      }
+
+      function conflict(d) { return !actorId || String(d.initiator_user_id || '') === actorId || String(d.respondent_user_id || '') === actorId; }
+      function closed(d) { return ['RESOLVED_FAVOR_INITIATOR', 'RESOLVED_FAVOR_RESPONDENT', 'CLOSED_DISMISSED'].includes(String(d.status || '').toUpperCase()); }
+      function mayAct(d) { return canArbitrate && !conflict(d) && !closed(d); }
+
+      function updateSummary(data, p) {
+        const total = Number(p && (p.totalItems ?? p.totalCount));
+        document.getElementById('stat-total').textContent = Number.isFinite(total) ? String(total) : String(data.length);
+        document.getElementById('stat-open').textContent = String(data.filter(x => x.status === 'OPEN').length);
+        document.getElementById('stat-investigation').textContent = String(data.filter(x => x.status === 'UNDER_INVESTIGATION').length);
+        document.getElementById('stat-closed').textContent = String(data.filter(x => closed(x)).length);
+        document.getElementById('disp-total-pill').textContent = (Number.isFinite(total) ? total : data.length) + ' contestação(ões)';
+      }
+
+      function render(data) {
+        if (!data.length) {
+          el.body.innerHTML = '<tr><td colspan="8"><div class="disp-state-box m-3"><i class="bi bi-inbox" aria-hidden="true"></i><strong class="d-block mb-1" style="color:var(--ok-text-primary);">Nenhuma contestação encontrada</strong><span>Altere os filtros ou tente novamente mais tarde.</span></div></td></tr>';
+          return;
+        }
+        el.body.innerHTML = data.map(d => {
+          const id = String(d.id || '');
+          const code = String(d.dispute_code || '');
+          const name = String(d.initiator_name || 'Requerente não identificado');
+          const respondent = String(d.respondent_name || 'Não indicado');
+          const st = String(d.status || '').toUpperCase();
+          const act = mayAct(d);
+          let actions = '<button type="button" class="btn btn-sm btn-outline-info" data-action="details" data-dispute-id="' + esc(id) + '" aria-label="Ver autos de ' + esc(code) + '" title="Consultar autos"><i class="bi bi-eye" aria-hidden="true"></i></button>';
+          if (act && st === 'OPEN') actions += '<button type="button" class="btn btn-sm btn-outline-primary" data-action="investigate" data-dispute-id="' + esc(id) + '" aria-label="Iniciar investigação de ' + esc(code) + '" title="Iniciar investigação"><i class="bi bi-search" aria-hidden="true"></i></button>';
+          if (act && (st === 'OPEN' || st === 'UNDER_INVESTIGATION')) actions += '<button type="button" class="btn btn-sm btn-outline-warning" data-action="resolve" data-dispute-id="' + esc(id) + '" aria-label="Deliberar disputa ' + esc(code) + '" title="Deliberação final"><i class="bi bi-gavel" aria-hidden="true"></i></button>';
+          return '<tr>' +
+            '<td class="ps-4"><div class="disp-name font-monospace">' + esc(code || '—') + '</div><div class="disp-sub">ID ' + esc(id) + '</div></td>' +
+            '<td><div class="disp-name">' + esc(name) + '</div></td>' +
+            '<td><div class="disp-sub">' + esc(respondent) + '</div></td>' +
+            '<td><span class="small">' + esc(categoryLabel(d.category)) + '</span></td>' +
+            '<td><span class="small" style="color:var(--ok-text-primary);">' + esc(d.amount_contested == null ? '—' : money(d.amount_contested, d.currency)) + '</span></td>' +
+            '<td>' + statusBadge(st) + '</td>' +
+            '<td><span class="small" style="color:var(--ok-text-muted);">' + esc(dateFmt(d.created_at)) + '</span></td>' +
+            '<td class="text-end pe-4"><div class="disp-actions">' + actions + '</div></td></tr>';
+        }).join('');
+      }
+
+      function renderPagination(p) {
+        const total = Number(p && (p.totalItems ?? p.totalCount));
+        const cur = Number(p && (p.currentPage ?? p.page));
+        const tp = Number(p && (p.totalPages ?? p.total_pages));
+        if (Number.isFinite(cur) && cur > 0) page = cur;
+        pages = Number.isFinite(tp) && tp > 0 ? tp : 1;
+        const size = Number(p && (p.pageSize ?? p.limit)) || Number(el.limit.value) || 15;
+        const first = Number.isFinite(total) && total > 0 ? (page - 1) * size + 1 : 0;
+        const last = Number.isFinite(total) && total > 0 ? Math.min(page * size, total) : records.length;
+        document.getElementById('disp-pagination-info').textContent = Number.isFinite(total)
+          ? 'A mostrar ' + first + '–' + last + ' de ' + total + ' · Página ' + page + ' de ' + pages
+          : 'Página ' + page + ' · ' + records.length + ' resultado(s)';
+        const nums = Array.from(new Set([1, pages, page - 1, page, page + 1].filter(n => n >= 1 && n <= pages))).sort((a, b) => a - b);
+        let html = '<li><button type="button" data-page="' + (page - 1) + '" ' + (page <= 1 ? 'disabled' : '') + ' aria-label="Página anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></button></li>';
+        let prev = 0;
+        nums.forEach(n => {
+          if (prev && n - prev > 1) html += '<li class="text-muted px-1 align-self-center" aria-hidden="true" style="color:var(--ok-text-muted);">…</li>';
+          html += '<li><button type="button" data-page="' + n + '" class="' + (n === page ? 'is-current' : '') + '" ' + (n === page ? 'aria-current="page"' : '') + '>' + n + '</button></li>';
+          prev = n;
+        });
+        html += '<li><button type="button" data-page="' + (page + 1) + '" ' + (page >= pages ? 'disabled' : '') + ' aria-label="Página seguinte"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></li>';
+        el.pagination.innerHTML = html;
+      }
+
+      /* ====================================================================
+         CARREGAR FILA
+         ==================================================================== */
+      async function loadQueue(requestPage) {
+        if (!canArbitrate) {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-shield-lock" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Acesso reservado</strong><span>A fila de contestações está limitada a ADMIN e AUDITOR. A API aplica a mesma autorização.</span>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-plug" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Cliente da API indisponível</strong><span>Não é seguro consultar nem deliberar contestações sem o cliente autenticado da API.</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="disp-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        page = requestPage || 1;
+        const thisSeq = ++seq;
+        clearAlert();
+        el.error.classList.add('d-none');
+        el.card.classList.add('d-none');
+        el.loading.classList.remove('d-none');
+        el.loading.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>A carregar a fila de contestações…';
+        const q = new URLSearchParams({ page: String(page), limit: String(Number(el.limit.value) || 15) });
+        if (el.status.value) q.set('status', el.status.value);
+        if (el.category.value) q.set('category', el.category.value);
+        try {
+          const response = await window.apiClient.get('/disputes/queue?' + q.toString());
+          if (thisSeq !== seq) return;
+          if (!response || response.success === false || !Array.isArray(response.data)) throw new Error('A API não devolveu uma fila válida.');
+          records = response.data;
+          render(records);
+          renderPagination(response.pagination || {});
+          updateSummary(records, response.pagination || {});
+          el.loading.classList.add('d-none');
+          el.card.classList.remove('d-none');
+        } catch (error) {
+          if (thisSeq !== seq) return;
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-exclamation-triangle" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Não foi possível carregar a fila</strong><span>' + esc(errMsg(error, 'Falha de comunicação com o servidor.')) + '</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="disp-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+        }
+      }
+
+      /* ====================================================================
+         MODAIS
+         ==================================================================== */
+      function modal(id) {
+        if (!window.bootstrap || !window.bootstrap.Modal) {
+          alertPage('Os componentes de interface não foram inicializados. Recarregue a página antes de continuar.', 'warning');
+          return null;
+        }
+        return window.bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+      }
+      function detailItem(label, value) {
+        return '<div class="col-12 col-md-6"><div class="disp-detail"><span class="disp-detail-label">' + esc(label) + '</span><span class="disp-detail-value">' + esc(value == null || value === '' ? '—' : value) + '</span></div></div>';
+      }
+
+      async function showDetails(id) {
+        const m = modal('modal-disp-details');
+        const body = document.getElementById('disp-details-body');
+        if (!m || !window.apiClient || typeof window.apiClient.get !== 'function') return;
+        body.innerHTML = '<div class="disp-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span><span class="ms-2">A consultar os autos…</span></div>';
+        m.show();
+        try {
+          const response = await window.apiClient.get('/disputes/' + encodeURIComponent(id));
+          const d = response && response.data ? (response.data.dispute || response.data) : null;
+          if (!d || typeof d !== 'object') throw new Error('A API não devolveu os autos da disputa.');
+          const partiesConflict = conflict(d);
+          const resolution = d.resolution_notes
+            ? '<div class="admin-note mt-3"><i class="bi bi-journal-check" aria-hidden="true"></i><span><strong>Parecer final</strong><br>' + esc(d.resolution_notes) + '<br><span class="small">Resolvido por ' + esc(d.resolver_name || '—') + ' · ' + esc(dateFmt(d.resolved_at)) + '</span></span></div>'
+            : '';
+          let workflow = '';
+          if (mayAct(d) && String(d.status).toUpperCase() === 'OPEN') {
+            workflow = '<div class="admin-note warning mt-3"><i class="bi bi-info-circle" aria-hidden="true"></i><span>O processo pode ser colocado em investigação ou deliberado diretamente, conforme as regras da API.</span></div>';
+          } else if (canArbitrate && partiesConflict) {
+            workflow = '<div class="admin-note alert mt-3"><i class="bi bi-person-exclamation" aria-hidden="true"></i><span>Conflito de interesses: como membro envolvido nesta disputa, não pode conduzir a investigação nem a arbitragem.</span></div>';
+          } else if (closed(d)) {
+            workflow = '<div class="admin-note mt-3"><i class="bi bi-lock" aria-hidden="true"></i><span>Esta disputa está encerrada e não admite novas deliberações.</span></div>';
+          }
+          body.innerHTML = '<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><div class="h5 fw-bold font-monospace mb-1" style="color:var(--ok-text-primary);">' + esc(d.dispute_code || 'Contestação') + '</div><div class="d-flex flex-wrap gap-2">' + statusBadge(d.status) + '<span class="disp-badge disp-state-dismissed">' + esc(categoryLabel(d.category)) + '</span></div></div><span class="small" style="color:var(--ok-text-muted);">Aberta ' + esc(dateFmt(d.created_at)) + '</span></div>' +
+            '<h3 class="mb-3" style="font-size:0.7rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ok-purple-vibrant);">Partes e referência</h3><div class="row g-2 mb-4">' +
+            detailItem('Requerente', d.initiator_name) + detailItem('E-mail do requerente', d.initiator_email) + detailItem('Parte reclamada', d.respondent_name) + detailItem('E-mail da parte reclamada', d.respondent_email) + detailItem('Grupo relacionado', d.group_name) + detailItem('Montante contestado', d.amount_contested == null ? '—' : money(d.amount_contested, d.currency)) + detailItem('ID da contribuição', d.contribution_id) + detailItem('ID da transação contabilística', d.ledger_transaction_id) + detailItem('ID do processo', d.id) + '</div>' +
+            '<h3 class="mb-3" style="font-size:0.7rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ok-purple-vibrant);">Relato e evidências</h3>' +
+            '<div class="disp-detail mb-2"><span class="disp-detail-label">Descrição dos factos</span><div class="disp-detail-value" style="white-space:pre-wrap">' + esc(d.description || '—') + '</div></div>' +
+            '<div class="disp-detail"><span class="disp-detail-label">Notas probatórias</span><div class="disp-detail-value" style="white-space:pre-wrap">' + esc(d.evidence_notes || '—') + '</div></div>' +
+            workflow + resolution;
+        } catch (error) {
+          body.innerHTML = '<div class="alert alert-danger mb-0" role="alert">' + esc(errMsg(error, 'Falha ao consultar os autos.')) + '</div>';
+        }
+      }
+
+      async function investigate(d) {
+        if (!mayAct(d) || String(d.status).toUpperCase() !== 'OPEN') return alertPage('A investigação não está disponível para este utilizador ou estado.', 'warning');
+        if (!await confirmAction('Iniciar investigação?', 'A contestação passará de OPEN para UNDER_INVESTIGATION.')) return;
+        try {
+          const res = await window.apiClient.post('/disputes/' + encodeURIComponent(d.id) + '/investigate', {});
+          if (res && res.success === false) throw new Error(res.message || 'A API recusou a transição.');
+          toast('Contestação encaminhada para investigação.');
+          await loadQueue(page);
+        } catch (e) { fail(e, 'Não foi possível iniciar a investigação.'); }
+      }
+
+      function openResolve(d) {
+        if (!mayAct(d) || !['OPEN', 'UNDER_INVESTIGATION'].includes(String(d.status).toUpperCase())) return alertPage('A arbitragem não está disponível para este utilizador ou estado.', 'warning');
+        document.getElementById('resolve-dispute-id').value = String(d.id);
+        document.getElementById('resolve-status').value = '';
+        document.getElementById('resolve-notes').value = '';
+        const m = modal('modal-disp-resolve');
+        if (m) m.show();
+      }
+
+      async function confirmAction(title, text) {
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          const r = await window.Swal.fire({ icon: 'warning', title, text, showCancelButton: true, confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar', confirmButtonColor: '#7c3aed' });
+          return Boolean(r.isConfirmed);
+        }
+        return window.confirm(title + '\n' + text);
+      }
+      function toast(t) {
+        if (window.Alerts && typeof window.Alerts.toast === 'function') window.Alerts.toast(t, 'success');
+        else alertPage(t, 'success');
+      }
+      function fail(e, f) {
+        const m = errMsg(e, f);
+        if (window.Alerts && typeof window.Alerts.error === 'function') window.Alerts.error(m);
+        else alertPage(m, 'danger');
+      }
+
+      /* ====================================================================
+         EVENTOS
+         ==================================================================== */
+      document.getElementById('disp-filter-form').addEventListener('submit', ev => { ev.preventDefault(); loadQueue(1); });
+      document.getElementById('disp-filter-form').addEventListener('reset', () => window.setTimeout(() => loadQueue(1), 0));
+      document.getElementById('disp-refresh').addEventListener('click', () => loadQueue(page));
+      el.pagination.addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-page]');
+        if (!b || b.disabled) return;
+        const n = Number(b.dataset.page);
+        if (Number.isInteger(n) && n >= 1 && n <= pages) loadQueue(n);
+      });
+      el.error.addEventListener('click', ev => { if (ev.target.closest('#disp-retry')) loadQueue(page); });
+      el.body.addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-action]');
+        if (!b) return;
+        const d = records.find(x => String(x.id) === String(b.dataset.disputeId));
+        if (!d) return;
+        if (b.dataset.action === 'details') showDetails(d.id);
+        else if (b.dataset.action === 'investigate') investigate(d);
+        else if (b.dataset.action === 'resolve') openResolve(d);
+      });
+
+      document.getElementById('form-disp-resolve').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        if (!canArbitrate || !window.apiClient || typeof window.apiClient.post !== 'function') return alertPage('A API ou as permissões de arbitragem não estão disponíveis.', 'danger');
+        const id = document.getElementById('resolve-dispute-id').value;
+        const status = document.getElementById('resolve-status').value;
+        const notes = document.getElementById('resolve-notes').value.trim();
+        const d = records.find(x => String(x.id) === String(id));
+        if (!d || !mayAct(d) || !['OPEN', 'UNDER_INVESTIGATION'].includes(String(d.status).toUpperCase())) return alertPage('O estado atual ou as partes envolvidas não permitem esta deliberação. Atualize a fila.', 'warning');
+        if (!status || notes.length < 10 || notes.length > 2000) return alertPage('Selecione uma decisão e introduza um parecer entre 10 e 2000 caracteres.', 'warning');
+        const title = status === 'RESOLVED_FAVOR_INITIATOR' ? 'Resolver a favor do requerente?' : status === 'RESOLVED_FAVOR_RESPONDENT' ? 'Resolver a favor da parte reclamada?' : 'Encerrar sem provimento?';
+        if (!await confirmAction(title, 'A decisão é final e será registada com a fundamentação apresentada.')) return;
+        const button = document.getElementById('resolve-submit');
+        button.disabled = true;
+        try {
+          const res = await window.apiClient.post('/disputes/' + encodeURIComponent(id) + '/resolve', { status, resolutionNotes: notes });
+          if (res && res.success === false) throw new Error(res.message || 'A API recusou a deliberação.');
+          const m = window.bootstrap.Modal.getInstance(document.getElementById('modal-disp-resolve'));
+          if (m) m.hide();
+          toast('Deliberação registada com sucesso.');
+          await loadQueue(page);
+        } catch (error) {
+          fail(error, 'Falha ao registar a deliberação.');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      document.getElementById('modal-disp-resolve').addEventListener('hidden.bs.modal', () => {
+        document.getElementById('form-disp-resolve').reset();
+        document.getElementById('resolve-submit').disabled = false;
+      });
+
+      /* ====================================================================
+         RELÓGIO UTC + INICIALIZAÇÃO
+         ==================================================================== */
+      const clock = document.getElementById('admin-utc-clock');
+      function updateClock() {
+        if (clock) clock.textContent = new Intl.DateTimeFormat('pt-PT', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()) + ' UTC';
+      }
+      updateClock();
+      window.setInterval(updateClock, 1000);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        loadQueue(1);
+      });
+    })();
+  </script>
+</body>
+</html>

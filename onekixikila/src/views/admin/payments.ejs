@@ -1,0 +1,1687 @@
+<%- include('../partials/head') %>
+<%
+  const adminUser = (typeof user !== 'undefined' && user) ? user : {};
+  const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador';
+  const adminRoleForPage = String(adminUser.role || '').toUpperCase();
+  const adminIdForPage = String(adminUser.id || '');
+  const canAccessAdminPage = (...roles) => roles.includes(adminRoleForPage);
+  const canViewAuditTrail = canAccessAdminPage('ADMIN', 'AUDITOR');
+  const adminDisplayName = adminUserName || 'Administrador';
+%>
+
+<!-- Fontes do dashboard normal — identidade visual preservada. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     SISTEMA DE DESIGN — ONEKIXIKILA ADMIN (TEMA ESCURO PADRÃO + TEMA CLARO)
+     Coerente com dashboard/index.ejs: paleta, cards chapados, sidebar slim tech.
+     Fontes: Plus Jakarta Sans (corpo) + Space Grotesk (títulos).
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-pill: 9999px;
+    --ok-radius-card: 20px;
+    --ok-radius-md: 12px;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1180px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.25);
+    --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+    --ok-color-card-white: #ffffff;
+    --ok-color-card-lime: #bef264;
+    --ok-color-card-purple: #7c3aed;
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.10);
+    --ok-border-strong: rgba(15, 23, 42, 0.18);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.08);
+    --ok-shadow-card: rgba(15, 23, 42, 0.10);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+      --ok-purple-glow: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-border-strong: rgba(15, 23, 42, 0.18);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ok-bg-canvas);
+    color: var(--ok-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(5, 5, 8, 0) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.10) 0%, rgba(244, 245, 249, 0) 70%);
+  }
+
+  /* =========================================================================
+     BARRA LATERAL SLIM TECH
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 20px;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+  }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+    text-decoration: none;
+  }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; width: 100%;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: thin;
+  }
+  .ok-rail-nav::-webkit-scrollbar { width: 3px; }
+  .ok-rail-nav::-webkit-scrollbar-thumb { background: var(--ok-border-subtle); border-radius: 5px; }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: transparent;
+    position: relative;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+  }
+  .ok-rail-link svg { width: 20px; height: 20px; }
+
+  .admin-rail-count {
+    position: absolute; top: 2px; right: 1px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    background: #ef4444; color: #fff;
+    border: 2px solid var(--ok-bg-surface);
+    font-size: 9px; font-weight: 800;
+  }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CENTRALIZADO
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 20px);
+    padding: 20px 20px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+
+  /* Top nav — alinhado ao centro do conteúdo */
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* Barra de pesquisa — alinhada ao início do conteúdo */
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 0;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex; align-items: center;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+  .ok-action-circle[disabled] { opacity: 0.65; cursor: wait; }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    color: inherit;
+  }
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%; object-fit: cover;
+    background: var(--ok-purple-soft);
+    border: 2px solid var(--ok-purple-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); font-weight: 800; font-size: 0.9rem;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: 14px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+
+  .ok-page-title-main {
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #10b981;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 780px;
+  }
+
+  .admin-hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-btn-pill-soft {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ok-btn-pill-soft:hover {
+    background: var(--ok-purple-vibrant);
+    color: #ffffff;
+  }
+  .ok-btn-pill-soft[disabled] { opacity: 0.65; cursor: wait; }
+
+  .ok-btn-pill-primary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 18px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+  }
+  .ok-btn-pill-primary:hover { transform: translateY(-1px); color: #ffffff; }
+  .ok-btn-pill-primary[disabled] { opacity: 0.65; cursor: wait; }
+
+  .admin-currency-badge {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-muted);
+    font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* =========================================================================
+     FAIXA DE 4 CARDS CHAPADOS (KPIs)
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 24px auto;
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+    width: 100%;
+  }
+
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+    color: inherit;
+  }
+
+  .ok-flat-card-box.theme-white { background-color: #ffffff; color: #0f172a; }
+  .ok-flat-card-box.theme-lime { background-color: #bef264; color: #0f172a; }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: #ffffff; color: #0f172a;
+    border-left: 1px solid rgba(0,0,0,0.08);
+  }
+  .ok-flat-card-box.theme-purple { background-color: #7c3aed; color: #ffffff; }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: #0f172a; }
+  .theme-purple .ok-flat-icon-container svg { stroke: #ffffff; }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .theme-purple .ok-flat-trend { background: rgba(255,255,255,0.15); color: #ffffff; }
+  .ok-flat-trend.warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+  .ok-flat-trend.danger { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+  .ok-flat-trend.info { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+
+  /* =========================================================================
+     CARDS BASE (admin-card)
+     ========================================================================= */
+  .admin-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-card);
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 20px auto;
+    width: 100%;
+  }
+
+  .admin-note {
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-text-secondary);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    padding: 0.85rem 1rem;
+    display: flex; align-items: flex-start; gap: 8px;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+  .admin-note i { color: var(--ok-purple-vibrant); flex-shrink: 0; }
+  .admin-note.warning {
+    background: rgba(6, 182, 212, 0.08);
+    border-color: rgba(6, 182, 212, 0.22);
+    color: #b6e7ee;
+  }
+  .admin-note.warning i { color: #67e8f9; }
+  .admin-note.critical {
+    background: rgba(244, 63, 94, 0.10);
+    border-color: rgba(244, 63, 94, 0.25);
+    color: #fecdd3;
+  }
+  .admin-note.critical i { color: #fda4af; }
+
+  /* =========================================================================
+     BOTÕES
+     ========================================================================= */
+  .btn-primary-ok {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    border: none;
+    color: #ffffff;
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(139, 92, 246, 0.35);
+    transition: all 0.2s ease;
+  }
+  .btn-primary-ok:hover { transform: translateY(-1px); color: #fff; }
+  .btn-warning-ok {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: none;
+    color: #ffffff;
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3);
+    transition: all 0.2s ease;
+  }
+  .btn-warning-ok:hover { transform: translateY(-1px); color: #fff; }
+  .btn-ghost-ok {
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-primary);
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .btn-ghost-ok:hover {
+    background: var(--ok-pill-bg-hover);
+    color: var(--ok-purple-vibrant);
+  }
+
+  /* =========================================================================
+     TABELA
+     ========================================================================= */
+  .fin-table-wrap {
+    overflow: auto;
+    border-radius: var(--ok-radius-card);
+  }
+  .fin-table { min-width: 900px; margin: 0; }
+  .fin-table thead th {
+    color: var(--ok-text-muted);
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--ok-border-subtle);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.95rem 0.85rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .fin-table tbody td {
+    border-bottom: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-secondary);
+    padding: 0.95rem 0.85rem;
+    vertical-align: middle;
+    font-size: 0.84rem;
+  }
+  .fin-table tbody tr:last-child td { border-bottom: 0; }
+  .fin-table tbody tr { transition: background 0.15s ease; }
+  .fin-table tbody tr:hover { background: var(--ok-stream-hover); }
+
+  .fin-subtext {
+    color: var(--ok-text-muted);
+    font-size: 0.72rem;
+    margin-top: 0.2rem;
+    overflow-wrap: anywhere;
+  }
+  .fin-nowrap { white-space: nowrap; }
+
+  .fin-badge {
+    border: 1px solid transparent;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.025em;
+    padding: 0.34rem 0.58rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  .fin-state-match { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #6ee7b7; }
+  .fin-state-amount { background: rgba(244, 63, 94, 0.12); border-color: rgba(244, 63, 94, 0.25); color: #fda4af; }
+  .fin-state-status { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.25); color: #fcd34d; }
+  .fin-state-resolved { background: rgba(6, 182, 212, 0.12); border-color: rgba(6, 182, 212, 0.25); color: #67e8f9; }
+  .fin-state-other { background: var(--ok-pill-bg); border-color: var(--ok-border-subtle); color: var(--ok-text-secondary); }
+
+  .fin-actions { display: flex; justify-content: flex-end; gap: 0.35rem; }
+  .fin-actions .btn {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 36px;
+    border-radius: var(--ok-radius-md);
+    transition: all 0.15s ease;
+  }
+  .fin-actions .btn:hover { transform: translateY(-1px); }
+
+  /* =========================================================================
+     PAGINAÇÃO + FOOTER
+     ========================================================================= */
+  .fin-footer {
+    align-items: center;
+    border-top: 1px solid var(--ok-border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+  }
+  .fin-pager { display: flex; gap: 0.4rem; }
+  .fin-pager button {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 9px;
+    color: var(--ok-text-secondary);
+    padding: 0.45rem 0.8rem;
+    font-weight: 700;
+    transition: all 0.15s ease;
+  }
+  .fin-pager button:hover:not(:disabled) {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+  }
+  .fin-pager button:disabled { cursor: not-allowed; opacity: 0.4; }
+
+  /* =========================================================================
+     ESTADOS
+     ========================================================================= */
+  .fin-state-box {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-card);
+    color: var(--ok-text-muted);
+    padding: 2.5rem 1rem;
+    text-align: center;
+    background: var(--ok-bg-surface);
+  }
+  .fin-state-box i {
+    color: var(--ok-purple-vibrant);
+    display: block;
+    font-size: 1.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  /* =========================================================================
+     RUN RESULT CARD
+     ========================================================================= */
+  .fin-run-result {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 24px auto;
+    background: linear-gradient(145deg, rgba(124, 58, 237, 0.10), rgba(6, 182, 212, 0.04));
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-card);
+    padding: 1.2rem;
+    width: 100%;
+  }
+  .fin-result-number {
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--ok-text-primary);
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+
+  .fin-detail-box {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-md);
+    height: 100%;
+    padding: 0.8rem 0.9rem;
+  }
+  .fin-detail-label {
+    color: var(--ok-text-muted);
+    display: block;
+    font-size: 0.67rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.28rem;
+    text-transform: uppercase;
+  }
+  .fin-detail-value {
+    color: var(--ok-text-primary);
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+
+  .fin-discrepancy {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 14px;
+    padding: 1rem;
+  }
+  .fin-discrepancy-title {
+    color: var(--ok-text-primary);
+    font-weight: 800;
+  }
+
+  /* =========================================================================
+     MODAIS
+     ========================================================================= */
+  .fin-modal .modal-content {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-strong);
+    border-radius: 18px;
+    color: var(--ok-text-primary);
+  }
+  .fin-modal .modal-header,
+  .fin-modal .modal-footer { border-color: var(--ok-border-subtle); }
+  .fin-modal .modal-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+  }
+  .fin-modal .btn-close { filter: invert(1) grayscale(1) brightness(2); }
+  html[data-theme="light"] .fin-modal .btn-close { filter: none; }
+  .fin-modal .form-control,
+  .fin-modal .form-select {
+    background: var(--ok-bg-elevated) !important;
+    border: 1px solid var(--ok-border-strong) !important;
+    color: var(--ok-text-primary) !important;
+    min-height: 43px;
+    border-radius: var(--ok-radius-md);
+  }
+  .fin-modal .form-control::placeholder { color: var(--ok-text-muted); }
+  .fin-modal .form-control:focus,
+  .fin-modal .form-select:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 3px var(--ok-purple-soft) !important;
+  }
+  .fin-modal option { background: var(--ok-bg-elevated); color: var(--ok-text-primary); }
+
+  /* =========================================================================
+     ALERTA INLINE
+     ========================================================================= */
+  #fin-alert {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 16px auto;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.85rem;
+    width: 100%;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+    .fin-footer { flex-direction: column; align-items: flex-start; }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<body data-admin-role="<%= adminRoleForPage %>">
+  <div class="ok-ambient-glow-core" aria-hidden="true"></div>
+
+  <!-- ======================================================================
+       SIDEBAR SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila — Administração" aria-label="Painel administrativo OneKixikila">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav" aria-label="Ferramentas de administração">
+      <a href="/admin" class="ok-rail-link" title="Dashboard executivo" aria-label="Dashboard executivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'SUPPORT_AGENT')) { %>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores" aria-label="Utilizadores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila" aria-label="Grupos de Kixikila">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão de identidade KYC" aria-label="Revisão KYC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2.5"></circle><path d="M5.5 17c.8-2 2-3 3.5-3s2.7 1 3.5 3M15 9h3M15 13h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas" aria-label="Disputas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path><path d="M12 8v4M12 16h.01"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-disputes">0</span>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+      <a href="/admin/payments" class="ok-rail-link active" title="Pagamentos e saídas" aria-label="Pagamentos e saídas" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20M6 15h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios financeiros" aria-label="Relatórios financeiros">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path><path d="M14 9h5v5"></path></svg>
+      </a>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas e limites" aria-label="Configurações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.6-1.4-2.4 1.4-1.1A8 8 0 0 1 7 13l-1.8-.3V9.9L7 9.6a8 8 0 0 1 .7-1.6L6.3 6.8l1.4-2.4 1.7.6a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.6 1.4 2.4-1.4 1.2a8 8 0 0 1 .7 1.6l1.8.3v2.8l-1.8.3a8 8 0 0 1-.7 1.6z"></path></svg>
+      </a>
+      <% } %>
+      <% if (canViewAuditTrail) { %>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria forense" aria-label="Auditoria forense">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M8 13h8M8 17h8"></path></svg>
+      </a>
+      <% } %>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/notifications" class="ok-rail-link" title="Notificações" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+      <a href="/profile" class="ok-rail-link" title="Perfil" aria-label="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar sessão" aria-label="Terminar sessão" style="background:transparent;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- TOP BAR -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" id="global-dashboard-search" placeholder="Pesquisar lotes ou prestadores..." autocomplete="off" aria-label="Pesquisar lotes">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <span class="admin-currency-badge d-none d-md-inline-flex" id="admin-utc-clock" style="font-family:'Space Grotesk',monospace;letter-spacing:0.02em;">--:--:-- UTC</span>
+
+        <a href="/dashboard" class="ok-action-circle d-none d-sm-inline-flex" title="Painel do Membro" aria-label="Painel do Membro">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill" aria-label="Perfil do administrador">
+          <span class="ok-profile-avatar-nav" aria-hidden="true"><%= String(adminDisplayName).trim().charAt(0).toUpperCase() || 'A' %></span>
+          <div class="d-flex flex-column text-start admin-profile-text">
+            <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1;"><%= adminDisplayName %></span>
+            <span class="text-muted" style="font-size: 0.7rem;"><%= adminRoleForPage.replaceAll('_', ' ') || 'ADMIN' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Pagamentos e <span class="user-highlight">Conciliação</span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Controlo de Tesouraria
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          Execute conciliações entre o razão interno e os prestadores, consulte lotes de auditoria e registe a resolução formal de discrepâncias. A interface não inicia pagamentos nem movimenta fundos.
+        </p>
+      </div>
+
+      <div class="admin-hero-actions">
+        <button type="button" class="ok-btn-pill-soft" id="fin-refresh">
+          <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Atualizar histórico
+        </button>
+        <button type="button" class="ok-btn-pill-primary" id="fin-open-run">
+          <i class="bi bi-arrow-left-right" aria-hidden="true"></i> Executar conciliação
+        </button>
+      </div>
+    </section>
+
+    <!-- Alertas inline -->
+    <div id="fin-alert" class="alert d-none" role="alert" aria-live="polite"></div>
+
+    <!-- Aviso -->
+    <div class="admin-note" style="max-width:var(--ok-content-max);margin:0 auto 20px auto;">
+      <i class="bi bi-shield-lock" aria-hidden="true"></i>
+      <span>Conciliações consultam extratos dos gateways e criam um lote auditável; não iniciam débitos, reembolsos nem transferências. Resolver um lote regista parecer e estado, sem alterar lançamentos bancários ou do livro-razão.</span>
+    </div>
+
+    <!-- ====================================================================
+         FAIXA DE 4 CARDS CHAPADOS — KPIs
+         ==================================================================== -->
+    <div class="ok-flat-quad-strip" aria-label="Resumo dos lotes na página atual">
+
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+              <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Lotes nesta página</h5>
+          <p class="ok-flat-desc">Página atual do histórico.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-total">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Histórico
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Correspondentes</h5>
+          <p class="ok-flat-desc">Sem divergências reportadas.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-matched">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Conciliados
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M24 14v12m0 6h.01" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Com discrepâncias</h5>
+          <p class="ok-flat-desc">Aguardam análise ou resolução.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-issues">—</span>
+          <div class="ok-flat-trend warning">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 1 21h22L12 2zm0 6v6m0 3h.01"/></svg>
+            A rever
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 8h20v32H14z" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M18 16h12M18 22h12M18 28h8" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Resolvidos manualmente</h5>
+          <p class="ok-flat-desc">Intervenção registada.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-resolved">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Registados
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ====================================================================
+         RESULTADO DA ÚLTIMA EXECUÇÃO
+         ==================================================================== -->
+    <section id="fin-last-run" class="fin-run-result mb-4 d-none" aria-live="polite">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+          <div style="color:var(--ok-purple-vibrant);font-size:0.68rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;">Resultado da execução</div>
+          <h2 class="h5 fw-bold mb-0" style="color:var(--ok-text-primary);font-family:'Space Grotesk',sans-serif;" id="run-title">Conciliação concluída</h2>
+        </div>
+        <button type="button" class="btn btn-ghost-ok" id="run-hide">Fechar</button>
+      </div>
+      <div id="run-summary" class="row g-2"></div>
+      <div id="run-discrepancies" class="mt-3"></div>
+    </section>
+
+    <!-- Loading / Erro -->
+    <div id="fin-loading" class="admin-card fin-state-box mb-4" role="status" aria-live="polite">
+      <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+      A carregar o histórico de conciliações…
+    </div>
+    <div id="fin-error" class="admin-card fin-state-box d-none mb-4" role="alert"></div>
+
+    <!-- ====================================================================
+         TABELA DE LOTES
+         ==================================================================== -->
+    <section class="admin-card mb-4 d-none" id="fin-table-card" aria-labelledby="fin-table-title">
+      <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom:1px solid var(--ok-border-subtle);">
+        <div>
+          <h2 id="fin-table-title" style="font-size:1.05rem;font-weight:800;color:var(--ok-text-primary);margin:0;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;">
+            <i class="bi bi-bank" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>
+            Lotes de conciliação
+          </h2>
+          <p class="mb-0" style="font-size:0.78rem;color:var(--ok-text-muted);">Histórico de auditoria financeira retornado pelo backend.</p>
+        </div>
+        <span class="admin-currency-badge" id="fin-page-label"></span>
+      </div>
+
+      <div class="fin-table-wrap">
+        <table class="table fin-table">
+          <thead>
+            <tr>
+              <th class="ps-4">Referência</th>
+              <th>Prestador</th>
+              <th>Período</th>
+              <th>Registos</th>
+              <th>Discrepâncias</th>
+              <th>Estado</th>
+              <th>Executado em</th>
+              <th class="text-end pe-4">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="fin-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="fin-footer">
+        <span class="small" style="color:var(--ok-text-muted);" id="fin-page-info">—</span>
+        <div class="fin-pager">
+          <button type="button" id="fin-prev" aria-label="Página anterior">
+            <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+          </button>
+          <button type="button" id="fin-next" aria-label="Página seguinte">
+            Seguinte <i class="bi bi-chevron-right" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Aviso crítico -->
+    <div class="admin-note critical" style="max-width:var(--ok-content-max);margin:0 auto 20px auto;">
+      <i class="bi bi-exclamation-octagon" aria-hidden="true"></i>
+      <span>Antes de resolver um lote, investigue todas as divergências. A confirmação marca o lote como <strong>MANUALLY_RESOLVED</strong>, mas não corrige nem reverte transações subjacentes.</span>
+    </div>
+
+    <footer class="admin-footer" style="border-top:1px solid var(--ok-border-subtle);background:transparent;padding:1rem 1.25rem;text-align:center;color:var(--ok-text-muted);font-size:0.78rem;max-width:var(--ok-content-max);margin:2rem auto 0;width:100%;">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Operações de tesouraria com controlo e trilha de auditoria.</span>
+    </footer>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL — Executar conciliação
+       ====================================================================== -->
+  <div class="modal fade fin-modal" id="modal-fin-run" tabindex="-1" aria-labelledby="modalFinRunLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="modalFinRunLabel"><i class="bi bi-arrow-left-right me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>Executar conciliação</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="form-fin-run">
+          <div class="modal-body">
+            <div class="admin-note warning mb-3">
+              <i class="bi bi-info-circle" aria-hidden="true"></i>
+              <span>A operação consulta o extrato externo do prestador e grava um novo lote de conciliação. Escolha período e prestador com cuidado.</span>
+            </div>
+            <label for="run-provider" class="form-label small fw-semibold">Prestador de pagamento</label>
+            <select id="run-provider" class="form-select" required>
+              <option value="MULTICAIXA_EXPRESS">Multicaixa Express (EMIS)</option>
+              <option value="UNITEL_MONEY">Unitel Money</option>
+              <option value="E_KWANZA">e-Kwanza (BAI)</option>
+            </select>
+            <div class="row g-3 mt-1">
+              <div class="col-6">
+                <label for="run-start-date" class="form-label small fw-semibold">Data inicial</label>
+                <input id="run-start-date" type="date" class="form-control" required>
+              </div>
+              <div class="col-6">
+                <label for="run-end-date" class="form-label small fw-semibold">Data final</label>
+                <input id="run-end-date" type="date" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-text mt-2" style="color:var(--ok-text-muted);">O servidor interpreta as datas como dias UTC completos.</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost-ok" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary-ok" id="fin-run-submit">Executar e registar lote</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL — Detalhe de lote
+       ====================================================================== -->
+  <div class="modal fade fin-modal" id="modal-fin-detail" tabindex="-1" aria-labelledby="modalFinDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="modalFinDetailLabel"><i class="bi bi-receipt-cutoff me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>Detalhe da conciliação</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body" id="fin-detail-body">
+          <div class="fin-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost-ok" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-warning-ok d-none" id="fin-detail-resolve"><i class="bi bi-journal-check me-1" aria-hidden="true"></i>Registar resolução</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL — Resolver lote
+       ====================================================================== -->
+  <div class="modal fade fin-modal" id="modal-fin-resolve" tabindex="-1" aria-labelledby="modalFinResolveLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="modalFinResolveLabel"><i class="bi bi-journal-check me-2" style="color:var(--ok-accent-amber);" aria-hidden="true"></i>Resolver discrepância</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="form-fin-resolve">
+          <input type="hidden" id="resolve-batch-reference">
+          <div class="modal-body">
+            <div class="admin-note critical mb-3">
+              <i class="bi bi-exclamation-octagon" aria-hidden="true"></i>
+              <span>Esta ação consolida o lote como resolvido manualmente. Não efetua ajustes automáticos no razão nem junto do prestador.</span>
+            </div>
+            <label for="resolve-notes" class="form-label small fw-semibold">Parecer técnico de resolução <span class="text-danger">*</span></label>
+            <textarea id="resolve-notes" class="form-control" rows="5" minlength="10" maxlength="1000" required placeholder="Registe as verificações realizadas, evidências consideradas e decisão (10–1000 caracteres)."></textarea>
+            <div class="form-text mt-2" style="color:var(--ok-text-muted);">O parecer será guardado no histórico do lote e na trilha de auditoria.</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost-ok" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-warning-ok" id="fin-resolve-submit">Confirmar resolução</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/sweet-alert') %>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+        sidebarToggle?.addEventListener('click', () => {
+          const active = document.body.classList.toggle('mobile-nav-active');
+          sidebarToggle.setAttribute('aria-expanded', String(active));
+        });
+        document.querySelectorAll('.ok-rail-link[href]').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 991px)').matches) {
+              document.body.classList.remove('mobile-nav-active');
+            }
+          });
+        });
+        const search = document.getElementById('global-dashboard-search');
+        document.addEventListener('keydown', (event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (search) { event.preventDefault(); search.focus(); }
+          }
+        });
+        document.querySelectorAll('[data-action="logout"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            button.disabled = true;
+            try {
+              if (window.apiClient && typeof window.apiClient.post === 'function') await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') window.apiClient.clearSession();
+            } catch (_) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         ESTADO E HELPERS
+         ==================================================================== */
+      const role = String(document.body.dataset.adminRole || '').toUpperCase();
+      const canView = ['ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR'].includes(role);
+      const canRun = canView;
+      const canResolve = ['ADMIN', 'AUDITOR'].includes(role);
+      document.getElementById('fin-open-run').classList.toggle('d-none', !canRun);
+      document.getElementById('fin-refresh').classList.toggle('d-none', !canView);
+
+      const el = {
+        loading: document.getElementById('fin-loading'),
+        error: document.getElementById('fin-error'),
+        card: document.getElementById('fin-table-card'),
+        body: document.getElementById('fin-table-body'),
+        alert: document.getElementById('fin-alert'),
+        prev: document.getElementById('fin-prev'),
+        next: document.getElementById('fin-next')
+      };
+      let page = 1, pageSize = 20, records = [], currentBatch = null, seq = 0;
+
+      function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+      function msg(e, f) { return e && typeof e.message === 'string' && e.message.trim() ? e.message : f; }
+      function showAlert(text, type) {
+        el.alert.className = 'alert alert-' + (type || 'danger');
+        el.alert.textContent = String(text || 'Ocorreu um erro.');
+        el.alert.classList.remove('d-none');
+        el.alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      function clearAlert() { el.alert.classList.add('d-none'); el.alert.textContent = ''; }
+
+      function dateFmt(v, withTime) {
+        if (!v) return '—';
+        const d = new Date(v);
+        return Number.isNaN(d.getTime()) ? '—' : new Intl.DateTimeFormat('pt-PT', withTime ? { dateStyle: 'medium', timeStyle: 'short' } : { dateStyle: 'medium', timeZone: 'UTC' }).format(d);
+      }
+      function dateOnly(v) {
+        if (!v) return '—';
+        const d = new Date(v);
+        return Number.isNaN(d.getTime()) ? '—' : new Intl.DateTimeFormat('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(d);
+      }
+      function money(v, c) {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return '—';
+        try { return new Intl.NumberFormat('pt-AO', { style: 'currency', currency: String(c || 'AOA'), maximumFractionDigits: 2 }).format(n); }
+        catch (_) { return new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 2 }).format(n) + ' ' + String(c || 'AOA'); }
+      }
+      function fmtCount(v) {
+        const n = Number(v);
+        return Number.isFinite(n) ? new Intl.NumberFormat('pt-PT').format(n) : '—';
+      }
+
+      function statusBadge(s) {
+        const v = String(s || 'UNKNOWN').toUpperCase();
+        const labels = { MATCHED: 'Correspondente', DISCREPANCY_AMOUNT: 'Divergência de montante', DISCREPANCY_STATUS: 'Divergência de estado', MANUALLY_RESOLVED: 'Resolvido manualmente' };
+        const cls = { MATCHED: 'fin-state-match', DISCREPANCY_AMOUNT: 'fin-state-amount', DISCREPANCY_STATUS: 'fin-state-status', MANUALLY_RESOLVED: 'fin-state-resolved' };
+        return '<span class="fin-badge ' + (cls[v] || 'fin-state-other') + '" title="' + esc(v) + '">' + esc(labels[v] || v) + '</span>';
+      }
+      function providerName(p) {
+        return ({ MULTICAIXA_EXPRESS: 'Multicaixa Express', UNITEL_MONEY: 'Unitel Money', E_KWANZA: 'e-Kwanza' })[String(p || '').toUpperCase()] || String(p || '—');
+      }
+
+      function summary(rows) {
+        document.getElementById('stat-total').textContent = String(rows.length);
+        document.getElementById('stat-matched').textContent = String(rows.filter(x => x.status === 'MATCHED').length);
+        document.getElementById('stat-issues').textContent = String(rows.filter(x => !['MATCHED', 'MANUALLY_RESOLVED'].includes(x.status)).length);
+        document.getElementById('stat-resolved').textContent = String(rows.filter(x => x.status === 'MANUALLY_RESOLVED').length);
+        document.getElementById('fin-page-label').textContent = 'Página ' + page;
+      }
+
+      function render(rows) {
+        if (!rows.length) {
+          el.body.innerHTML = '<tr><td colspan="8"><div class="fin-state-box m-3"><i class="bi bi-bank" aria-hidden="true"></i><strong class="d-block mb-1" style="color:var(--ok-text-primary);">Ainda não há lotes nesta página</strong><span>Execute uma conciliação autorizada ou regresse à página anterior.</span></div></td></tr>';
+          return;
+        }
+        el.body.innerHTML = rows.map(x => {
+          const ref = String(x.batch_reference || '');
+          const eligible = canResolve && !['MATCHED', 'MANUALLY_RESOLVED'].includes(String(x.status || '').toUpperCase());
+          let actions = '<button type="button" class="btn btn-sm btn-outline-info" data-action="details" data-reference="' + esc(ref) + '" title="Ver relatório" aria-label="Ver lote ' + esc(ref) + '"><i class="bi bi-eye" aria-hidden="true"></i></button>';
+          if (eligible) actions += '<button type="button" class="btn btn-sm btn-outline-warning" data-action="resolve" data-reference="' + esc(ref) + '" title="Registar resolução" aria-label="Resolver lote ' + esc(ref) + '"><i class="bi bi-journal-check" aria-hidden="true"></i></button>';
+          const expected = Number(x.total_expected_records || 0);
+          const matched = Number(x.total_matched_records || 0);
+          const issues = Number(x.total_discrepancy_records || 0);
+          return '<tr>' +
+            '<td class="ps-4"><div class="fw-bold font-monospace" style="color:var(--ok-text-primary);">' + esc(ref || '—') + '</div><div class="fin-subtext">ID ' + esc(x.id || '—') + '</div></td>' +
+            '<td><span class="small">' + esc(providerName(x.provider)) + '</span></td>' +
+            '<td><span class="small fin-nowrap">' + esc(dateOnly(x.period_start)) + ' – ' + esc(dateOnly(x.period_end)) + '</span></td>' +
+            '<td><span class="fw-bold" style="color:var(--ok-text-primary);">' + (Number.isFinite(expected) ? expected : 0) + '</span><div class="fin-subtext">' + (Number.isFinite(matched) ? matched : 0) + ' correspondentes</div></td>' +
+            '<td><span class="fw-bold ' + (issues > 0 ? 'text-warning' : 'text-success') + '">' + (Number.isFinite(issues) ? issues : 0) + '</span></td>' +
+            '<td>' + statusBadge(x.status) + '</td>' +
+            '<td><span class="small" style="color:var(--ok-text-muted);">' + esc(dateFmt(x.reconciled_at || x.created_at, true)) + '</span></td>' +
+            '<td class="text-end pe-4"><div class="fin-actions">' + actions + '</div></td>' +
+            '</tr>';
+        }).join('');
+      }
+
+      function setPageControls(rows) {
+        document.getElementById('fin-page-info').textContent = 'Página ' + page + ' · ' + rows.length + ' lote(s) apresentados · tamanho máximo ' + pageSize;
+        el.prev.disabled = page <= 1;
+        el.next.disabled = rows.length < pageSize;
+      }
+
+      /* ====================================================================
+         CARREGAR HISTÓRICO
+         ==================================================================== */
+      async function loadHistory(requestedPage) {
+        if (!canView) {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-shield-lock" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Acesso financeiro restrito</strong><span>A conciliação exige papel ADMIN, AUDITOR ou FINANCIAL_OPERATOR. O servidor valida todas as operações.</span>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-plug" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Cliente da API indisponível</strong><span>Não é seguro consultar nem alterar registos financeiros sem o cliente autenticado da API.</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="fin-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        page = requestedPage || 1;
+        const thisSeq = ++seq;
+        clearAlert();
+        el.error.classList.add('d-none');
+        el.card.classList.add('d-none');
+        el.loading.classList.remove('d-none');
+        el.loading.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>A carregar o histórico de conciliações…';
+        try {
+          const response = await window.apiClient.get('/payments/reconciliation?page=' + page + '&limit=' + pageSize);
+          if (thisSeq !== seq) return;
+          if (!response || response.success === false || !Array.isArray(response.data)) throw new Error('A API não devolveu uma lista de conciliações válida.');
+          records = response.data;
+          render(records);
+          summary(records);
+          setPageControls(records);
+          el.loading.classList.add('d-none');
+          el.card.classList.remove('d-none');
+        } catch (error) {
+          if (thisSeq !== seq) return;
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          const routeHint = error && Number(error.status) === 400 ? ' A rota GET /reconciliation está a ser interceptada por GET /:paymentId em src/routes/payment.routes.js; a rota estática deve ser declarada antes da rota dinâmica.' : '';
+          el.error.innerHTML = '<i class="bi bi-exclamation-triangle" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Não foi possível carregar o histórico</strong><span>' + esc(msg(error, 'Falha de comunicação com o servidor.') + routeHint) + '</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="fin-retry"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+        }
+      }
+
+      /* ====================================================================
+         MODAIS
+         ==================================================================== */
+      function modal(id) {
+        if (!window.bootstrap || !window.bootstrap.Modal) {
+          showAlert('Os componentes de interface não foram inicializados. Recarregue antes de continuar.', 'warning');
+          return null;
+        }
+        return window.bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+      }
+      function detailItem(label, value) {
+        return '<div class="col-12 col-md-6"><div class="fin-detail-box"><span class="fin-detail-label">' + esc(label) + '</span><span class="fin-detail-value">' + esc(value == null || value === '' ? '—' : value) + '</span></div></div>';
+      }
+
+      function discrepancySeverity(d) {
+        const type = String(d.type || '');
+        if (type === 'MISSING_IN_INTERNAL') return ['CRÍTICA', 'fin-state-amount'];
+        if (type === 'AMOUNT_MISMATCH') return [Math.abs(Number(d.internalAmount || 0) - Number(d.externalAmount || 0)) >= 10000 ? 'CRÍTICA' : 'ALTA', 'fin-state-amount'];
+        if (type === 'MISSING_IN_EXTERNAL') return ['ALTA', 'fin-state-status'];
+        return ['MÉDIA', 'fin-state-status'];
+      }
+      function discrepanciesHtml(list) {
+        if (!Array.isArray(list) || !list.length) {
+          return '<div class="fin-state-box py-4"><i class="bi bi-check2-circle" aria-hidden="true"></i><strong style="color:var(--ok-text-primary);">Não foram reportadas discrepâncias neste lote.</strong></div>';
+        }
+        return '<div class="d-grid gap-2">' + list.map(d => {
+          const [sev, cls] = discrepancySeverity(d);
+          return '<article class="fin-discrepancy"><div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2"><div class="fin-discrepancy-title">' + esc(({ MISSING_IN_EXTERNAL: 'Ausente no extrato do prestador', MISSING_IN_INTERNAL: 'Ausente no registo interno', AMOUNT_MISMATCH: 'Divergência de montante', STATUS_MISMATCH: 'Divergência de estado' })[d.type] || d.type || 'Discrepância') + '</div><span class="fin-badge ' + cls + '">' + esc(sev) + '</span></div><div class="row g-2 mb-2">' + detailItem('Referência do comerciante', d.merchantReference) + detailItem('ID da transação no prestador', d.providerTransactionId) + detailItem('Montante interno', d.internalAmount == null ? '—' : money(d.internalAmount, 'AOA')) + detailItem('Montante externo', d.externalAmount == null ? '—' : money(d.externalAmount, 'AOA')) + detailItem('Estado interno', d.internalStatus) + detailItem('Estado externo', d.externalStatus) + '</div><p class="small mb-0" style="color:var(--ok-text-muted);">' + esc(d.details || 'Sem detalhe adicional.') + '</p></article>';
+        }).join('') + '</div>';
+      }
+
+      function resolveAllowed(b) {
+        return canResolve && b && !['MATCHED', 'MANUALLY_RESOLVED'].includes(String(b.status || '').toUpperCase());
+      }
+      function openResolve(ref) {
+        if (!canResolve) return showAlert('A resolução manual exige ADMIN ou AUDITOR.', 'warning');
+        document.getElementById('resolve-batch-reference').value = ref;
+        document.getElementById('resolve-notes').value = '';
+        const m = modal('modal-fin-resolve');
+        if (m) m.show();
+      }
+
+      async function showDetails(ref) {
+        const m = modal('modal-fin-detail');
+        const body = document.getElementById('fin-detail-body');
+        const resolveBtn = document.getElementById('fin-detail-resolve');
+        if (!m || !window.apiClient || typeof window.apiClient.get !== 'function') return;
+        currentBatch = null;
+        resolveBtn.classList.add('d-none');
+        body.innerHTML = '<div class="fin-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span><span class="ms-2">A consultar o lote…</span></div>';
+        m.show();
+        try {
+          const response = await window.apiClient.get('/payments/reconciliation/' + encodeURIComponent(ref));
+          const b = response && response.data ? (response.data.batch || response.data) : null;
+          if (!b || typeof b !== 'object') throw new Error('A API não devolveu os detalhes do lote.');
+          currentBatch = b;
+          if (resolveAllowed(b)) resolveBtn.classList.remove('d-none');
+          let meta = b.report_metadata || {};
+          if (typeof meta === 'string') { try { meta = JSON.parse(meta); } catch (_) { meta = {}; } }
+          const list = Array.isArray(meta.discrepancies) ? meta.discrepancies : [];
+          const resolution = meta.resolution || {};
+          body.innerHTML = '<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4"><div><div class="h5 fw-bold font-monospace mb-1" style="color:var(--ok-text-primary);">' + esc(b.batch_reference || ref) + '</div><div class="d-flex flex-wrap gap-2">' + statusBadge(b.status) + '<span class="fin-badge fin-state-other">' + esc(providerName(b.provider)) + '</span></div></div><span class="small" style="color:var(--ok-text-muted);">' + esc(dateFmt(b.reconciled_at, true)) + '</span></div>' +
+            '<h3 class="mb-3" style="font-size:0.7rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ok-purple-vibrant);">Resumo contábil</h3>' +
+            '<div class="row g-2 mb-4">' + detailItem('Período', dateOnly(b.period_start) + ' – ' + dateOnly(b.period_end)) + detailItem('Registos esperados', b.total_expected_records) + detailItem('Registos correspondentes', b.total_matched_records) + detailItem('Discrepâncias', b.total_discrepancy_records) + detailItem('Montante interno', money(b.total_amount_internal, b.currency)) + detailItem('Montante do prestador', money(b.total_amount_external, b.currency)) + detailItem('Responsável pela execução', b.reconciled_by) + detailItem('Criado em', dateFmt(b.created_at, true)) + '</div>' +
+            '<div class="d-flex align-items-center justify-content-between gap-2 mb-3"><h3 class="mb-0" style="font-size:0.7rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ok-purple-vibrant);">Discrepâncias detalhadas</h3><span class="small" style="color:var(--ok-text-muted);">' + list.length + ' registo(s)</span></div>' +
+            discrepanciesHtml(list) +
+            (resolution.notes ? '<div class="admin-note warning mt-3"><i class="bi bi-journal-check" aria-hidden="true"></i><span><strong>Parecer de resolução registado</strong><br>' + esc(resolution.notes) + '<br><span class="small">' + esc(dateFmt(resolution.resolvedAt, true)) + '</span></span></div>' : '');
+        } catch (error) {
+          body.innerHTML = '<div class="alert alert-danger mb-0" role="alert">' + esc(msg(error, 'Falha ao consultar o detalhe do lote.')) + '</div>';
+        }
+      }
+
+      function showRunResult(r) {
+        document.getElementById('fin-last-run').classList.remove('d-none');
+        document.getElementById('run-title').textContent = 'Lote ' + String(r.batchReference || '') + ' · ' + String(providerName(r.provider));
+        document.getElementById('run-summary').innerHTML = '<div class="col-6 col-lg-3"><div class="fin-detail-box"><span class="fin-detail-label">Estado</span><span class="fin-detail-value">' + statusBadge(r.status) + '</span></div></div><div class="col-6 col-lg-3"><div class="fin-detail-box"><span class="fin-detail-label">Correspondentes / esperados</span><span class="fin-result-number">' + fmtCount(r.totalMatchedRecords) + ' / ' + fmtCount(r.totalExpectedRecords) + '</span></div></div><div class="col-6 col-lg-3"><div class="fin-detail-box"><span class="fin-detail-label">Discrepâncias</span><span class="fin-result-number">' + fmtCount(r.totalDiscrepancyRecords) + '</span></div></div><div class="col-6 col-lg-3"><div class="fin-detail-box"><span class="fin-detail-label">Montantes interno / externo</span><span class="fin-detail-value">' + esc(money(r.totalAmountInternal, 'AOA')) + ' / ' + esc(money(r.totalAmountExternal, 'AOA')) + '</span></div></div>';
+        document.getElementById('run-discrepancies').innerHTML = discrepanciesHtml(r.discrepancies || []);
+        document.getElementById('fin-last-run').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      async function confirmAction(title, text) {
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          const r = await window.Swal.fire({ icon: 'warning', title, text, showCancelButton: true, confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar', confirmButtonColor: '#7c3aed' });
+          return Boolean(r.isConfirmed);
+        }
+        return window.confirm(title + '\n' + text);
+      }
+      function toast(message) {
+        if (window.Alerts && typeof window.Alerts.toast === 'function') window.Alerts.toast(message, 'success');
+        else showAlert(message, 'success');
+      }
+      function fail(error, fallback) {
+        const text = msg(error, fallback);
+        if (window.Alerts && typeof window.Alerts.error === 'function') window.Alerts.error(text);
+        else showAlert(text, 'danger');
+      }
+
+      /* ====================================================================
+         EVENTOS
+         ==================================================================== */
+      document.getElementById('fin-open-run').addEventListener('click', () => {
+        if (!canRun) return showAlert('A execução exige ADMIN, AUDITOR ou FINANCIAL_OPERATOR.', 'warning');
+        const m = modal('modal-fin-run');
+        if (m) m.show();
+      });
+      document.getElementById('fin-refresh').addEventListener('click', () => loadHistory(page));
+      document.getElementById('fin-prev').addEventListener('click', () => { if (page > 1) loadHistory(page - 1); });
+      document.getElementById('fin-next').addEventListener('click', () => { if (records.length >= pageSize) loadHistory(page + 1); });
+      el.error.addEventListener('click', ev => { if (ev.target.closest('#fin-retry')) loadHistory(page); });
+      el.body.addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-action]');
+        if (!b) return;
+        const ref = b.dataset.reference;
+        if (!ref) return;
+        if (b.dataset.action === 'details') showDetails(ref);
+        else if (b.dataset.action === 'resolve') openResolve(ref);
+      });
+      document.getElementById('fin-detail-resolve').addEventListener('click', () => {
+        const m = window.bootstrap.Modal.getInstance(document.getElementById('modal-fin-detail'));
+        if (m) m.hide();
+        if (currentBatch) openResolve(currentBatch.batch_reference);
+      });
+      document.getElementById('run-hide').addEventListener('click', () => document.getElementById('fin-last-run').classList.add('d-none'));
+
+      document.getElementById('form-fin-run').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        if (!canRun || !window.apiClient || typeof window.apiClient.post !== 'function') return showAlert('A API ou as permissões necessárias não estão disponíveis.', 'danger');
+        const provider = document.getElementById('run-provider').value;
+        const startDate = document.getElementById('run-start-date').value;
+        const endDate = document.getElementById('run-end-date').value;
+        if (!startDate || !endDate || startDate > endDate) return showAlert('Indique um intervalo de datas válido: início igual ou anterior ao fim.', 'warning');
+        if (!await confirmAction('Executar conciliação externa?', 'O sistema consultará o prestador e gravará um novo lote financeiro para o período selecionado.')) return;
+        const button = document.getElementById('fin-run-submit');
+        button.disabled = true;
+        try {
+          const response = await window.apiClient.post('/payments/reconciliation/run', { provider, startDate, endDate });
+          if (!response || response.success === false || !response.data) throw new Error(response && response.message || 'O servidor não devolveu o resultado da conciliação.');
+          const m = window.bootstrap.Modal.getInstance(document.getElementById('modal-fin-run'));
+          if (m) m.hide();
+          showRunResult(response.data);
+          toast('Lote de conciliação criado.');
+          page = 1;
+          await loadHistory(1);
+        } catch (error) {
+          fail(error, 'Falha ao executar a conciliação.');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      document.getElementById('form-fin-resolve').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        if (!canResolve || !window.apiClient || typeof window.apiClient.post !== 'function') return showAlert('A resolução exige ADMIN/AUDITOR e um cliente API ativo.', 'danger');
+        const ref = document.getElementById('resolve-batch-reference').value;
+        const notes = document.getElementById('resolve-notes').value.trim();
+        if (!ref || notes.length < 10 || notes.length > 1000) return showAlert('O parecer deve conter entre 10 e 1000 caracteres.', 'warning');
+        if (!await confirmAction('Registar resolução manual?', 'O lote será marcado como MANUALLY_RESOLVED. Não serão alteradas transações do prestador nem do razão.')) return;
+        const button = document.getElementById('fin-resolve-submit');
+        button.disabled = true;
+        try {
+          const response = await window.apiClient.post('/payments/reconciliation/' + encodeURIComponent(ref) + '/resolve', { resolutionNotes: notes });
+          if (!response || response.success === false) throw new Error(response && response.message || 'A API recusou a resolução.');
+          const m = window.bootstrap.Modal.getInstance(document.getElementById('modal-fin-resolve'));
+          if (m) m.hide();
+          toast('Parecer de resolução registado.');
+          await loadHistory(page);
+        } catch (error) {
+          fail(error, 'Falha ao registar a resolução.');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      document.getElementById('modal-fin-resolve').addEventListener('hidden.bs.modal', () => {
+        document.getElementById('form-fin-resolve').reset();
+        document.getElementById('fin-resolve-submit').disabled = false;
+      });
+      document.getElementById('modal-fin-run').addEventListener('hidden.bs.modal', () => {
+        document.getElementById('form-fin-run').reset();
+        document.getElementById('fin-run-submit').disabled = false;
+      });
+
+      /* ====================================================================
+         DATAS PADRÃO + RELÓGIO UTC + INICIALIZAÇÃO
+         ==================================================================== */
+      function localDate(d) { const x = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return x.toISOString().slice(0, 10); }
+      const today = localDate(new Date());
+      const firstMonth = localDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+      document.getElementById('run-start-date').value = firstMonth;
+      document.getElementById('run-end-date').value = today;
+      document.getElementById('run-start-date').max = today;
+      document.getElementById('run-end-date').max = today;
+
+      const clock = document.getElementById('admin-utc-clock');
+      function updateClock() {
+        if (clock) clock.textContent = new Intl.DateTimeFormat('pt-PT', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()) + ' UTC';
+      }
+      updateClock();
+      window.setInterval(updateClock, 1000);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        loadHistory(1);
+      });
+    })();
+  </script>
+</body>
+</html>

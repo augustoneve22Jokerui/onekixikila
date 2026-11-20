@@ -1,0 +1,370 @@
+<!--
+  ==============================================================================
+  ONEKIXIKILA — PARTIAL SWEETALERT2
+  ==============================================================================
+  Integração global do SweetAlert2 com a identidade visual da OneKixikila.
+  - Carrega a biblioteca a partir da CDN oficial (jsdelivr).
+  - Carrega o adaptador local /js/sweet-alert.js que expõe window.Alerts.
+  - Injeta overrides CSS para alinhar os modais com o design system (cantos
+    arredondados, cores, tipografia Inter, botões em pílula e dark mode).
+  Este partial deve ser incluído uma única vez por página, preferencialmente
+  antes do fecho do </body>.
+-->
+
+<!-- Biblioteca oficial SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+
+<!-- Adaptador institucional da OneKixikila (window.Alerts) -->
+<script src="/js/sweet-alert.js"></script>
+
+<style>
+  /* --------------------------------------------------------------------- */
+  /* OVERRIDES GLOBAIS SWEETALERT2 — IDENTIDADE ONEKIXIKILA                */
+  /* --------------------------------------------------------------------- */
+
+  .swal2-popup {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    border-radius: var(--ok-border-radius-lg, 24px) !important;
+    background-color: var(--ok-bg-card, #ffffff) !important;
+    color: var(--ok-text-main, #0f172a) !important;
+    border: 1px solid var(--ok-border-color, #e2e8f0) !important;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.25) !important;
+    padding: 1.75rem 1.5rem 1.25rem !important;
+  }
+
+  .swal2-title {
+    font-family: inherit !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: var(--ok-text-main, #0f172a) !important;
+    letter-spacing: -0.01em !important;
+    padding: 0 !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .swal2-html-container {
+    font-family: inherit !important;
+    font-size: 0.92rem !important;
+    color: var(--ok-text-muted, #64748b) !important;
+    line-height: 1.55 !important;
+    margin: 0.25rem 0 1rem !important;
+    padding: 0 !important;
+  }
+
+  .swal2-icon {
+    margin: 0.25rem auto 1rem !important;
+    border-width: 2px !important;
+  }
+
+  .swal2-icon.swal2-success {
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+  }
+
+  .swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(16, 185, 129, 0.25) !important;
+  }
+
+  .swal2-icon.swal2-error {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+  }
+
+  .swal2-icon.swal2-warning {
+    border-color: #f59e0b !important;
+    color: #f59e0b !important;
+  }
+
+  .swal2-icon.swal2-info {
+    border-color: #3b82f6 !important;
+    color: #3b82f6 !important;
+  }
+
+  .swal2-icon.swal2-question {
+    border-color: #7c3aed !important;
+    color: #7c3aed !important;
+  }
+
+  /* Botões em pílula */
+  .swal2-actions {
+    gap: 0.5rem !important;
+    margin-top: 0.5rem !important;
+    width: 100% !important;
+    flex-wrap: wrap !important;
+  }
+
+  .swal2-styled {
+    font-family: inherit !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    border-radius: var(--ok-border-radius-pill, 9999px) !important;
+    padding: 0.65rem 1.4rem !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease !important;
+    min-width: 120px !important;
+  }
+
+  .swal2-styled:focus {
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.25) !important;
+  }
+
+  .swal2-confirm {
+    background-color: var(--btn-purple, #7c3aed) !important;
+    color: #ffffff !important;
+  }
+
+  .swal2-confirm:hover {
+    background-color: var(--btn-purple-hover, #6d28d9) !important;
+    transform: translateY(-1px);
+  }
+
+  .swal2-cancel {
+    background-color: transparent !important;
+    color: var(--ok-text-main, #0f172a) !important;
+    border: 1.5px solid var(--ok-border-color, #e2e8f0) !important;
+  }
+
+  .swal2-cancel:hover {
+    background-color: var(--ok-bg-body, #f8fafc) !important;
+    transform: translateY(-1px);
+  }
+
+  .swal2-deny {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+  }
+
+  .swal2-deny:hover {
+    background-color: #dc2626 !important;
+    transform: translateY(-1px);
+  }
+
+  .swal2-close {
+    color: var(--ok-text-muted, #64748b) !important;
+    font-size: 1.5rem !important;
+    transition: color 0.2s ease !important;
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .swal2-close:hover {
+    color: var(--ok-text-main, #0f172a) !important;
+  }
+
+  .swal2-input,
+  .swal2-textarea,
+  .swal2-select {
+    font-family: inherit !important;
+    border-radius: var(--ok-border-radius-pill, 9999px) !important;
+    border: 1.5px solid var(--ok-border-color, #e2e8f0) !important;
+    background-color: var(--ok-bg-body, #f8fafc) !important;
+    color: var(--ok-text-main, #0f172a) !important;
+    font-size: 0.92rem !important;
+    padding: 0.65rem 1.1rem !important;
+    height: auto !important;
+    margin: 0.5rem 0 !important;
+    box-shadow: none !important;
+  }
+
+  .swal2-textarea {
+    border-radius: var(--ok-border-radius-md, 16px) !important;
+    min-height: 100px !important;
+    resize: vertical !important;
+  }
+
+  .swal2-input:focus,
+  .swal2-textarea:focus,
+  .swal2-select:focus {
+    border-color: var(--btn-purple, #7c3aed) !important;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15) !important;
+    background-color: var(--ok-bg-card, #ffffff) !important;
+  }
+
+  /* Toasts flutuantes */
+  .swal2-toast {
+    border-radius: var(--ok-border-radius-md, 16px) !important;
+    padding: 0.75rem 1rem !important;
+    box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.3) !important;
+    border: 1px solid var(--ok-border-color, #e2e8f0) !important;
+  }
+
+  .swal2-toast .swal2-title {
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+  }
+
+  .swal2-toast .swal2-icon {
+    margin: 0 0.5rem 0 0 !important;
+    width: 1.5em !important;
+    height: 1.5em !important;
+    min-width: 1.5em !important;
+  }
+
+  .swal2-timer-progress-bar {
+    background-color: var(--btn-purple, #7c3aed) !important;
+  }
+
+  /* Animação dos modais */
+  .swal2-show {
+    animation: okSwalPopIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  @keyframes okSwalPopIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.92) translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    .swal2-popup {
+      background-color: #151e2e !important;
+      border-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+
+    .swal2-title {
+      color: #f8fafc !important;
+    }
+
+    .swal2-html-container {
+      color: #94a3b8 !important;
+    }
+
+    .swal2-close {
+      color: #94a3b8 !important;
+    }
+
+    .swal2-close:hover {
+      color: #f8fafc !important;
+    }
+
+    .swal2-input,
+    .swal2-textarea,
+    .swal2-select {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+
+    .swal2-input:focus,
+    .swal2-textarea:focus,
+    .swal2-select:focus {
+      background-color: #0f172a !important;
+    }
+
+    .swal2-cancel {
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+
+    .swal2-cancel:hover {
+      background-color: #1e293b !important;
+    }
+
+    .swal2-toast {
+      border-color: #1e293b !important;
+    }
+  }
+
+  /* Responsividade */
+  @media (max-width: 480px) {
+    .swal2-popup {
+      border-radius: 20px !important;
+      padding: 1.5rem 1rem 1rem !important;
+      width: calc(100% - 24px) !important;
+      margin: 0 auto !important;
+    }
+
+    .swal2-title {
+      font-size: 1.1rem !important;
+    }
+
+    .swal2-styled {
+      min-width: 100px !important;
+      padding: 0.6rem 1.1rem !important;
+      font-size: 0.85rem !important;
+    }
+
+    .swal2-actions {
+      flex-direction: column-reverse !important;
+      width: 100% !important;
+    }
+
+    .swal2-styled {
+      width: 100% !important;
+    }
+  }
+
+  /* Respeitar preferências de movimento reduzido */
+  @media (prefers-reduced-motion: reduce) {
+    .swal2-show,
+    .swal2-styled,
+    .swal2-close,
+    .swal2-input,
+    .swal2-textarea,
+    .swal2-select {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    /**
+     * Personaliza o comportamento padrão do SweetAlert2 com os parâmetros visuais
+     * da OneKixikila (tipografia, botões em pílula, cores da marca e dark mode).
+     * O adaptador /js/sweet-alert.js expõe window.Alerts e window.Swal, e este
+     * script garante que os defaults estejam alinhados ao design system global.
+     */
+    document.addEventListener('DOMContentLoaded', function () {
+      if (typeof window.Swal === 'undefined') {
+        console.warn('[OneKixikila SweetAlert] Biblioteca SweetAlert2 não carregada.');
+        return;
+      }
+
+      // Aplica customClass padrão a todos os modais e toasts
+      window.Swal = window.Swal.mixin({
+        customClass: {
+          popup: 'ok-swal-popup',
+          title: 'ok-swal-title',
+          htmlContainer: 'ok-swal-html',
+          confirmButton: 'ok-swal-confirm',
+          cancelButton: 'ok-swal-cancel',
+          denyButton: 'ok-swal-deny',
+          input: 'ok-swal-input',
+          closeButton: 'ok-swal-close',
+          actions: 'ok-swal-actions'
+        },
+        buttonsStyling: false,
+        reverseButtons: true,
+        focusCancel: true,
+        allowEscapeKey: true,
+        allowOutsideClick: true,
+        showClass: {
+          popup: 'swal2-show'
+        },
+        hideClass: {
+          popup: ''
+        }
+      });
+
+      // Re-expõe o window.Alerts com o Swal atualizado (mantém compatibilidade)
+      if (window.Alerts && typeof window.Alerts === 'object') {
+        window.Alerts.Swal = window.Swal;
+      }
+    });
+  })();
+</script>

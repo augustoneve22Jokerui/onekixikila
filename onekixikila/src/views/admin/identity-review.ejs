@@ -1,0 +1,2697 @@
+<%- include('../partials/head') %>
+<%
+  const adminUser = (typeof user !== 'undefined' && user) ? user : {};
+  const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador';
+  const adminRoleForPage = String(adminUser.role || '').toUpperCase();
+  const adminIdForPage = String(adminUser.id || '');
+  const canAccessAdminPage = (...roles) => roles.includes(adminRoleForPage);
+  const canViewAuditTrail = canAccessAdminPage('ADMIN', 'AUDITOR');
+  const adminDisplayName = adminUserName || 'Administrador';
+%>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     ONEKIXIKILA ADMIN — REVISÃO DE IDENTIDADE KYC · ULTRA APPLE LIGHT
+     Alinhamento centralizado unificado: top-nav, hero, cards, filtros, tabela,
+     notas e footer partilham a mesma coluna (max-width: 1180px + margin auto).
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-color-token-001: rgba(124, 58, 237, 0.14);
+    --ok-color-token-002: rgba(5, 5, 8, 0);
+    --ok-color-token-003: rgba(124, 58, 237, 0.10);
+    --ok-color-token-004: rgba(244, 245, 249, 0);
+    --ok-color-token-005: #7c3aed;
+    --ok-color-token-006: #4c1d95;
+    --ok-color-token-007: rgba(124, 58, 237, 0.4);
+    --ok-color-token-008: #8b5cf6;
+    --ok-color-token-009: #6d28d9;
+    --ok-color-token-010: #ffffff;
+    --ok-color-token-011: rgba(139, 92, 246, 0.5);
+    --ok-color-token-012: #ef4444;
+    --ok-color-token-013: #fff;
+    --ok-color-token-014: #c084fc;
+    --ok-color-token-015: rgba(16, 185, 129, 0.15);
+    --ok-color-token-016: rgba(16, 185, 129, 0.3);
+    --ok-color-token-017: #10b981;
+    --ok-color-token-018: #0f172a;
+    --ok-color-token-019: #bef264;
+    --ok-color-token-020: rgba(0,0,0,0.08);
+    --ok-color-token-021: rgba(255,255,255,0.15);
+    --ok-color-token-022: rgba(245, 158, 11, 0.15);
+    --ok-color-token-023: #f59e0b;
+    --ok-color-token-024: rgba(244, 63, 94, 0.15);
+    --ok-color-token-025: #f43f5e;
+    --ok-color-token-026: rgba(6, 182, 212, 0.15);
+    --ok-color-token-027: #06b6d4;
+    --ok-color-token-028: rgba(6, 182, 212, 0.08);
+    --ok-color-token-029: rgba(6, 182, 212, 0.22);
+    --ok-color-token-030: #b6e7ee;
+    --ok-color-token-031: #67e8f9;
+    --ok-color-token-032: rgba(139, 92, 246, 0.35);
+    --ok-color-token-033: rgba(255, 255, 255, 0.02);
+    --ok-color-token-034: rgba(139, 92, 246, 0.28);
+    --ok-color-token-035: rgba(6, 182, 212, 0.14);
+    --ok-color-token-036: #ddd6fe;
+    --ok-color-token-037: rgba(6, 182, 212, 0.12);
+    --ok-color-token-038: rgba(6, 182, 212, 0.25);
+    --ok-color-token-039: rgba(245, 158, 11, 0.12);
+    --ok-color-token-040: rgba(245, 158, 11, 0.25);
+    --ok-color-token-041: #fcd34d;
+    --ok-color-token-042: rgba(16, 185, 129, 0.12);
+    --ok-color-token-043: rgba(16, 185, 129, 0.25);
+    --ok-color-token-044: #6ee7b7;
+    --ok-color-token-045: rgba(244, 63, 94, 0.12);
+    --ok-color-token-046: rgba(244, 63, 94, 0.25);
+    --ok-color-token-047: #fda4af;
+    --ok-color-token-048: #08080e;
+    --ok-color-token-049: #101018;
+    --ok-color-token-050: rgba(255, 255, 255, 0.06);
+    --ok-color-token-051: rgba(255, 255, 255, 0.03);
+    --ok-color-token-052: rgba(255, 255, 255, 0.09);
+    --ok-color-token-053: #e2e8f0;
+    --ok-color-token-054: #f1f5f9;
+    --ok-color-token-055: rgba(0, 0, 0, 0.55);
+    --ok-color-token-056: rgba(0, 0, 0, 0.35);
+    --ok-color-token-057: rgba(124, 58, 237, 0.18);
+    --ok-color-token-058: rgba(124, 58, 237, 0.06);
+    --ok-color-token-059: rgba(255, 255, 255, 0.02);
+    --ok-color-token-060: rgba(255, 255, 255, 0.005);
+    --ok-color-transparent: transparent;
+    --ok-color-white: #ffffff;
+    --ok-color-black: #000000;
+
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+    --ok-bg-window: #0f0f16;
+    --ok-bg-window-inner: #14141c;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+    --ok-shadow-window: 0 40px 120px rgba(0, 0, 0, 0.75), 0 12px 36px rgba(0, 0, 0, 0.55);
+    --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --ok-glass-tint: rgba(15, 15, 22, 0.72);
+    --ok-glass-tint-strong: rgba(15, 15, 22, 0.92);
+    --ok-divider: rgba(255, 255, 255, 0.06);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-pill: 9999px;
+    --ok-radius-card: 12px;
+    --ok-radius-md: 12px;
+    --ok-radius-window: 18px;
+    --ok-radius-inner: 12px;
+    --ok-radius-circle: 50%;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1180px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+    --ok-bg-window: #ffffff;
+    --ok-bg-window-inner: #fafafa;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.22);
+    --ok-purple-glow: rgba(124, 58, 237, 0.22);
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.08);
+    --ok-border-strong: rgba(15, 23, 42, 0.14);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.06);
+    --ok-shadow-card: rgba(15, 23, 42, 0.08);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    --ok-shadow-window: 0 24px 70px rgba(15, 23, 42, 0.16), 0 4px 14px rgba(15, 23, 42, 0.06);
+    --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --ok-glass-tint: rgba(255, 255, 255, 0.72);
+    --ok-glass-tint-strong: rgba(255, 255, 255, 0.94);
+    --ok-divider: rgba(15, 23, 42, 0.06);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+      --ok-bg-window: #ffffff;
+      --ok-bg-window-inner: #fafafa;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.22);
+      --ok-purple-glow: rgba(124, 58, 237, 0.22);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.08);
+      --ok-border-strong: rgba(15, 23, 42, 0.14);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.06);
+      --ok-shadow-card: rgba(15, 23, 42, 0.08);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      --ok-shadow-window: 0 24px 70px rgba(15, 23, 42, 0.16), 0 4px 14px rgba(15, 23, 42, 0.06);
+      --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      --ok-glass-tint: rgba(255, 255, 255, 0.72);
+      --ok-glass-tint-strong: rgba(255, 255, 255, 0.94);
+      --ok-divider: rgba(15, 23, 42, 0.06);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ok-bg-canvas);
+    color: var(--ok-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, var(--ok-color-token-001) 0%, var(--ok-color-token-002) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, var(--ok-color-token-003) 0%, var(--ok-color-token-004) 70%);
+  }
+
+  /* =========================================================================
+     SIDEBAR SLIM TECH
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-md);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+  }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: var(--ok-radius-md);
+    background: linear-gradient(135deg, var(--ok-color-token-005) 0%, var(--ok-color-token-006) 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 20px var(--ok-color-token-007);
+    text-decoration: none;
+  }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 14px; width: 100%;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: thin;
+  }
+  .ok-rail-nav::-webkit-scrollbar { width: 3px; }
+  .ok-rail-nav::-webkit-scrollbar-thumb { background: var(--ok-border-subtle); border-radius: 5px; }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: var(--ok-radius-md);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: var(--ok-color-transparent);
+    position: relative;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    box-shadow: 0 8px 20px var(--ok-color-token-011);
+  }
+  .ok-rail-link svg { width: 20px; height: 20px; }
+
+  .admin-rail-count {
+    position: absolute; top: 2px; right: 1px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    background: var(--ok-color-token-012); color: var(--ok-color-token-013);
+    border: 2px solid var(--ok-bg-surface);
+    font-size: 9px; font-weight: 800;
+  }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  .admin-empty-nav-search {
+    color: var(--ok-text-muted);
+    font-size: 0.68rem;
+    text-align: center;
+    padding: 0.5rem 0.2rem;
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CONTENTOR UNIFICADO (todos os filhos partilham a coluna)
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 36px);
+    padding: 20px 32px 48px 0;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Regra central: todos os descendentes diretos alinham-se à mesma coluna. */
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 1;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex; align-items: center;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: var(--ok-radius-md);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+  .ok-action-circle[disabled] { opacity: 0.65; cursor: wait; }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    color: inherit;
+  }
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%; object-fit: cover;
+    background: var(--ok-purple-soft);
+    border: 2px solid var(--ok-purple-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); font-weight: 800; font-size: 0.9rem;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: var(--ok-radius-md);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .ok-page-title-main {
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, var(--ok-color-token-014) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-color-token-015);
+    border: 1px solid var(--ok-color-token-016);
+    color: var(--ok-color-token-017);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: var(--ok-color-token-017);
+    box-shadow: 0 0 8px var(--ok-color-token-017);
+  }
+
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 780px;
+  }
+
+  .admin-hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-btn-pill-soft {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ok-btn-pill-soft:hover {
+    background: var(--ok-purple-vibrant);
+    color: var(--ok-color-token-010);
+  }
+  .ok-btn-pill-soft[disabled] { opacity: 0.65; cursor: wait; }
+
+  .admin-currency-badge {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-muted);
+    font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  .admin-content-section-title {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .admin-content-section-title h5 {
+    font-size: 1.05rem; font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0; display: flex; align-items: center; gap: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* =========================================================================
+     FAIXA DE 4 CARDS CHAPADOS (KPI KYC)
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+    margin-bottom: 24px;
+  }
+
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+    color: inherit;
+  }
+
+  .ok-flat-card-box.theme-white { background-color: var(--ok-color-token-010); color: var(--ok-color-token-018); }
+  .ok-flat-card-box.theme-lime { background-color: var(--ok-color-token-019); color: var(--ok-color-token-018); }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: var(--ok-color-token-010); color: var(--ok-color-token-018);
+    border-left: 1px solid var(--ok-color-token-020);
+  }
+  .ok-flat-card-box.theme-purple { background-color: var(--ok-color-token-005); color: var(--ok-color-token-010); }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: var(--ok-color-token-018); }
+  .theme-purple .ok-flat-icon-container svg { stroke: var(--ok-color-token-010); }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: var(--ok-color-token-015); color: var(--ok-color-token-017); }
+  .theme-purple .ok-flat-trend { background: var(--ok-color-token-021); color: var(--ok-color-token-010); }
+
+  .ok-flat-trend.warning { background: var(--ok-color-token-022); color: var(--ok-color-token-023); }
+  .ok-flat-trend.danger { background: var(--ok-color-token-024); color: var(--ok-color-token-025); }
+  .ok-flat-trend.info { background: var(--ok-color-token-026); color: var(--ok-color-token-027); }
+
+  /* =========================================================================
+     CARDS BASE
+     ========================================================================= */
+  .admin-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-window);
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    margin-bottom: 20px;
+  }
+
+  .admin-note {
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-text-secondary);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    padding: 0.85rem 1rem;
+    display: flex; align-items: flex-start; gap: 8px;
+    margin-bottom: 20px;
+  }
+  .admin-note i { color: var(--ok-purple-vibrant); flex-shrink: 0; }
+  .admin-note.warning {
+    background: var(--ok-color-token-028);
+    border-color: var(--ok-color-token-029);
+    color: var(--ok-color-token-030);
+  }
+  .admin-note.warning i { color: var(--ok-color-token-031); }
+
+  /* =========================================================================
+     FILTROS
+     ========================================================================= */
+  .kyc-filter-card { padding: 1.15rem 1.25rem; }
+  .kyc-filter-card h2 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .kyc-filter-card .form-label {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .kyc-filter-card .form-control,
+  .kyc-filter-card .form-select,
+  .kyc-modal .form-control,
+  .kyc-modal .form-select {
+    background: var(--ok-bg-elevated) !important;
+    border: 1px solid var(--ok-border-strong) !important;
+    color: var(--ok-text-primary) !important;
+    min-height: 43px;
+    border-radius: var(--ok-radius-md);
+  }
+  .kyc-filter-card .form-control::placeholder,
+  .kyc-modal textarea::placeholder { color: var(--ok-text-muted); }
+  .kyc-filter-card .form-control:focus,
+  .kyc-filter-card .form-select:focus,
+  .kyc-modal .form-control:focus,
+  .kyc-modal .form-select:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 3px var(--ok-purple-soft) !important;
+  }
+  .kyc-filter-card option,
+  .kyc-modal option { background: var(--ok-bg-elevated); color: var(--ok-text-primary); }
+  .kyc-filter-card .input-group-text {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-strong);
+    color: var(--ok-text-muted);
+    border-radius: var(--ok-radius-md) 0 0 var(--ok-radius-md);
+  }
+  .kyc-filter-card .input-group .form-control {
+    border-radius: 0 var(--ok-radius-md) var(--ok-radius-md) 0 !important;
+  }
+
+  .btn-primary-ok {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    border: none;
+    color: var(--ok-color-token-010);
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px var(--ok-color-token-032);
+    transition: all 0.2s ease;
+  }
+  .btn-primary-ok:hover { transform: translateY(-1px); color: var(--ok-color-token-013); }
+  .btn-ghost-ok {
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-primary);
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .btn-ghost-ok:hover {
+    background: var(--ok-pill-bg-hover);
+    color: var(--ok-purple-vibrant);
+  }
+
+  /* =========================================================================
+     TABELA KYC
+     ========================================================================= */
+  .kyc-table-wrap {
+    overflow: auto;
+    border-radius: var(--ok-radius-window);
+  }
+  .kyc-table { min-width: 980px; margin: 0; }
+  .kyc-table thead th {
+    color: var(--ok-text-muted);
+    background: var(--ok-color-token-033);
+    border-bottom: 1px solid var(--ok-border-subtle);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.95rem 0.85rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .kyc-table tbody td {
+    border-bottom: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-secondary);
+    padding: 0.95rem 0.85rem;
+    vertical-align: middle;
+    font-size: 0.84rem;
+  }
+  .kyc-table tbody tr:last-child td { border-bottom: 0; }
+  .kyc-table tbody tr { transition: background 0.15s ease; }
+  .kyc-table tbody tr:hover { background: var(--ok-stream-hover); }
+
+  .kyc-avatar {
+    align-items: center;
+    background: linear-gradient(140deg, var(--ok-color-token-034), var(--ok-color-token-035));
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-color-token-036);
+    display: inline-flex;
+    flex: 0 0 40px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+  }
+  .kyc-name {
+    color: var(--ok-text-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .kyc-subtext {
+    color: var(--ok-text-muted);
+    font-size: 0.72rem;
+    margin-top: 0.2rem;
+    overflow-wrap: anywhere;
+  }
+
+  .kyc-badge {
+    border: 1px solid transparent;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.025em;
+    padding: 0.34rem 0.58rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  .kyc-state-review { background: var(--ok-color-token-037); border-color: var(--ok-color-token-038); color: var(--ok-color-token-031); }
+  .kyc-state-pending { background: var(--ok-color-token-039); border-color: var(--ok-color-token-040); color: var(--ok-color-token-041); }
+  .kyc-state-approved { background: var(--ok-color-token-042); border-color: var(--ok-color-token-043); color: var(--ok-color-token-044); }
+  .kyc-state-rejected { background: var(--ok-color-token-045); border-color: var(--ok-color-token-046); color: var(--ok-color-token-047); }
+  .kyc-state-other, .kyc-tier { background: var(--ok-pill-bg); border-color: var(--ok-border-subtle); color: var(--ok-text-secondary); }
+
+  .kyc-actions { display: flex; justify-content: flex-end; gap: 0.4rem; }
+  .kyc-actions .btn {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 36px;
+    min-width: 36px;
+    border-radius: var(--ok-radius-circle);
+    transition: all 0.15s ease;
+  }
+  .kyc-actions .btn:hover { transform: translateY(-1px); }
+
+  /* =========================================================================
+     PAGINAÇÃO
+     ========================================================================= */
+  .kyc-card-footer {
+    align-items: center;
+    border-top: 1px solid var(--ok-border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+  }
+  .kyc-pagination {
+    display: flex; flex-wrap: wrap; gap: 0.35rem;
+    list-style: none; margin: 0; padding: 0;
+  }
+  .kyc-pagination button {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 9px;
+    color: var(--ok-text-secondary);
+    min-width: 36px;
+    padding: 0.4rem 0.65rem;
+    font-weight: 700;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .kyc-pagination button:hover:not(:disabled),
+  .kyc-pagination button.is-current {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+  }
+  .kyc-pagination button.is-current {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+  }
+  .kyc-pagination button:disabled { cursor: not-allowed; opacity: 0.4; }
+
+  /* =========================================================================
+     ESTADOS
+     ========================================================================= */
+  .kyc-state-box {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-window);
+    color: var(--ok-text-muted);
+    padding: 2.75rem 1rem;
+    text-align: center;
+    background: var(--ok-bg-surface);
+  }
+  .kyc-state-box i {
+    color: var(--ok-purple-vibrant);
+    display: block;
+    font-size: 1.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  /* =========================================================================
+     ✦ MODAIS ULTRA APPLE LIGHT ✦
+     ========================================================================= */
+  .kyc-modal .modal-dialog {
+    max-width: 620px;
+    width: calc(100% - 2rem);
+    margin: 1.75rem auto;
+  }
+  .kyc-modal .modal-dialog.modal-lg { max-width: 680px; }
+  .kyc-modal .modal-dialog.modal-xl { max-width: 780px; }
+  .kyc-modal .modal-dialog.modal-wide { max-width: 920px; }
+
+  .kyc-modal .modal-content {
+    background: var(--ok-bg-window);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-window);
+    color: var(--ok-text-primary);
+    box-shadow: var(--ok-shadow-window);
+    overflow: hidden;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  .kyc-modal .modal-header {
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint-strong);
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .kyc-modal .modal-title {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    color: var(--ok-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .kyc-modal .modal-title i { color: var(--ok-purple-vibrant); }
+  .kyc-modal .modal-footer {
+    padding: 0.85rem 1.15rem;
+    border-top: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint);
+    gap: 0.5rem;
+  }
+  .kyc-modal .btn-close {
+    background: transparent;
+    opacity: 0.65;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    filter: none;
+    background-image: none;
+    position: relative;
+    transition: all 0.15s ease;
+    box-shadow: none;
+  }
+  .kyc-modal .btn-close::before {
+    content: '×';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ok-text-muted);
+    line-height: 1;
+  }
+  .kyc-modal .btn-close:hover { opacity: 1; background: var(--ok-pill-bg); }
+  .kyc-modal .btn-close:hover::before { color: var(--ok-text-primary); }
+  html[data-theme="light"] .kyc-modal .btn-close { filter: none; }
+  html[data-theme="light"] .kyc-modal .btn-close::before { color: var(--ok-text-muted); }
+  html[data-theme="light"] .kyc-modal .btn-close:hover::before { color: var(--ok-text-primary); }
+
+  .kyc-modal .modal-body {
+    padding: 1.15rem 1.2rem;
+    background: var(--ok-bg-window);
+  }
+
+  /* Timeline multi-etapa */
+  .kyc-timeline {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    background: var(--ok-bg-window-inner);
+    border-bottom: 1px solid var(--ok-divider);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .kyc-timeline::-webkit-scrollbar { display: none; }
+
+  .kyc-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.65rem 0.35rem 0.35rem;
+    border-radius: var(--ok-radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ok-text-muted);
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+    flex-shrink: 0;
+  }
+  .kyc-step .dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--ok-text-muted);
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+  .kyc-step.active {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    border-color: var(--ok-purple-border);
+  }
+  .kyc-step.active .dot {
+    background: var(--ok-purple-vibrant);
+    color: var(--ok-color-token-010);
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 4px 12px var(--ok-color-token-011);
+  }
+  .kyc-step.done {
+    color: var(--ok-color-token-017);
+  }
+  .kyc-step.done .dot {
+    background: var(--ok-color-token-015);
+    border-color: var(--ok-color-token-016);
+    color: var(--ok-color-token-017);
+  }
+  .kyc-step.done .dot::before { content: '✓'; }
+  .kyc-step.done .dot span { display: none; }
+
+  .kyc-step-sep {
+    width: 14px; height: 1.5px;
+    background: var(--ok-border-subtle);
+    flex-shrink: 0;
+  }
+  .kyc-step-sep.done { background: var(--ok-color-token-016); }
+
+  /* Painéis de etapa */
+  .kyc-pane {
+    display: none;
+    animation: kycFadeIn 0.3s ease;
+  }
+  .kyc-pane.active { display: block; }
+  @keyframes kycFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .kyc-pane-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ok-purple-vibrant);
+    margin: 0 0 0.75rem;
+  }
+
+  /* Grid de campos compactos */
+  .kyc-field-grid {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .kyc-field {
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    padding: 0.7rem 0.85rem;
+    transition: all 0.15s ease;
+  }
+  .kyc-field:hover { border-color: var(--ok-border-strong); }
+  .kyc-field-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ok-text-muted);
+    margin-bottom: 0.28rem;
+  }
+  .kyc-field-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ok-text-primary);
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+  .kyc-field-value.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.02em;
+  }
+
+  /* Cartão de documento com thumbnail */
+  .kyc-doc-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .kyc-doc-tile {
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .kyc-doc-tile:hover {
+    border-color: var(--ok-purple-border);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px var(--ok-shadow-card);
+  }
+  .kyc-doc-thumb {
+    aspect-ratio: 16 / 10;
+    background: linear-gradient(135deg, var(--ok-bg-window) 0%, var(--ok-bg-window-inner) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-purple-vibrant);
+    font-size: 2rem;
+    border-bottom: 1px solid var(--ok-divider);
+    position: relative;
+    overflow: hidden;
+  }
+  .kyc-doc-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .kyc-doc-thumb .file-badge {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: var(--ok-glass-tint-strong);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    padding: 2px 8px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--ok-text-secondary);
+    backdrop-filter: blur(10px);
+  }
+  .kyc-doc-body {
+    padding: 0.75rem 0.85rem;
+    display: flex; flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+  }
+  .kyc-doc-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ok-text-primary);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .kyc-doc-meta {
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    display: flex; gap: 6px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .kyc-doc-meta .dot-sep { opacity: 0.4; }
+  .kyc-doc-footer {
+    display: flex; gap: 0.4rem;
+    padding: 0 0.85rem 0.85rem;
+  }
+
+  /* Botões circulares Apple */
+  .ok-icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--ok-border-subtle);
+    background: var(--ok-bg-elevated);
+    color: var(--ok-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .ok-icon-btn:hover {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px var(--ok-shadow-card);
+  }
+  .ok-icon-btn.primary {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    border-color: transparent;
+    color: var(--ok-color-token-010);
+    box-shadow: 0 6px 16px var(--ok-color-token-032);
+  }
+  .ok-icon-btn.primary:hover { transform: translateY(-1px) scale(1.03); color: var(--ok-color-token-010); }
+  .ok-icon-btn.ghost { background: transparent; }
+  .ok-icon-btn.ghost:hover { background: var(--ok-pill-bg); }
+  .ok-icon-btn.lg { width: 44px; height: 44px; }
+  .ok-icon-btn.sm { width: 32px; height: 32px; }
+  .ok-icon-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  .ok-icon-btn svg { width: 16px; height: 16px; }
+  .ok-icon-btn.lg svg { width: 18px; height: 18px; }
+  .ok-icon-btn.sm svg { width: 14px; height: 14px; }
+
+  /* Wizard footer Apple */
+  .kyc-wizard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.85rem 1.15rem;
+    border-top: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint);
+    flex-wrap: wrap;
+  }
+  .kyc-wizard-progress {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ok-text-muted);
+    letter-spacing: 0.02em;
+  }
+  .kyc-wizard-progress strong { color: var(--ok-purple-vibrant); }
+  .kyc-wizard-actions { display: flex; gap: 0.4rem; align-items: center; }
+
+  .ok-btn-apple {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .ok-btn-apple.primary {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    box-shadow: 0 6px 18px var(--ok-color-token-032);
+  }
+  .ok-btn-apple.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px var(--ok-color-token-032); color: var(--ok-color-token-010); }
+  .ok-btn-apple.secondary {
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border: 1px solid var(--ok-border-subtle);
+  }
+  .ok-btn-apple.secondary:hover {
+    background: var(--ok-pill-bg-hover);
+    color: var(--ok-purple-vibrant);
+    border-color: var(--ok-purple-border);
+  }
+  .ok-btn-apple.ghost {
+    background: transparent;
+    color: var(--ok-text-secondary);
+  }
+  .ok-btn-apple.ghost:hover { color: var(--ok-purple-vibrant); background: var(--ok-pill-bg); }
+  .ok-btn-apple[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  /* Visualizador de documento em tempo real */
+  .kyc-viewer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+    min-height: 420px;
+  }
+  .kyc-viewer-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.55rem 0.75rem;
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+  }
+  .kyc-viewer-meta {
+    display: flex; align-items: center; gap: 0.5rem;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+  .kyc-viewer-filename {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ok-text-primary);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-width: 260px;
+  }
+  .kyc-viewer-tools { display: flex; gap: 0.35rem; flex-shrink: 0; }
+  .kyc-viewer-stage {
+    flex: 1;
+    min-height: 340px;
+    max-height: 60vh;
+    display: flex; align-items: center; justify-content: center;
+    background:
+      radial-gradient(circle at 30% 20%, var(--ok-color-token-057) 0%, transparent 55%),
+      radial-gradient(circle at 70% 80%, var(--ok-color-token-058) 0%, transparent 55%),
+      var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    overflow: hidden;
+    position: relative;
+  }
+  .kyc-viewer-stage img,
+  .kyc-viewer-stage iframe {
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    display: block;
+    border-radius: 8px;
+    background: var(--ok-color-white);
+  }
+  .kyc-viewer-stage img {
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+  }
+  .kyc-viewer-stage img.zoomed {
+    cursor: zoom-out;
+    transform: scale(1.6);
+    z-index: 5;
+  }
+  .kyc-viewer-stage iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 340px;
+  }
+  .kyc-viewer-stage .state-hint {
+    text-align: center;
+    color: var(--ok-text-muted);
+    font-size: 0.85rem;
+    padding: 2rem 1rem;
+  }
+  .kyc-viewer-stage .state-hint i {
+    display: block;
+    font-size: 2.4rem;
+    color: var(--ok-purple-vibrant);
+    margin-bottom: 0.85rem;
+  }
+
+  /* Animações de entrada dos modais */
+  .kyc-modal.fade .modal-dialog {
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease;
+  }
+  .kyc-modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+  }
+
+  /* Header summary do titular */
+  .kyc-header-summary {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.85rem;
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+  }
+  .kyc-header-summary .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(140deg, var(--ok-color-token-034), var(--ok-color-token-035));
+    border: 1px solid var(--ok-purple-border);
+    color: var(--ok-color-token-036);
+    font-weight: 800;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .kyc-header-summary .info { min-width: 0; flex: 1; }
+  .kyc-header-summary .name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .kyc-header-summary .sub {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    margin: 0.15rem 0 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .kyc-header-summary .badges {
+    display: flex; gap: 0.35rem; flex-wrap: wrap;
+    margin-top: 0.35rem;
+  }
+
+  /* Campos de formulário */
+  .kyc-pane .form-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ok-text-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  /* Cartão de confirmação final */
+  .kyc-confirm-card {
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    padding: 1rem;
+    display: flex; flex-direction: column; gap: 0.65rem;
+  }
+  .kyc-confirm-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--ok-divider);
+  }
+  .kyc-confirm-row:last-child { border-bottom: 0; }
+  .kyc-confirm-row .label {
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .kyc-confirm-row .value {
+    color: var(--ok-text-primary);
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  /* Alerta inline */
+  #kyc-page-alert {
+    margin-bottom: 16px;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.85rem;
+  }
+
+  /* =========================================================================
+     FOOTER
+     ========================================================================= */
+  .admin-footer {
+    border-top: 1px solid var(--ok-border-subtle);
+    background: var(--ok-color-transparent);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    color: var(--ok-text-muted);
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 1;
+    margin-top: 2rem;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+    .kyc-card-footer { flex-direction: column; align-items: flex-start; }
+    .kyc-pagination { width: 100%; }
+    .kyc-modal .modal-dialog { max-width: calc(100% - 1.5rem); }
+    .kyc-viewer-filename { max-width: 160px; }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+    .kyc-field-grid { grid-template-columns: 1fr; }
+    .kyc-doc-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  .text-danger { color: var(--ok-accent-rose) !important; }
+  .text-muted { color: var(--ok-text-muted) !important; }
+  .btn-outline-info { --bs-btn-color: var(--ok-accent-cyan); --bs-btn-border-color: var(--ok-accent-cyan); --bs-btn-hover-color: var(--ok-text-primary); --bs-btn-hover-bg: var(--ok-accent-cyan); --bs-btn-hover-border-color: var(--ok-accent-cyan); }
+  .btn-outline-primary { --bs-btn-color: var(--ok-purple-vibrant); --bs-btn-border-color: var(--ok-purple-vibrant); --bs-btn-hover-color: var(--ok-text-primary); --bs-btn-hover-bg: var(--ok-purple-primary); --bs-btn-hover-border-color: var(--ok-purple-primary); }
+  .alert-danger { --bs-alert-color: var(--ok-accent-rose); --bs-alert-bg: var(--ok-color-token-045); --bs-alert-border-color: var(--ok-accent-rose); }
+  .alert-warning { --bs-alert-color: var(--ok-accent-amber); --bs-alert-bg: var(--ok-color-token-039); --bs-alert-border-color: var(--ok-accent-amber); }
+  .alert-success { --bs-alert-color: var(--ok-color-token-017); --bs-alert-bg: var(--ok-color-token-015); --bs-alert-border-color: var(--ok-accent-emerald); }
+  .alert-info { --bs-alert-color: var(--ok-accent-cyan); --bs-alert-bg: var(--ok-color-token-026); --bs-alert-border-color: var(--ok-accent-cyan); }
+</style>
+
+<body data-admin-role="<%= adminRoleForPage %>" data-admin-user-id="<%= adminIdForPage %>">
+  <div class="ok-ambient-glow-core" aria-hidden="true"></div>
+
+  <!-- ======================================================================
+       SIDEBAR SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila — Administração" aria-label="Painel administrativo OneKixikila">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ok-color-token-010)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav" aria-label="Ferramentas de administração">
+      <a href="/admin" class="ok-rail-link" title="Dashboard executivo" aria-label="Dashboard executivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'SUPPORT_AGENT')) { %>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores" aria-label="Utilizadores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila" aria-label="Grupos de Kixikila">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link active" title="Revisão de identidade KYC" aria-label="Revisão KYC" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2.5"></circle><path d="M5.5 17c.8-2 2-3 3.5-3s2.7 1 3.5 3M15 9h3M15 13h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas" aria-label="Disputas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path><path d="M12 8v4M12 16h.01"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-disputes">0</span>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos e saídas" aria-label="Pagamentos e saídas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20M6 15h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios financeiros" aria-label="Relatórios financeiros">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path><path d="M14 9h5v5"></path></svg>
+      </a>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas e limites" aria-label="Configurações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.6-1.4-2.4 1.4-1.1A8 8 0 0 1 7 13l-1.8-.3V9.9L7 9.6a8 8 0 0 1 .7-1.6L6.3 6.8l1.4-2.4 1.7.6a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.6 1.4 2.4-1.4 1.2a8 8 0 0 1 .7 1.6l1.8.3v2.8l-1.8.3a8 8 0 0 1-.7 1.6z"></path></svg>
+      </a>
+      <% } %>
+      <% if (canViewAuditTrail) { %>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria forense" aria-label="Auditoria forense">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M8 13h8M8 17h8"></path></svg>
+      </a>
+      <% } %>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/notifications" class="ok-rail-link" title="Notificações" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+      <a href="/profile" class="ok-rail-link" title="Perfil" aria-label="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar sessão" aria-label="Terminar sessão" style="background:var(--ok-color-transparent);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL — TODOS OS FILHOS PARTILHAM A MESMA COLUNA
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- TOP BAR (alinhado à mesma coluna do hero, cards, tabela, footer) -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" id="global-dashboard-search" placeholder="Pesquisar nome, documento ou e-mail..." autocomplete="off" aria-label="Pesquisar fila KYC">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <span class="admin-currency-badge d-none d-md-inline-flex" id="admin-utc-clock" style="font-family:'Space Grotesk',monospace;letter-spacing:0.02em;">--:--:-- UTC</span>
+
+        <a href="/dashboard" class="ok-action-circle d-none d-sm-inline-flex" title="Painel do Membro" aria-label="Painel do Membro">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill" aria-label="Perfil do administrador">
+          <span class="ok-profile-avatar-nav" aria-hidden="true"><%= String(adminDisplayName).trim().charAt(0).toUpperCase() || 'A' %></span>
+          <div class="d-flex flex-column text-start admin-profile-text">
+            <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1;"><%= adminDisplayName %></span>
+            <span class="text-muted" style="font-size: 0.7rem;"><%= adminRoleForPage.replaceAll('_', ' ') || 'ADMIN' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Revisão de Identidade <span class="user-highlight">KYC</span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Fila de Conformidade
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          Analise processos e documentos submetidos, consulte detalhes com acesso autorizado e registe pareceres de conformidade com a respetiva fundamentação.
+        </p>
+      </div>
+
+      <div class="admin-hero-actions">
+        <button type="button" id="kyc-refresh-btn" class="ok-btn-pill-soft">
+          <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Atualizar fila
+        </button>
+      </div>
+    </section>
+
+    <!-- Alertas inline -->
+    <div id="kyc-page-alert" class="alert d-none" role="alert" aria-live="polite"></div>
+
+    <!-- Aviso de confidencialidade -->
+    <div class="admin-note">
+      <i class="bi bi-shield-lock" aria-hidden="true"></i>
+      <span>Documentos de identidade são dados confidenciais. O acesso é autenticado e auditado. Os pareceres de revisão só são apresentados a utilizadores ADMIN/AUDITOR e o servidor valida cada transição de estado.</span>
+    </div>
+
+    <!-- FAIXA DE 4 CARDS CHAPADOS -->
+    <div class="ok-flat-quad-strip" aria-label="Resumo dos processos carregados">
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+              <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Processos filtrados</h5>
+          <p class="ok-flat-desc">Correspondentes aos filtros aplicados.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-total">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Fila total
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Em análise nesta página</h5>
+          <p class="ok-flat-desc">Processos atualmente em análise.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-review">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Em revisão
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Aprovados nesta página</h5>
+          <p class="ok-flat-desc">Identidades aprovadas.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-approved">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Aprovadas
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M24 14v12m0 6h.01" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">A requerer atenção</h5>
+          <p class="ok-flat-desc">Pendentes, rejeitados ou a rever.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-attention">—</span>
+          <div class="ok-flat-trend warning">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 1 21h22L12 2zm0 6v6m0 3h.01"/></svg>
+            Requer atenção
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <section class="admin-card kyc-filter-card" aria-labelledby="kyc-filter-title">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-funnel" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>
+        <h2 id="kyc-filter-title">Pesquisa e filtros</h2>
+      </div>
+      <form id="kyc-filter-form" class="row g-2 align-items-end" role="search">
+        <div class="col-12 col-lg-5">
+          <label for="kyc-search" class="form-label">Pesquisa</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+            <input type="search" class="form-control" id="kyc-search" maxlength="100" autocomplete="off" placeholder="Nome no documento, número ou e-mail">
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <label for="kyc-status" class="form-label">Estado do processo</label>
+          <select class="form-select" id="kyc-status">
+            <option value="">Todos os estados</option>
+            <option value="PENDING">Pendente</option>
+            <option value="UNDER_REVIEW">Em análise</option>
+            <option value="APPROVED">Aprovado</option>
+            <option value="REJECTED">Rejeitado</option>
+            <option value="NEEDS_REVIEW">Requer revisão</option>
+            <option value="EXPIRED">Expirado</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-2">
+          <label for="kyc-tier" class="form-label">Nível KYC</label>
+          <select class="form-select" id="kyc-tier">
+            <option value="">Todos os níveis</option>
+            <option value="TIER_1_UNVERIFIED">Nível 1 · Não verificado</option>
+            <option value="TIER_2_VERIFIED">Nível 2 · Verificado</option>
+            <option value="TIER_3_ENHANCED">Nível 3 · Avançado</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-1">
+          <label for="kyc-limit" class="form-label">Por página</label>
+          <select class="form-select" id="kyc-limit">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-1 d-flex gap-2">
+          <button type="submit" class="btn btn-primary-ok flex-grow-1" aria-label="Pesquisar">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+          <button type="reset" class="btn btn-ghost-ok" aria-label="Limpar filtros" title="Limpar filtros">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Loading -->
+    <div id="kyc-loading" class="admin-card kyc-state-box" role="status" aria-live="polite">
+      <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+      A carregar a fila de conformidade…
+    </div>
+
+    <!-- Erro -->
+    <div id="kyc-error" class="admin-card kyc-state-box d-none" role="alert"></div>
+
+    <!-- Tabela -->
+    <section class="admin-card d-none" id="kyc-table-card" aria-labelledby="kyc-table-title">
+      <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom:1px solid var(--ok-border-subtle);">
+        <div>
+          <h2 id="kyc-table-title" style="font-size:1.05rem;font-weight:800;color:var(--ok-text-primary);margin:0;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;">
+            <i class="bi bi-person-bounding-box" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>
+            Processos de identidade
+          </h2>
+          <p class="mb-0" style="font-size:0.78rem;color:var(--ok-text-muted);">Ações disponíveis de acordo com as transições de estado autorizadas no backend.</p>
+        </div>
+        <span class="admin-currency-badge" id="kyc-total-pill"></span>
+      </div>
+
+      <div class="kyc-table-wrap">
+        <table class="table kyc-table">
+          <thead>
+            <tr>
+              <th class="ps-4">Titular / documento</th>
+              <th>Contacto</th>
+              <th>Tipo de documento</th>
+              <th>Nível</th>
+              <th>Estado</th>
+              <th>Submetido em</th>
+              <th class="text-end pe-4">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="kyc-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="kyc-card-footer">
+        <span class="small" style="color:var(--ok-text-muted);" id="kyc-pagination-info">—</span>
+        <ul class="kyc-pagination" id="kyc-pagination" aria-label="Paginação"></ul>
+      </div>
+    </section>
+
+    <div class="admin-note warning">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      <span>As opções de parecer são limitadas às transições permitidas para o estado atual do processo. A API continua a validar todas as decisões no servidor.</span>
+    </div>
+
+    <footer class="admin-footer">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Acesso KYC sujeito a confidencialidade e auditoria.</span>
+    </footer>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL 1 — DETALHE DO PROCESSO (WIZARD 4 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade kyc-modal" id="modal-kyc-details" tabindex="-1" aria-labelledby="modalKycDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable modal-wide">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalKycDetailsLabel"><i class="bi bi-person-vcard" aria-hidden="true"></i>Ficha de verificação KYC</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="kyc-timeline" id="details-timeline">
+          <span class="kyc-step active" data-step="1"><span class="dot"><span>1</span></span>Identificação</span>
+          <span class="kyc-step-sep" data-sep="1"></span>
+          <span class="kyc-step" data-step="2"><span class="dot"><span>2</span></span>Contacto</span>
+          <span class="kyc-step-sep" data-sep="2"></span>
+          <span class="kyc-step" data-step="3"><span class="dot"><span>3</span></span>Revisão</span>
+          <span class="kyc-step-sep" data-sep="3"></span>
+          <span class="kyc-step" data-step="4"><span class="dot"><span>4</span></span>Documentos</span>
+        </div>
+
+        <div class="modal-body" id="modal-kyc-details-body">
+          <div class="kyc-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span></div>
+        </div>
+
+        <div class="kyc-wizard-footer" id="details-wizard-footer">
+          <span class="kyc-wizard-progress">Etapa <strong id="details-step-current">1</strong> de 4</span>
+          <div class="kyc-wizard-actions">
+            <button type="button" class="ok-btn-apple secondary" id="details-prev-btn" disabled>
+              <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+            </button>
+            <button type="button" class="ok-btn-apple primary" id="details-next-btn">
+              Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Fechar</button>
+            <button type="button" class="ok-btn-apple primary d-none" id="detail-review-btn">
+              <i class="bi bi-clipboard-check" aria-hidden="true"></i> Emitir parecer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2 — PARECER DE CONFORMIDADE (WIZARD 4 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade kyc-modal" id="modal-kyc-review" tabindex="-1" aria-labelledby="modalKycReviewLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalKycReviewLabel"><i class="bi bi-clipboard-check" aria-hidden="true"></i>Parecer de conformidade</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="kyc-timeline" id="review-timeline">
+          <span class="kyc-step active" data-step="1"><span class="dot"><span>1</span></span>Dados</span>
+          <span class="kyc-step-sep" data-sep="1"></span>
+          <span class="kyc-step" data-step="2"><span class="dot"><span>2</span></span>Decisão</span>
+          <span class="kyc-step-sep" data-sep="2"></span>
+          <span class="kyc-step" data-step="3"><span class="dot"><span>3</span></span>Fundamentação</span>
+          <span class="kyc-step-sep" data-sep="3"></span>
+          <span class="kyc-step" data-step="4"><span class="dot"><span>4</span></span>Confirmação</span>
+        </div>
+
+        <form id="form-kyc-review">
+          <input type="hidden" id="review-verification-id">
+          <div class="modal-body">
+
+            <div class="kyc-pane active" data-pane="1">
+              <div class="admin-note" style="margin-bottom:0.85rem;">
+                <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                <span>Confirme os dados do titular antes de prosseguir. Nenhuma decisão é registada nesta etapa.</span>
+              </div>
+              <div class="kyc-header-summary">
+                <div class="avatar" id="review-avatar">K</div>
+                <div class="info">
+                  <p class="name" id="review-name">—</p>
+                  <p class="sub" id="review-sub">—</p>
+                  <div class="badges" id="review-badges"></div>
+                </div>
+              </div>
+              <div class="kyc-field-grid" id="review-data-grid"></div>
+            </div>
+
+            <div class="kyc-pane" data-pane="2">
+              <p class="kyc-pane-title">Decisão de conformidade</p>
+              <label for="review-decision" class="form-label">Decisão</label>
+              <select class="form-select" id="review-decision" required>
+                <option value="APPROVED">Aprovar identidade</option>
+                <option value="REJECTED">Rejeitar processo</option>
+                <option value="NEEDS_REVIEW">Solicitar revisão adicional</option>
+              </select>
+              <div id="review-tier-wrap" class="mt-3">
+                <label for="review-tier" class="form-label">Nível concedido</label>
+                <select class="form-select" id="review-tier">
+                  <option value="TIER_2_VERIFIED">TIER_2_VERIFIED — Identidade verificada</option>
+                  <option value="TIER_3_ENHANCED">TIER_3_ENHANCED — Verificação avançada</option>
+                </select>
+              </div>
+              <div class="admin-note warning" style="margin-top:0.85rem;">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                <span>Apenas transições permitidas para o estado atual estão disponíveis. O servidor valida novamente.</span>
+              </div>
+            </div>
+
+            <div class="kyc-pane" data-pane="3">
+              <p class="kyc-pane-title">Fundamentação obrigatória</p>
+              <label for="review-rejection-reason" class="form-label">Fundamentação da decisão <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="review-rejection-reason" rows="4" minlength="10" maxlength="500" required placeholder="Registe uma justificação objetiva, entre 10 e 500 caracteres."></textarea>
+              <div class="form-text" style="color:var(--ok-text-muted);">Obrigatória para iniciar análise, aprovar, rejeitar ou solicitar reenvio.</div>
+              <label for="review-notes" class="form-label mt-3">Notas internas de revisão</label>
+              <textarea class="form-control" id="review-notes" rows="3" maxlength="1000" placeholder="Observações para registo interno (máximo 1000 caracteres)."></textarea>
+              <div class="form-text" style="color:var(--ok-text-muted);">Comentário interno opcional; não substitui a fundamentação obrigatória.</div>
+            </div>
+
+            <div class="kyc-pane" data-pane="4">
+              <p class="kyc-pane-title">Confirmação final</p>
+              <div class="kyc-confirm-card">
+                <div class="kyc-confirm-row">
+                  <span class="label">Titular</span>
+                  <span class="value" id="confirm-name">—</span>
+                </div>
+                <div class="kyc-confirm-row">
+                  <span class="label">Processo</span>
+                  <span class="value mono" id="confirm-id">—</span>
+                </div>
+                <div class="kyc-confirm-row">
+                  <span class="label">Decisão</span>
+                  <span class="value" id="confirm-decision">—</span>
+                </div>
+                <div class="kyc-confirm-row" id="confirm-tier-row">
+                  <span class="label">Nível concedido</span>
+                  <span class="value" id="confirm-tier">—</span>
+                </div>
+                <div class="kyc-confirm-row">
+                  <span class="label">Fundamentação</span>
+                  <span class="value" id="confirm-reason">—</span>
+                </div>
+              </div>
+              <div class="admin-note" style="margin-top:0.85rem;">
+                <i class="bi bi-shield-check" aria-hidden="true"></i>
+                <span>Ao confirmar, a decisão é registada na auditoria institucional e o estado do processo é atualizado no servidor.</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="kyc-wizard-footer">
+            <span class="kyc-wizard-progress">Etapa <strong id="review-step-current">1</strong> de 4</span>
+            <div class="kyc-wizard-actions">
+              <button type="button" class="ok-btn-apple secondary" id="review-prev-btn" disabled>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+              </button>
+              <button type="button" class="ok-btn-apple primary" id="review-next-btn">
+                Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="ok-btn-apple primary d-none" id="review-submit-btn">
+                <i class="bi bi-check2" aria-hidden="true"></i> Registar parecer
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 3 — VISUALIZADOR DE DOCUMENTO EM TEMPO REAL
+       ====================================================================== -->
+  <div class="modal fade kyc-modal" id="modal-kyc-document" tabindex="-1" aria-labelledby="modalKycDocumentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable modal-wide">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalKycDocumentLabel"><i class="bi bi-file-earmark-lock" aria-hidden="true"></i>Documento confidencial</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body" id="modal-kyc-document-body">
+          <div class="kyc-state-box">A preparar visualização segura…</div>
+        </div>
+        <div class="modal-footer">
+          <a href="#" id="kyc-document-download-link" class="ok-btn-apple primary d-none" target="_blank" rel="noopener noreferrer" download><i class="bi bi-download" aria-hidden="true"></i> Descarregar ficheiro</a>
+          <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/sweet-alert') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+        sidebarToggle?.addEventListener('click', () => {
+          const active = document.body.classList.toggle('mobile-nav-active');
+          sidebarToggle.setAttribute('aria-expanded', String(active));
+        });
+        document.querySelectorAll('.ok-rail-link[href]').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 991px)').matches) {
+              document.body.classList.remove('mobile-nav-active');
+            }
+          });
+        });
+        const search = document.getElementById('global-dashboard-search');
+        document.addEventListener('keydown', (event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (search) { event.preventDefault(); search.focus(); }
+          }
+        });
+        document.querySelectorAll('[data-action="logout"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            button.disabled = true;
+            try {
+              if (window.apiClient && typeof window.apiClient.post === 'function') await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') window.apiClient.clearSession();
+            } catch (_) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         ESTADO E HELPERS KYC
+         ==================================================================== */
+      const role = String(document.body.dataset.adminRole || '').toUpperCase();
+      const actorId = String(document.body.dataset.adminUserId || '');
+      const canReview = ['ADMIN', 'AUDITOR'].includes(role);
+
+      const el = {
+        loading: document.getElementById('kyc-loading'),
+        error: document.getElementById('kyc-error'),
+        card: document.getElementById('kyc-table-card'),
+        body: document.getElementById('kyc-table-body'),
+        search: document.getElementById('kyc-search'),
+        status: document.getElementById('kyc-status'),
+        tier: document.getElementById('kyc-tier'),
+        limit: document.getElementById('kyc-limit'),
+        pagination: document.getElementById('kyc-pagination'),
+        paginationInfo: document.getElementById('kyc-pagination-info'),
+        pill: document.getElementById('kyc-total-pill'),
+        alert: document.getElementById('kyc-page-alert')
+      };
+
+      let page = 1, pages = 1, seq = 0, records = [], currentVerification = null, activeObjectUrl = null;
+
+      function esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      }
+      function errMsg(e, f) { return e && typeof e.message === 'string' && e.message.trim() ? e.message : f; }
+      function showAlert(msg, type) {
+        el.alert.className = 'alert alert-' + (type || 'danger');
+        el.alert.textContent = String(msg || 'Ocorreu um erro.');
+        el.alert.classList.remove('d-none');
+        el.alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      function clearAlert() { el.alert.classList.add('d-none'); el.alert.textContent = ''; }
+      function dateFmt(v) {
+        if (!v) return '—';
+        if (window.App && typeof window.App.formatDate === 'function') {
+          try { return window.App.formatDate(v, true); } catch (_) {}
+        }
+        const d = new Date(v);
+        return Number.isNaN(d.getTime()) ? '—' : new Intl.DateTimeFormat('pt-PT', { dateStyle: 'medium', timeStyle: 'short' }).format(d);
+      }
+      function statusBadge(s) {
+        const v = String(s || 'UNKNOWN').toUpperCase();
+        const labels = { PENDING: 'Pendente', UNDER_REVIEW: 'Em análise', APPROVED: 'Aprovado', REJECTED: 'Rejeitado', NEEDS_REVIEW: 'Requer revisão', EXPIRED: 'Expirado' };
+        const cls = { PENDING: 'kyc-state-pending', UNDER_REVIEW: 'kyc-state-review', APPROVED: 'kyc-state-approved', REJECTED: 'kyc-state-rejected', NEEDS_REVIEW: 'kyc-state-pending', EXPIRED: 'kyc-state-other' };
+        return '<span class="kyc-badge ' + (cls[v] || 'kyc-state-other') + '" title="' + esc(v) + '">' + esc(labels[v] || v) + '</span>';
+      }
+      function tierBadge(t) {
+        const v = String(t || 'TIER_1_UNVERIFIED').toUpperCase();
+        const labels = { TIER_1_UNVERIFIED: 'Nível 1', TIER_2_VERIFIED: 'Nível 2', TIER_3_ENHANCED: 'Nível 3' };
+        return '<span class="kyc-badge kyc-tier" title="' + esc(v) + '">' + esc(labels[v] || v) + '</span>';
+      }
+      function idTypeLabel(t) {
+        const m = { NATIONAL_ID: 'Bilhete de Identidade', PASSPORT: 'Passaporte', DRIVING_LICENSE: 'Carta de condução', FACIAL_PHOTO: 'Fotografia facial', PROOF_OF_ADDRESS: 'Comprovativo de residência' };
+        return m[String(t || '').toUpperCase()] || String(t || '—');
+      }
+      function maskId(value) {
+        const raw = String(value || '');
+        return raw.length <= 4 ? '••••' : '••••••' + raw.slice(-4);
+      }
+      function allowedDecisions(v) {
+        if (!v) return [];
+        const status = String(v.status || '').toUpperCase();
+        const map = { PENDING: ['REJECTED'], UNDER_REVIEW: ['APPROVED', 'REJECTED', 'NEEDS_REVIEW'], NEEDS_REVIEW: ['REJECTED'], REJECTED: [], APPROVED: ['NEEDS_REVIEW'], EXPIRED: [] };
+        return map[status] || [];
+      }
+      function reviewAllowed(v) {
+        return canReview && Boolean(actorId) && v && String(v.user_id || v.userId || '') !== actorId && allowedDecisions(v).length > 0;
+      }
+      function summary(data, p) {
+        const total = Number(p && (p.totalItems ?? p.totalCount));
+        document.getElementById('stat-total').textContent = Number.isFinite(total) ? String(total) : String(data.length);
+        document.getElementById('stat-review').textContent = String(data.filter(x => String(x.status || '').toUpperCase() === 'UNDER_REVIEW').length);
+        document.getElementById('stat-approved').textContent = String(data.filter(x => String(x.status || '').toUpperCase() === 'APPROVED').length);
+        document.getElementById('stat-attention').textContent = String(data.filter(x => ['PENDING', 'NEEDS_REVIEW', 'REJECTED', 'EXPIRED'].includes(String(x.status || '').toUpperCase())).length);
+        el.pill.textContent = (Number.isFinite(total) ? total : data.length) + ' processo(s)';
+      }
+      function render(data) {
+        if (!data.length) {
+          el.body.innerHTML = '<tr><td colspan="7"><div class="kyc-state-box m-3"><i class="bi bi-person-check" aria-hidden="true"></i><strong class="d-block mb-1" style="color:var(--ok-text-primary);">Nenhum processo encontrado</strong><span>Altere os filtros ou tente uma pesquisa diferente.</span></div></td></tr>';
+          return;
+        }
+        el.body.innerHTML = data.map(v => {
+          const id = String(v.id || '');
+          const name = String(v.full_name_on_document || v.fullNameOnDocument || v.user_full_name || v.user_registered_name || 'Nome não indicado');
+          const email = String(v.email || v.user_email || '—');
+          const phone = String(v.phone_number || v.phoneNumber || '—');
+          const status = String(v.status || '').toUpperCase();
+          const canAct = reviewAllowed(v);
+          let actions = '<button type="button" class="btn btn-sm btn-outline-info" data-action="details" data-verification-id="' + esc(id) + '" aria-label="Ver processo KYC de ' + esc(name) + '" title="Ficha e documentos"><i class="bi bi-eye" aria-hidden="true"></i></button>';
+          if (canAct) actions += '<button type="button" class="btn btn-sm btn-outline-primary" data-action="review" data-verification-id="' + esc(id) + '" aria-label="Emitir parecer KYC de ' + esc(name) + '" title="Emitir parecer"><i class="bi bi-clipboard-check" aria-hidden="true"></i></button>';
+          return '<tr>' +
+            '<td class="ps-4"><div class="d-flex align-items-center gap-3"><span class="kyc-avatar" aria-hidden="true">' + esc(name.trim().charAt(0).toUpperCase() || 'K') + '</span><div><div class="kyc-name">' + esc(name) + '</div><div class="kyc-subtext kyc-sensitive">Documento: ' + esc(maskId(v.id_number || v.idNumber)) + '</div></div></div></td>' +
+            '<td><div class="kyc-name">' + esc(email) + '</div><div class="kyc-subtext">' + esc(phone) + '</div></td>' +
+            '<td><span class="small">' + esc(idTypeLabel(v.id_type || v.idType)) + '</span></td>' +
+            '<td>' + tierBadge(v.tier) + '</td>' +
+            '<td>' + statusBadge(status) + '</td>' +
+            '<td><span class="small" style="color:var(--ok-text-muted);">' + esc(dateFmt(v.submitted_at || v.submittedAt)) + '</span></td>' +
+            '<td class="text-end pe-4"><div class="kyc-actions">' + actions + '</div></td>' +
+            '</tr>';
+        }).join('');
+      }
+      function renderPagination(p) {
+        const current = Number(p && (p.currentPage ?? p.page));
+        const count = Number(p && (p.totalPages ?? p.total_pages));
+        if (Number.isFinite(current) && current > 0) page = current;
+        pages = Number.isFinite(count) && count > 0 ? count : 1;
+        const total = Number(p && (p.totalItems ?? p.totalCount));
+        const limit = Number(el.limit.value) || 15;
+        const first = total > 0 ? (page - 1) * limit + 1 : 0;
+        const last = total > 0 ? Math.min(page * limit, total) : 0;
+        el.paginationInfo.textContent = pages > 1 ? ('A mostrar ' + first + '–' + last + ' de ' + total + ' · Página ' + page + ' de ' + pages) : (total > 0 ? ('A mostrar ' + first + '–' + last + ' de ' + total + ' processo(s)') : 'Sem resultados');
+        const nums = Array.from(new Set([1, pages, page - 1, page, page + 1].filter(n => n >= 1 && n <= pages))).sort((a, b) => a - b);
+        let html = '<li><button type="button" data-page="' + (page - 1) + '" ' + (page <= 1 ? 'disabled' : '') + ' aria-label="Página anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></button></li>';
+        let lastNum = 0;
+        nums.forEach(n => {
+          if (lastNum && n - lastNum > 1) html += '<li class="text-muted px-1 align-self-center" aria-hidden="true" style="color:var(--ok-text-muted);">…</li>';
+          html += '<li><button type="button" data-page="' + n + '" class="' + (n === page ? 'is-current' : '') + '" ' + (n === page ? 'aria-current="page"' : '') + '>' + n + '</button></li>';
+          lastNum = n;
+        });
+        html += '<li><button type="button" data-page="' + (page + 1) + '" ' + (page >= pages ? 'disabled' : '') + ' aria-label="Página seguinte"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></li>';
+        el.pagination.innerHTML = html;
+      }
+
+      /* ====================================================================
+         CARREGAR FILA
+         ==================================================================== */
+      async function loadQueue(requestedPage) {
+        if (!canReview) {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-shield-lock" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Acesso de revisão restrito</strong><span>A fila de conformidade e os pareceres KYC estão reservados a ADMIN e AUDITOR. O servidor permanece como autoridade de autorização.</span>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-plug" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Cliente da API indisponível</strong><span>Não é seguro carregar documentos ou emitir pareceres sem o cliente da API. Recarregue a página e tente novamente.</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="kyc-retry-btn"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+          return;
+        }
+        const thisSeq = ++seq;
+        page = requestedPage || 1;
+        clearAlert();
+        el.error.classList.add('d-none');
+        el.card.classList.add('d-none');
+        el.loading.classList.remove('d-none');
+        el.loading.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>A carregar a fila de conformidade…';
+        const q = new URLSearchParams({ page: String(page), limit: String(Number(el.limit.value) || 15) });
+        const search = el.search.value.trim();
+        if (search) q.set('search', search);
+        if (el.status.value) q.set('status', el.status.value);
+        if (el.tier.value) q.set('tier', el.tier.value);
+        try {
+          const response = await window.apiClient.get('/identity/queue?' + q.toString());
+          if (thisSeq !== seq) return;
+          if (!response || response.success === false) throw new Error('A resposta da API não contém uma fila KYC válida.');
+          const payload = response.data && response.data.data ? response.data.data : response.data;
+          const pageRows = Array.isArray(payload) ? payload : (payload && (payload.items || payload.verifications || payload.records || payload.results));
+          if (!Array.isArray(pageRows)) throw new Error('A resposta da API não contém uma fila KYC válida.');
+          records = pageRows;
+          const pagination = response.pagination || (payload && payload.pagination) || {};
+          render(records);
+          renderPagination(pagination);
+          summary(records, pagination);
+          el.loading.classList.add('d-none');
+          el.card.classList.remove('d-none');
+        } catch (error) {
+          if (thisSeq !== seq) return;
+          el.loading.classList.add('d-none');
+          el.card.classList.add('d-none');
+          el.error.innerHTML = '<i class="bi bi-exclamation-triangle" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Não foi possível carregar a fila KYC</strong><span>' + esc(errMsg(error, 'Falha de comunicação com o servidor.')) + '</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="kyc-retry-btn"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          el.error.classList.remove('d-none');
+        }
+      }
+
+      /* ====================================================================
+         HELPERS DE MODAL
+         ==================================================================== */
+      function modal(id) {
+        if (!window.bootstrap || !window.bootstrap.Modal) {
+          showAlert('Os componentes de interface não foram inicializados. Recarregue a página antes de continuar.', 'warning');
+          return null;
+        }
+        return window.bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+      }
+      function field(label, value, opts) {
+        const o = opts || {};
+        return '<div class="kyc-field"><span class="kyc-field-label">' + esc(label) + '</span><span class="kyc-field-value' + (o.mono ? ' mono' : '') + '">' + esc(value == null || value === '' ? '—' : value) + '</span></div>';
+      }
+      function detail(label, value) { return field(label, value); }
+      function bytesText(value) {
+        const n = Number(value);
+        if (!Number.isFinite(n) || n < 0) return '—';
+        if (n < 1024) return n + ' B';
+        if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+        return (n / 1048576).toFixed(2) + ' MB';
+      }
+
+      /* ====================================================================
+         WIZARD — CONTROLE DE ETAPAS (DETALHE)
+         ==================================================================== */
+      let detailStep = 1;
+      const detailStepCount = 4;
+      function setDetailStep(step) {
+        detailStep = Math.max(1, Math.min(detailStepCount, step));
+        document.querySelectorAll('#modal-kyc-details .kyc-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === detailStep);
+        });
+        const timeline = document.getElementById('details-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.kyc-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === detailStep);
+            el.classList.toggle('done', n < detailStep);
+          });
+          timeline.querySelectorAll('.kyc-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < detailStep);
+          });
+        }
+        const cur = document.getElementById('details-step-current');
+        if (cur) cur.textContent = String(detailStep);
+        const prev = document.getElementById('details-prev-btn');
+        const next = document.getElementById('details-next-btn');
+        const reviewBtn = document.getElementById('detail-review-btn');
+        if (prev) prev.disabled = detailStep <= 1;
+        if (next) next.classList.toggle('d-none', detailStep >= detailStepCount);
+        if (reviewBtn) {
+          const showReview = detailStep === detailStepCount && currentVerification && reviewAllowed(currentVerification);
+          reviewBtn.classList.toggle('d-none', !showReview);
+        }
+      }
+
+      /* ====================================================================
+         WIZARD — CONTROLE DE ETAPAS (PARECER)
+         ==================================================================== */
+      let reviewStep = 1;
+      const reviewStepCount = 4;
+      function setReviewStep(step) {
+        reviewStep = Math.max(1, Math.min(reviewStepCount, step));
+        document.querySelectorAll('#modal-kyc-review .kyc-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === reviewStep);
+        });
+        const timeline = document.getElementById('review-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.kyc-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === reviewStep);
+            el.classList.toggle('done', n < reviewStep);
+          });
+          timeline.querySelectorAll('.kyc-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < reviewStep);
+          });
+        }
+        const cur = document.getElementById('review-step-current');
+        if (cur) cur.textContent = String(reviewStep);
+        const prev = document.getElementById('review-prev-btn');
+        const next = document.getElementById('review-next-btn');
+        const submit = document.getElementById('review-submit-btn');
+        if (prev) prev.disabled = reviewStep <= 1;
+        if (next) next.classList.toggle('d-none', reviewStep >= reviewStepCount);
+        if (submit) submit.classList.toggle('d-none', reviewStep < reviewStepCount);
+        if (reviewStep === reviewStepCount) buildConfirmStep();
+      }
+
+      function buildConfirmStep() {
+        const v = currentVerification || {};
+        const name = v.full_name_on_document || v.user_registered_name || '—';
+        const id = v.id || '—';
+        const decision = document.getElementById('review-decision').value;
+        const tier = document.getElementById('review-tier').value;
+        const reason = document.getElementById('review-rejection-reason').value.trim();
+        document.getElementById('confirm-name').textContent = name;
+        document.getElementById('confirm-id').textContent = id;
+        const labels = { APPROVED: 'Aprovar identidade', REJECTED: 'Rejeitar processo', NEEDS_REVIEW: 'Solicitar revisão adicional' };
+        document.getElementById('confirm-decision').textContent = labels[decision] || decision;
+        document.getElementById('confirm-tier').textContent = tier;
+        document.getElementById('confirm-tier-row').style.display = decision === 'APPROVED' ? '' : 'none';
+        document.getElementById('confirm-reason').textContent = reason || '—';
+      }
+
+      /* ====================================================================
+         ABRIR PARECER
+         ==================================================================== */
+      function openReview(v) {
+        if (!canReview) return showAlert('A emissão de parecer exige ADMIN ou AUDITOR.', 'warning');
+        if (!reviewAllowed(v)) return showAlert('O backend não permite emitir este parecer para o estado atual do processo.', 'warning');
+        currentVerification = v;
+        document.getElementById('review-verification-id').value = String(v.id);
+        const decisionSelect = document.getElementById('review-decision');
+        const allowed = allowedDecisions(v);
+        Array.from(decisionSelect.options).forEach(option => { option.hidden = !allowed.includes(option.value); });
+        decisionSelect.value = allowed.includes('APPROVED') ? 'APPROVED' : allowed[0];
+        document.getElementById('review-tier').value = 'TIER_2_VERIFIED';
+        document.getElementById('review-rejection-reason').value = '';
+        document.getElementById('review-notes').value = '';
+
+        const name = v.full_name_on_document || v.user_registered_name || 'Titular';
+        const avatar = document.getElementById('review-avatar');
+        if (avatar) avatar.textContent = (String(name).trim().charAt(0).toUpperCase() || 'K');
+        document.getElementById('review-name').textContent = name;
+        document.getElementById('review-sub').textContent = v.email || v.user_email || '—';
+        document.getElementById('review-badges').innerHTML = statusBadge(v.status) + ' ' + tierBadge(v.tier);
+
+        const grid = document.getElementById('review-data-grid');
+        if (grid) {
+          grid.innerHTML = [
+            field('Nome no documento', v.full_name_on_document || v.user_registered_name),
+            field('Tipo de documento', idTypeLabel(v.id_type || v.idType)),
+            field('Número do documento', maskId(v.id_number || v.idNumber), { mono: true }),
+            field('Data de nascimento', dateFmt(v.birth_date_on_document)),
+            field('Validade do documento', dateFmt(v.expiration_date)),
+            field('E-mail', v.email || v.user_email),
+            field('Telefone', v.phone_number || v.phoneNumber),
+            field('Submetido em', dateFmt(v.submitted_at || v.submittedAt)),
+            field('Processo', v.id, { mono: true })
+          ].join('');
+        }
+
+        updateReviewFields();
+        setReviewStep(1);
+        const m = modal('modal-kyc-review');
+        if (m) m.show();
+      }
+
+      function updateReviewFields() {
+        const decision = document.getElementById('review-decision').value;
+        const approve = decision === 'APPROVED';
+        document.getElementById('review-tier-wrap').classList.toggle('d-none', !approve);
+        document.getElementById('review-rejection-reason').required = true;
+        document.getElementById('review-notes').required = false;
+      }
+
+      /* ====================================================================
+         ABRIR DETALHE (WIZARD)
+         ==================================================================== */
+      async function showDetails(id) {
+        const m = modal('modal-kyc-details');
+        const body = document.getElementById('modal-kyc-details-body');
+        const reviewBtn = document.getElementById('detail-review-btn');
+        if (!m || !window.apiClient || typeof window.apiClient.get !== 'function') return;
+        currentVerification = null;
+        reviewBtn.classList.add('d-none');
+        setDetailStep(1);
+        body.innerHTML = '<div class="kyc-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span><span class="ms-2">A consultar processo e anexos…</span></div>';
+        m.show();
+        try {
+          const response = await window.apiClient.get('/identity/' + encodeURIComponent(id));
+          if (!response || response.success === false) throw new Error(response && response.message || 'Falha ao consultar o processo.');
+          const payload = response.data && response.data.data ? response.data.data : response.data;
+          const v = payload && (payload.verification || payload.identityVerification || payload);
+          if (!v || typeof v !== 'object') throw new Error('A API não devolveu um processo válido.');
+          currentVerification = v;
+          if (reviewAllowed(v)) reviewBtn.classList.remove('d-none');
+          const name = String(v.full_name_on_document || v.user_registered_name || 'Titular');
+          const docs = Array.isArray(v.documents) ? v.documents : [];
+
+          const pane1 = '<div class="kyc-header-summary"><div class="avatar">' + esc(name.trim().charAt(0).toUpperCase() || 'K') + '</div><div class="info"><p class="name">' + esc(name) + '</p><p class="sub">' + esc(v.email || v.user_email || '—') + '</p><div class="badges">' + statusBadge(v.status) + ' ' + tierBadge(v.tier) + '</div></div></div>' +
+            '<p class="kyc-pane-title">Identificação apresentada</p>' +
+            '<div class="kyc-field-grid">' +
+              field('Nome no documento', v.full_name_on_document) +
+              field('Nome registado na plataforma', v.user_registered_name) +
+              field('Número do documento', maskId(v.id_number), { mono: true }) +
+              field('Data de nascimento no documento', dateFmt(v.birth_date_on_document)) +
+              field('Validade do documento', dateFmt(v.expiration_date)) +
+              field('Tipo de documento', idTypeLabel(v.id_type)) +
+            '</div>';
+
+          const pane2 = '<p class="kyc-pane-title">Contacto</p>' +
+            '<div class="kyc-field-grid">' +
+              field('E-mail da conta', v.email) +
+              field('Telefone da conta', v.phone_number) +
+              field('ID do processo', v.id, { mono: true }) +
+              field('Submetido em', dateFmt(v.submitted_at)) +
+            '</div>';
+
+          const pane3 = '<p class="kyc-pane-title">Histórico de revisão</p>' +
+            '<div class="kyc-field-grid">' +
+              field('Estado atual', v.status) +
+              field('Nível', v.tier) +
+              field('Revisto em', dateFmt(v.reviewed_at)) +
+              field('Revisor (ID)', v.reviewed_by, { mono: true }) +
+              field('Motivo da rejeição', v.rejection_reason) +
+              field('Notas da revisão', v.review_notes) +
+            '</div>';
+
+          const pane4 = '<p class="kyc-pane-title">Documentos privados</p>' +
+            '<div class="d-flex align-items-center justify-content-between gap-2 mb-2"><span class="small" style="color:var(--ok-text-muted);">Acesso autenticado e auditado</span></div>' +
+            (docs.length ? '<div class="kyc-doc-grid">' + docs.map(d => {
+              const documentId = d.id || '';
+              const filename = d.originalFilename || d.original_filename || 'Documento';
+              const mime = d.mimeType || d.mime_type || '';
+              return '<div class="kyc-doc-tile"><div class="kyc-doc-thumb"><span class="file-badge">' + esc((mime.split('/')[1] || 'FILE').toUpperCase()) + '</span><i class="bi bi-file-earmark-lock" aria-hidden="true"></i></div><div class="kyc-doc-body"><div class="kyc-doc-name">' + esc(idTypeLabel(d.documentType || d.document_type)) + '</div><div class="kyc-doc-meta">' + esc(filename) + '</div><div class="kyc-doc-meta"><span>' + esc(bytesText(d.fileSizeBytes ?? d.file_size_bytes)) + '</span><span class="dot-sep">•</span><span>' + esc(mime || 'tipo desconhecido') + '</span></div><div class="kyc-doc-meta">Enviado ' + esc(dateFmt(d.createdAt || d.created_at)) + (d.isVerified || d.is_verified ? ' • verificado' : '') + '</div></div><div class="kyc-doc-footer"><button type="button" class="ok-icon-btn primary" data-document-id="' + esc(documentId) + '" data-document-name="' + esc(filename) + '" data-document-mime="' + esc(mime) + '" title="Ver documento"><i class="bi bi-eye" aria-hidden="true"></i></button></div></div>';
+            }).join('') + '</div>' : '<div class="kyc-state-box py-4">Não há documentos anexados a este processo.</div>');
+
+          body.innerHTML =
+            '<div class="kyc-pane active" data-pane="1">' + pane1 + '</div>' +
+            '<div class="kyc-pane" data-pane="2">' + pane2 + '</div>' +
+            '<div class="kyc-pane" data-pane="3">' + pane3 + '</div>' +
+            '<div class="kyc-pane" data-pane="4">' + pane4 + '</div>';
+
+          setDetailStep(1);
+        } catch (error) {
+          body.innerHTML = '<div class="alert alert-danger mb-0" role="alert">' + esc(errMsg(error, 'Falha ao consultar o processo KYC.')) + '</div>';
+        }
+      }
+
+      /* ====================================================================
+         VISUALIZADOR DE DOCUMENTO EM TEMPO REAL
+         ==================================================================== */
+      async function viewDocument(documentId, fileName, declaredMime) {
+        if (!window.apiClient || typeof window.apiClient.buildHeaders !== 'function') {
+          showAlert('O cliente autenticado da API não está disponível; descarga cancelada.', 'danger');
+          return;
+        }
+        const m = modal('modal-kyc-document');
+        const body = document.getElementById('modal-kyc-document-body');
+        const link = document.getElementById('kyc-document-download-link');
+        if (!m || !documentId) return;
+        if (activeObjectUrl) { URL.revokeObjectURL(activeObjectUrl); activeObjectUrl = null; }
+        link.classList.add('d-none');
+        link.removeAttribute('href');
+        body.innerHTML = '<div class="kyc-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span><span class="ms-2">A descarregar o documento com autorização…</span></div>';
+        m.show();
+        try {
+          const headers = window.apiClient.buildHeaders({ Accept: 'application/pdf, image/*, application/octet-stream, application/json' });
+          const response = await fetch('/api/v1/identity/documents/' + encodeURIComponent(documentId) + '/download', { method: 'GET', headers, credentials: 'include' });
+          const contentType = String(response.headers.get('content-type') || '').toLowerCase();
+          if (!response.ok) {
+            let message = 'Falha ao descarregar o documento (HTTP ' + response.status + ').';
+            try { const errorData = await response.json(); message = errorData && errorData.error && errorData.error.message || errorData.message || message; } catch (_) {}
+            throw new Error(message);
+          }
+          if (contentType.includes('application/json')) {
+            const metadata = await response.json();
+            if (metadata && metadata.success === false) throw new Error(metadata.error && metadata.error.message || metadata.message || 'Falha ao obter o documento.');
+            throw new Error('O armazenamento remoto devolveu apenas metadados, sem ficheiro ou URL temporário. A API atual não disponibiliza a descarga remota.');
+          }
+          const blob = await response.blob();
+          const mime = String(blob.type || declaredMime || '').toLowerCase().split(';')[0];
+          if (!blob.size) throw new Error('O documento descarregado está vazio.');
+          if (!['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/octet-stream'].includes(mime)) throw new Error('Tipo de ficheiro não permitido para pré-visualização: ' + (mime || 'desconhecido'));
+          activeObjectUrl = URL.createObjectURL(new Blob([blob], { type: mime }));
+          const safeName = String(fileName || 'documento').replace(/[\\r\\n"\\\\]/g, '_');
+          link.href = activeObjectUrl;
+          link.download = safeName;
+          link.classList.remove('d-none');
+
+          const viewer =
+            '<div class="kyc-viewer">' +
+              '<div class="kyc-viewer-toolbar">' +
+                '<div class="kyc-viewer-meta">' +
+                  '<span class="ok-icon-btn ghost sm" aria-hidden="true"><i class="bi bi-file-earmark-lock"></i></span>' +
+                  '<span class="kyc-viewer-filename" title="' + esc(safeName) + '">' + esc(safeName) + '</span>' +
+                  '<span class="kyc-badge kyc-tier">' + esc((mime || 'file').toUpperCase()) + '</span>' +
+                '</div>' +
+                '<div class="kyc-viewer-tools">' +
+                  (mime.startsWith('image/') ? '<button type="button" class="ok-icon-btn" id="kyc-viewer-zoom" title="Ampliar"><i class="bi bi-zoom-in" aria-hidden="true"></i></button>' : '') +
+                  '<a href="' + esc(activeObjectUrl) + '" download="' + esc(safeName) + '" class="ok-icon-btn" title="Descarregar"><i class="bi bi-download" aria-hidden="true"></i></a>' +
+                '</div>' +
+              '</div>' +
+              '<div class="kyc-viewer-stage" id="kyc-viewer-stage">' +
+                (mime === 'application/pdf'
+                  ? '<iframe src="' + esc(activeObjectUrl) + '" title="Pré-visualização segura do documento PDF"></iframe>'
+                  : (mime.startsWith('image/')
+                    ? '<img id="kyc-viewer-img" src="' + esc(activeObjectUrl) + '" alt="Documento confidencial enviado pelo titular">'
+                    : '<div class="state-hint"><i class="bi bi-file-earmark-arrow-down" aria-hidden="true"></i><strong style="display:block;color:var(--ok-text-primary);margin-bottom:4px;">Ficheiro autorizado</strong>Este formato não permite pré-visualização. Use o botão de descarga.</div>')) +
+              '</div>' +
+            '</div>';
+          body.innerHTML = viewer;
+
+          const zoomBtn = document.getElementById('kyc-viewer-zoom');
+          const viewerImg = document.getElementById('kyc-viewer-img');
+          if (zoomBtn && viewerImg) {
+            zoomBtn.addEventListener('click', () => {
+              viewerImg.classList.toggle('zoomed');
+              zoomBtn.innerHTML = viewerImg.classList.contains('zoomed')
+                ? '<i class="bi bi-zoom-out" aria-hidden="true"></i>'
+                : '<i class="bi bi-zoom-in" aria-hidden="true"></i>';
+            });
+            viewerImg.addEventListener('click', () => {
+              viewerImg.classList.toggle('zoomed');
+              zoomBtn.innerHTML = viewerImg.classList.contains('zoomed')
+                ? '<i class="bi bi-zoom-out" aria-hidden="true"></i>'
+                : '<i class="bi bi-zoom-in" aria-hidden="true"></i>';
+            });
+          }
+        } catch (error) {
+          body.innerHTML = '<div class="alert alert-warning mb-0" role="alert"><strong class="d-block mb-1">Documento indisponível</strong>' + esc(errMsg(error, 'Falha ao abrir o documento.')) + '</div>';
+        }
+      }
+
+      /* ====================================================================
+         LIGAÇÕES DE EVENTOS
+         ==================================================================== */
+      document.getElementById('kyc-filter-form').addEventListener('submit', ev => { ev.preventDefault(); loadQueue(1); });
+      document.getElementById('kyc-filter-form').addEventListener('reset', () => window.setTimeout(() => loadQueue(1), 0));
+      document.getElementById('kyc-refresh-btn').addEventListener('click', () => loadQueue(page));
+      el.pagination.addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-page]');
+        if (!b || b.disabled) return;
+        const n = Number(b.dataset.page);
+        if (Number.isInteger(n) && n >= 1 && n <= pages) loadQueue(n);
+      });
+      el.body.addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-action]');
+        if (!b) return;
+        const v = records.find(x => String(x.id) === String(b.dataset.verificationId));
+        if (!v) return;
+        if (b.dataset.action === 'details') showDetails(v.id);
+        else if (b.dataset.action === 'review') openReview(v);
+      });
+      el.error.addEventListener('click', ev => { if (ev.target.closest('#kyc-retry-btn')) loadQueue(page); });
+
+      document.getElementById('modal-kyc-details-body').addEventListener('click', ev => {
+        const b = ev.target.closest('button[data-document-id]');
+        if (b) viewDocument(b.dataset.documentId, b.dataset.documentName, b.dataset.documentMime);
+      });
+
+      document.getElementById('detail-review-btn').addEventListener('click', () => {
+        const detailModal = window.bootstrap.Modal.getInstance(document.getElementById('modal-kyc-details'));
+        if (detailModal) detailModal.hide();
+        if (currentVerification) openReview(currentVerification);
+      });
+
+      document.getElementById('review-decision').addEventListener('change', () => {
+        updateReviewFields();
+        if (reviewStep === reviewStepCount) buildConfirmStep();
+      });
+      document.getElementById('review-tier').addEventListener('change', () => {
+        if (reviewStep === reviewStepCount) buildConfirmStep();
+      });
+      document.getElementById('review-rejection-reason').addEventListener('input', () => {
+        if (reviewStep === reviewStepCount) buildConfirmStep();
+      });
+
+      document.getElementById('details-prev-btn').addEventListener('click', () => setDetailStep(detailStep - 1));
+      document.getElementById('details-next-btn').addEventListener('click', () => setDetailStep(detailStep + 1));
+
+      document.getElementById('review-prev-btn').addEventListener('click', () => setReviewStep(reviewStep - 1));
+      document.getElementById('review-next-btn').addEventListener('click', () => {
+        if (reviewStep === 2) {
+          const decision = document.getElementById('review-decision').value;
+          if (!decision) { showAlert('Selecione uma decisão antes de avançar.', 'warning'); return; }
+        }
+        if (reviewStep === 3) {
+          const reason = document.getElementById('review-rejection-reason').value.trim();
+          if (reason.length < 10 || reason.length > 500) { showAlert('A fundamentação exige entre 10 e 500 caracteres.', 'warning'); return; }
+        }
+        setReviewStep(reviewStep + 1);
+      });
+
+      document.getElementById('modal-kyc-document').addEventListener('hidden.bs.modal', () => {
+        if (activeObjectUrl) { URL.revokeObjectURL(activeObjectUrl); activeObjectUrl = null; }
+        const downloadLink = document.getElementById('kyc-document-download-link');
+        downloadLink.classList.add('d-none');
+        downloadLink.removeAttribute('href');
+      });
+      document.getElementById('modal-kyc-review').addEventListener('hidden.bs.modal', () => document.getElementById('form-kyc-review').reset());
+      document.getElementById('modal-kyc-details').addEventListener('hidden.bs.modal', () => { currentVerification = null; setDetailStep(1); });
+
+      /* ====================================================================
+         CONFIRMAÇÃO E SUBMISSÃO DO PARECER
+         ==================================================================== */
+      async function confirmKycDecision(status) {
+        const label = ({ APPROVED: 'aprovar a identidade', REJECTED: 'rejeitar o processo', NEEDS_REVIEW: 'solicitar revisão adicional' })[status] || 'registar esta decisão';
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          const first = await window.Swal.fire({ title: 'Confirmar decisão?', text: 'Vai ' + label + '. A ação ficará registada na auditoria.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Continuar', cancelButtonText: 'Cancelar', reverseButtons: true });
+          if (!first.isConfirmed) return false;
+          const second = await window.Swal.fire({ title: 'Confirmação final', text: 'Confirma definitivamente esta decisão de conformidade?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Confirmar decisão', cancelButtonText: 'Voltar', reverseButtons: true });
+          return Boolean(second.isConfirmed);
+        }
+        return window.confirm('Confirma que pretende ' + label + '?') && window.confirm('Confirmação final: registar a decisão KYC?');
+      }
+
+      document.getElementById('form-kyc-review').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        if (!canReview || !window.apiClient || typeof window.apiClient.post !== 'function') return showAlert('A API ou a autorização de revisão não está disponível. Ação cancelada.', 'danger');
+        const id = document.getElementById('review-verification-id').value;
+        const v = records.find(x => String(x.id) === String(id)) || currentVerification;
+        if (!v || !reviewAllowed(v)) return showAlert('O estado atual do processo não permite este parecer. Atualize a fila.', 'warning');
+        const status = document.getElementById('review-decision').value;
+        if (!allowedDecisions(v).includes(status)) return showAlert('Esta decisão não é uma transição permitida para o estado atual.', 'warning');
+        const tier = document.getElementById('review-tier').value;
+        const reason = document.getElementById('review-rejection-reason').value.trim();
+        const internalComment = document.getElementById('review-notes').value.trim();
+        if (reason.length < 10 || reason.length > 500) return showAlert('A fundamentação exige entre 10 e 500 caracteres.', 'warning');
+        if (internalComment.length > 1000) return showAlert('O comentário interno não pode exceder 1000 caracteres.', 'warning');
+        if (!await confirmKycDecision(status)) return;
+        const payload = { status, tier: status === 'APPROVED' ? tier : 'TIER_1_UNVERIFIED', rejectionReason: status === 'REJECTED' ? reason : null, reviewNotes: status === 'NEEDS_REVIEW' ? reason : (internalComment || reason || null) };
+        document.querySelectorAll('#form-kyc-review button[type="submit"]').forEach(b => b.disabled = true);
+        try {
+          const result = await window.apiClient.post('/identity/' + encodeURIComponent(id) + '/review', payload);
+          if (result && result.success === false) throw new Error(result.message || 'A API recusou o parecer.');
+          const m = window.bootstrap.Modal.getInstance(document.getElementById('modal-kyc-review'));
+          if (m) m.hide();
+          if (window.Alerts && typeof window.Alerts.toast === 'function') window.Alerts.toast('Decisão de conformidade registada com sucesso.', 'success');
+          else showAlert('Decisão de conformidade registada com sucesso.', 'success');
+          await loadQueue(page);
+        } catch (error) {
+          if (window.Alerts && typeof window.Alerts.error === 'function') window.Alerts.error(errMsg(error, 'Falha ao registar a decisão.'));
+          else showAlert(errMsg(error, 'Falha ao registar a decisão.'), 'danger');
+        } finally {
+          document.querySelectorAll('#form-kyc-review button[type="submit"]').forEach(b => b.disabled = false);
+        }
+      });
+      document.getElementById('modal-kyc-review').addEventListener('hidden.bs.modal', () => document.querySelectorAll('#form-kyc-review button[type="submit"]').forEach(b => b.disabled = false));
+
+      /* ====================================================================
+         RELÓGIO UTC
+         ==================================================================== */
+      const clock = document.getElementById('admin-utc-clock');
+      function updateClock() {
+        if (clock) clock.textContent = new Intl.DateTimeFormat('pt-PT', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()) + ' UTC';
+      }
+      updateClock();
+      window.setInterval(updateClock, 1000);
+
+      /* ====================================================================
+         INICIALIZAÇÃO
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        loadQueue(1);
+      });
+    })();
+  </script>
+</body>
+</html>

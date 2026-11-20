@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Regulamento & Regras — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Sidebar + Top Bar: arredondados. Cards centrais: quadrados.
+       Cores 100% roxo.
+       Escala MAIOR (igual ao Perfil / Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+      --ok-content-max-width: 1280px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL — ARREDONDADA
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+    .ok-badge-dot {
+      position: absolute; top: 10px; right: 10px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background-color: #ef4444;
+      border: 2px solid var(--ok-bg-surface);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* =========================================================================
+       TOP BAR — ARREDONDADA — CENTRALIZADA AO EIXO DO CONTEÚDO
+       ========================================================================= */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 0 auto 26px auto;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      padding: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+      flex-shrink: 1;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO — ARREDONDADO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 30px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-breadcrumb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      font-size: 0.86rem; font-weight: 700;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .ok-breadcrumb-btn:hover {
+      background: var(--ok-pill-bg-hover);
+      color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-border);
+      transform: translateX(-2px);
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-purple-soft);
+      border: 1px solid var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 10px var(--ok-purple-vibrant);
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+    }
+
+    .ok-btn-confirm-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff; border: none;
+      font-size: 0.86rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-confirm-pill:hover { transform: translateY(-2px); color: #ffffff; }
+
+    .ok-btn-ghost-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.86rem; font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-ghost-pill:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Nav pills internas do grupo */
+    .ok-group-nav-pills {
+      display: flex; gap: 8px;
+      padding: 8px;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      overflow-x: auto;
+      margin-bottom: 30px;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin-left: auto; margin-right: auto;
+      scrollbar-width: none;
+    }
+    .ok-group-nav-pills::-webkit-scrollbar { display: none; }
+    .ok-group-nav-pill {
+      padding: 10px 20px;
+      border-radius: var(--ok-radius-pill);
+      font-size: 0.84rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .ok-group-nav-pill:hover {
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+    }
+    .ok-group-nav-pill.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+    }
+
+    /* =========================================================================
+       CARDS CENTRAIS — QUADRADOS
+       ========================================================================= */
+    .ok-rules-layout {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .ok-rules-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 0;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .ok-rules-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .ok-rules-card-header h5 {
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ok-rules-card-body {
+      padding: 1.5rem;
+    }
+
+    /* Stat box interno (dentro dos cards) */
+    .ok-rule-field-box {
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 1.1rem 1.25rem;
+      height: 100%;
+    }
+    .ok-rule-field-label {
+      font-size: 0.74rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      margin: 0 0 6px 0;
+    }
+    .ok-rule-field-value {
+      font-size: 1.05rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+      line-height: 1.25;
+    }
+    .ok-rule-field-desc {
+      font-size: 0.78rem;
+      color: var(--ok-text-muted);
+      margin: 6px 0 0 0;
+      line-height: 1.45;
+    }
+
+    /* Termos box */
+    .ok-terms-box {
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 1.25rem;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.86rem;
+      color: var(--ok-text-secondary);
+      line-height: 1.65;
+      white-space: pre-wrap;
+      min-height: 150px;
+    }
+
+    /* Requisitos de adesão */
+    .ok-requirement-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--ok-border-subtle);
+    }
+    .ok-requirement-row:last-child { border-bottom: none; }
+    .ok-requirement-icon {
+      width: 40px; height: 40px;
+      border-radius: 0;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ok-requirement-title {
+      font-size: 0.9rem; font-weight: 700;
+      color: var(--ok-text-primary);
+      margin: 0 0 4px 0;
+    }
+    .ok-requirement-desc {
+      font-size: 0.78rem;
+      color: var(--ok-text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Alerta informativo */
+    .ok-status-alert {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px 20px;
+      background: var(--ok-purple-soft);
+      border: 1px solid var(--ok-purple-border);
+      border-radius: 0;
+      margin-bottom: 24px;
+    }
+    .ok-status-alert-icon {
+      width: 44px; height: 44px; border-radius: 0;
+      background: var(--ok-purple-vibrant);
+      color: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ok-status-alert-title {
+      font-size: 0.9rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0 0 4px 0;
+    }
+    .ok-status-alert-text {
+      font-size: 0.82rem;
+      color: var(--ok-text-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Formulário de edição (também quadrado) */
+    .ok-form-label {
+      font-size: 0.86rem; font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .ok-form-control,
+    .ok-form-select {
+      width: 100%;
+      height: 48px;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 18px;
+      font-size: 0.9rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .ok-form-control:focus,
+    .ok-form-select:focus {
+      border-color: var(--ok-purple-vibrant);
+      background: var(--ok-bg-surface);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-form-control::placeholder { color: var(--ok-text-muted); }
+    .ok-form-select option { color: #0f172a; }
+
+    .ok-form-textarea {
+      width: 100%;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 14px 18px;
+      font-size: 0.9rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      resize: vertical;
+      min-height: 120px;
+      transition: all 0.2s ease;
+    }
+    .ok-form-textarea:focus {
+      border-color: var(--ok-purple-vibrant);
+      background: var(--ok-bg-surface);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-form-textarea::placeholder { color: var(--ok-text-muted); }
+
+    .ok-switch-box {
+      padding: 14px 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      margin-bottom: 12px;
+    }
+    .ok-switch-box .form-check-input {
+      background-color: var(--ok-meter-bg);
+      border-color: var(--ok-border-subtle);
+    }
+    .ok-switch-box .form-check-input:checked {
+      background-color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-vibrant);
+    }
+    .ok-switch-box .form-check-label {
+      color: var(--ok-text-primary);
+    }
+    .ok-switch-box small {
+      color: var(--ok-text-muted);
+    }
+
+    /* Empty state */
+    .ok-empty-state {
+      text-align: center; padding: 3rem 1.5rem;
+      color: var(--ok-text-muted);
+    }
+    .ok-empty-state svg {
+      opacity: 0.4; margin-bottom: 1rem;
+      display: block; margin-inline: auto;
+    }
+    .ok-empty-state h6 {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    /* Responsividade */
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.7rem; }
+      .ok-search-capsule { width: 100%; }
+      .ok-top-nav { gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      .ok-top-nav { flex-wrap: wrap; height: auto; padding: 10px 0; }
+      .ok-nav-actions { margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link active" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Top Bar — Centralizada ao eixo do conteúdo -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar regras, políticas..." autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" style="font-size: 0.92rem; line-height: 1.15;" id="ok-nav-fullname"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" style="font-size: 0.76rem;" id="ok-nav-role"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <a href="/groups/<%= groupId %>" class="ok-breadcrumb-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Voltar ao Grupo
+        </a>
+        <h1 class="ok-page-title-main">
+          Regulamento & Regras
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Versão <span id="rules-version-badge">1</span>
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <span id="group-name-badge">Grupo</span> &bull; Políticas operacionais, tolerâncias, penalizações e termos particulares
+        </p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="ok-btn-confirm-pill d-none" id="btn-edit-rules-trigger">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Editar Regulamento
+        </button>
+      </div>
+    </section>
+
+    <!-- Nav pills internas -->
+    <div class="ok-group-nav-pills">
+      <a href="/groups/<%= groupId %>" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Visão Geral
+      </a>
+      <a href="/groups/<%= groupId %>/members" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        Membros
+      </a>
+      <a href="/groups/<%= groupId %>/schedule" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        Calendário
+      </a>
+      <a href="/groups/<%= groupId %>/rules" class="ok-group-nav-pill active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Regras
+      </a>
+      <a href="/groups/<%= groupId %>/invitations" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        Convites
+      </a>
+      <a href="/groups/<%= groupId %>/chat" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        Chat
+      </a>
+    </div>
+
+    <!-- Loading state -->
+    <div id="rules-loading-state" class="ok-empty-state" style="max-width:var(--ok-content-max-width);margin:0 auto;">
+      <div class="spinner-border mb-3" role="status" style="color: var(--ok-purple-vibrant); width: 3rem; height: 3rem;"></div>
+      <h6>A carregar regulamento e regras operacionais...</h6>
+      <p class="small">A consultar políticas de rotação, tolerância de quotas e conformidade jurídica.</p>
+    </div>
+
+    <!-- Conteúdo principal (oculto até hidratação) -->
+    <div id="rules-content-wrapper" class="d-none ok-rules-layout" data-group-id="<%= groupId %>">
+
+      <!-- Alerta informativo -->
+      <div class="ok-status-alert" id="rules-status-alert">
+        <div class="ok-status-alert-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        </div>
+        <div>
+          <p class="ok-status-alert-title">Princípio da Segurança Financeira e Imutabilidade</p>
+          <p class="ok-status-alert-text" id="rules-status-alert-text">
+            As regras podem ser configuradas livremente durante a fase de formação. Após o início das rodadas ativas, o regulamento torna-se imutável para assegurar a custódia e previsibilidade dos fundos dos membros.
+          </p>
+        </div>
+      </div>
+
+      <!-- Painel de Visualização -->
+      <div class="row g-4" id="rules-view-panel">
+        <div class="col-lg-8">
+          <!-- Parâmetros da Kixikila -->
+          <div class="ok-rules-card">
+            <div class="ok-rules-card-header">
+              <h5>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Parâmetros da Kixikila
+              </h5>
+            </div>
+            <div class="ok-rules-card-body">
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <div class="ok-rule-field-box">
+                    <p class="ok-rule-field-label">Modelo de Ordenação</p>
+                    <p class="ok-rule-field-value" id="view-rotation-type">—</p>
+                    <p class="ok-rule-field-desc" id="view-rotation-desc">Definição sequencial estabelecida na fundação.</p>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="ok-rule-field-box">
+                    <p class="ok-rule-field-label">Carência / Tolerância</p>
+                    <p class="ok-rule-field-value" id="view-grace-period">— dias após o vencimento</p>
+                    <p class="ok-rule-field-desc">Prazo antes da aplicação de multa de mora.</p>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="ok-rule-field-box">
+                    <p class="ok-rule-field-label">Taxa de Mora por Atraso</p>
+                    <p class="ok-rule-field-value" id="view-late-fee" style="color: var(--ok-purple-vibrant);">—</p>
+                    <p class="ok-rule-field-desc">Cobrada automaticamente sobre quotas em atraso.</p>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="ok-rule-field-box">
+                    <p class="ok-rule-field-label">Antecipação de Desembolso</p>
+                    <p class="ok-rule-field-value" id="view-early-payout">Não autorizada</p>
+                    <p class="ok-rule-field-desc">Desembolso restrito à conclusão integral da rodada.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estatuto Comunitário -->
+          <div class="ok-rules-card">
+            <div class="ok-rules-card-header">
+              <h5>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                Estatuto Comunitário & Termos Particulares
+              </h5>
+            </div>
+            <div class="ok-rules-card-body">
+              <div class="ok-terms-box" id="view-terms-box">Nenhum termo particular redigido. Aplicam-se os Termos de Serviço Gerais da OneKixikila.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna lateral -->
+        <div class="col-lg-4">
+          <!-- Requisitos de adesão -->
+          <div class="ok-rules-card">
+            <div class="ok-rules-card-header">
+              <h5>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+                Critérios de Admissão
+              </h5>
+            </div>
+            <div class="ok-rules-card-body">
+              <div class="ok-requirement-row">
+                <div class="ok-requirement-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><circle cx="12" cy="10" r="3"></circle><path d="M7 21v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path></svg>
+                </div>
+                <div>
+                  <p class="ok-requirement-title">Verificação de Identidade (KYC)</p>
+                  <p class="ok-requirement-desc" id="view-kyc-required-label">Obrigatória (Bilhete de Identidade verificado)</p>
+                </div>
+              </div>
+              <div class="ok-requirement-row">
+                <div class="ok-requirement-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div>
+                  <p class="ok-requirement-title">Aprovação da Liderança</p>
+                  <p class="ok-requirement-desc" id="view-approval-required-label">Exigida para todas as adesões</p>
+                </div>
+              </div>
+              <div class="ok-requirement-row">
+                <div class="ok-requirement-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+                <div>
+                  <p class="ok-requirement-title">Solvência da Carteira</p>
+                  <p class="ok-requirement-desc">Exigência de saldo disponível para quitação de quotas na data acordada.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resolução de conflitos -->
+          <div class="ok-rules-card">
+            <div class="ok-rules-card-header">
+              <h5>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Resolução de Conflitos
+              </h5>
+            </div>
+            <div class="ok-rules-card-body">
+              <p class="ok-requirement-desc mb-3">
+                Divergências sobre datas de rotação ou pagamento são tratadas prioritariamente pelo Líder do grupo através da ferramenta de moderação.
+              </p>
+              <p class="ok-requirement-desc mb-0">
+                Caso não haja consenso, qualquer membro pode abrir uma contestação formal no menu de <strong style="color: var(--ok-purple-vibrant);">Disputas</strong> para arbitragem técnica da OneKixikila.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Painel de Edição -->
+      <div class="ok-rules-card d-none" id="rules-edit-panel">
+        <div class="ok-rules-card-header">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            Editar Regulamento do Grupo
+          </h5>
+          <button type="button" class="ok-btn-ghost-pill" id="btn-cancel-edit-rules" style="height: 40px; padding: 0 16px; font-size: 0.82rem;">
+            Cancelar
+          </button>
+        </div>
+        <div class="ok-rules-card-body">
+          <form id="form-update-rules">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="ok-form-label">Modo de Rotação da Kixikila</label>
+                <select class="ok-form-select" name="rotationType" id="edit-rotation-type" required>
+                  <option value="FIXED">Ordem Fixa (Sequencial)</option>
+                  <option value="RANDOM_DRAW">Sorteio Aleatório Transparente</option>
+                  <option value="AUCTION">Leilão de Turno</option>
+                  <option value="CONSENSUS">Consenso da Comunidade</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="ok-form-label">Dias de Tolerância (Carência)</label>
+                <input type="number" class="ok-form-control" name="gracePeriodDays" id="edit-grace-period" min="0" max="15" value="2" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="ok-form-label">Tipo de Penalização</label>
+                <select class="ok-form-select" name="lateFeeType" id="edit-late-fee-type">
+                  <option value="FIXED">Taxa Fixa em Kwanzas (AOA)</option>
+                  <option value="PERCENTAGE">Percentagem sobre a Quota</option>
+                  <option value="NONE">Sem Multa de Mora</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="ok-form-label">Valor da Penalização</label>
+                <input type="number" class="ok-form-control" name="lateFeeValue" id="edit-late-fee-value" min="0" value="0">
+              </div>
+
+              <div class="col-12 mt-3">
+                <p class="ok-form-label" style="margin-bottom: 12px;">Critérios de Admissão e Operação</p>
+
+                <div class="ok-switch-box">
+                  <div class="form-check form-switch d-flex align-items-start gap-3 m-0">
+                    <input class="form-check-input" type="checkbox" id="edit-require-approval" name="requireAdminApprovalToJoin" checked style="margin-top: 4px;">
+                    <label class="form-check-label fw-bold" for="edit-require-approval" style="font-size: 0.9rem;">
+                      Exigir Aprovação da Liderança
+                      <span class="d-block small mt-1" style="font-weight: 400;">Novos pedidos de adesão entram em fila de análise.</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="ok-switch-box">
+                  <div class="form-check form-switch d-flex align-items-start gap-3 m-0">
+                    <input class="form-check-input" type="checkbox" id="edit-require-kyc" name="requireIdentityVerification" checked style="margin-top: 4px;">
+                    <label class="form-check-label fw-bold" for="edit-require-kyc" style="font-size: 0.9rem;">
+                      Exigir Bilhete de Identidade (KYC)
+                      <span class="d-block small mt-1" style="font-weight: 400;">Apenas participantes com documentação homologada podem participar.</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="ok-switch-box">
+                  <div class="form-check form-switch d-flex align-items-start gap-3 m-0">
+                    <input class="form-check-input" type="checkbox" id="edit-allow-early-payout" name="allowEarlyPayout" style="margin-top: 4px;">
+                    <label class="form-check-label fw-bold" for="edit-allow-early-payout" style="font-size: 0.9rem;">
+                      Permitir Antecipação de Desembolso
+                      <span class="d-block small mt-1" style="font-weight: 400;">Autoriza a liderança a antecipar o bolo por deliberação extraordinária.</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 mt-3">
+                <label class="ok-form-label">Estatuto Comunitário e Termos Particulares</label>
+                <textarea class="ok-form-textarea" name="termsAndConditions" id="edit-terms-box" rows="5" maxlength="5000" placeholder="Insira aqui as cláusulas, compromissos morais e regras específicas acordadas pelo grupo..."></textarea>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 d-flex justify-content-end" style="border-top: 1px solid var(--ok-border-subtle);">
+              <button type="submit" class="ok-btn-confirm-pill" id="btn-save-rules">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Guardar Alterações
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         HELPERS DE AVATAR (replicados do Perfil para consistência total)
+         ==================================================================== */
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForSave(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          return trimmed;
+        }
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const normalized = resolveAvatarUrlForSave(rawUrl);
+        if (!normalized) return null;
+        if (normalized === DEFAULT_AVATAR) return null;
+        return normalized;
+      }
+
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      function pickAvatarField(obj) {
+        if (!obj) return null;
+        return obj.avatarUrl || obj.avatar_url || obj.avatar || null;
+      }
+
+      /**
+       * Busca o perfil do utilizador e atualiza o avatar do navbar com a foto real.
+       * Replica o comportamento do Perfil (fetch /users/profile → resolveAvatarUrlForRender → applyAvatarToImg).
+       * Silencioso em caso de erro: o EJS já renderizou um fallback inicial.
+       */
+      async function hydrateNavbarAvatar() {
+        const navAvatar = document.getElementById('ok-nav-avatar');
+        const navName = document.getElementById('ok-nav-fullname');
+        const navRole = document.getElementById('ok-nav-role');
+        if (!navAvatar || !window.apiClient) return;
+
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          if (!raw) return;
+
+          const avatarField = pickAvatarField(raw);
+          const normalizedAvatar = resolveAvatarUrlForRender(avatarField);
+          applyAvatarToImg(navAvatar, normalizedAvatar);
+
+          const fullName = raw.fullName || raw.full_name || '';
+          const role = raw.role || 'Utilizador';
+          if (navName && fullName) navName.textContent = String(fullName).split(' ')[0];
+          if (navRole) navRole.textContent = role;
+        } catch (err) {
+          // Silencioso: EJS já tem fallback. Apenas loga em modo debug.
+          console.warn('[NAV:AVATAR_HYDRATE_WARN]', err && err.message ? err.message : err);
+        }
+      }
+
+      function initAvatarFallback() {
+        const img = document.getElementById('ok-nav-avatar');
+        if (!img) return;
+        // Garante que o handler de fallback está ligado já no load inicial
+        // (antes mesmo do hydrateNavbarAvatar completar).
+        applyAvatarToImg(img, resolveAvatarUrlForRender(img.getAttribute('src')));
+      }
+
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient) window.apiClient.clearSession();
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         LÓGICA DO REGULAMENTO — PRESERVADA INTEGRALMENTE
+         ==================================================================== */
+      const groupId = '<%= groupId %>';
+      let activeGroup = null;
+      let currentRules = null;
+      let isLeaderOrAdmin = false;
+
+      const loadingEl = document.getElementById('rules-loading-state');
+      const contentEl = document.getElementById('rules-content-wrapper');
+      const viewPanel = document.getElementById('rules-view-panel');
+      const editPanel = document.getElementById('rules-edit-panel');
+      const editTriggerBtn = document.getElementById('btn-edit-rules-trigger');
+      const cancelEditBtn = document.getElementById('btn-cancel-edit-rules');
+      const formUpdate = document.getElementById('form-update-rules');
+
+      async function initializePage() {
+        try {
+          if (!window.apiClient) return;
+
+          const groupRes = await window.apiClient.get('/groups/' + groupId);
+          activeGroup = groupRes.data && groupRes.data.group ? groupRes.data.group : groupRes.data;
+
+          document.getElementById('group-name-badge').textContent = activeGroup.name || 'Grupo';
+
+          currentRules = activeGroup.rules || activeGroup;
+
+          const currentUserId = window.App ? window.App.resolveCurrentUserId ? window.App.resolveCurrentUserId() : null : null;
+          isLeaderOrAdmin = Boolean(
+            activeGroup.leader_id === currentUserId ||
+            activeGroup.creator_id === currentUserId ||
+            (window.App && window.App.user && (window.App.user.role === 'ADMIN' || window.App.user.role === 'AUDITOR'))
+          );
+
+          hydrateRulesView();
+
+          loadingEl.classList.add('d-none');
+          contentEl.classList.remove('d-none');
+        } catch (err) {
+          loadingEl.innerHTML = `
+            <div class="ok-empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <h6>Erro ao Carregar Regulamento</h6>
+              <p class="small mb-3">${err.message || 'Falha ao consultar as regras operacionais do grupo.'}</p>
+              <a href="/groups/${groupId}" class="ok-btn-ghost-pill" style="height: 40px; padding: 0 16px; font-size: 0.82rem; text-decoration: none;">Voltar ao Grupo</a>
+            </div>
+          `;
+        }
+      }
+
+      function hydrateRulesView() {
+        document.getElementById('rules-version-badge').textContent = currentRules.version || 1;
+
+        const rotationMap = {
+          FIXED: { label: 'Ordem Fixa (Sequencial)', desc: 'As quotas e turnos seguem a ordem numérica dos slots atribuídos na adesão.' },
+          RANDOM_DRAW: { label: 'Sorteio Transparente', desc: 'As posições de recebimento foram sorteadas criptograficamente pela plataforma.' },
+          AUCTION: { label: 'Leilão de Turno', desc: 'Os turnos de recebimento podem ser disputados mediante propostas de desconto de quota.' },
+          CONSENSUS: { label: 'Consenso Comunitário', desc: 'A ordem é definida e ajustada por acordo unânime entre todos os membros.' }
+        };
+        const rot = rotationMap[currentRules.rotation_type] || rotationMap.FIXED;
+        document.getElementById('view-rotation-type').textContent = rot.label;
+        document.getElementById('view-rotation-desc').textContent = rot.desc;
+
+        const grace = currentRules.grace_period_days !== undefined ? currentRules.grace_period_days : 2;
+        document.getElementById('view-grace-period').textContent = grace + ' dias após o vencimento';
+
+        if (currentRules.late_fee_type === 'FIXED' && currentRules.late_fee_value > 0) {
+          const formatted = window.App ? window.App.formatMoney(currentRules.late_fee_value) : currentRules.late_fee_value + ' Kz';
+          document.getElementById('view-late-fee').textContent = formatted + ' (Taxa Fixa)';
+        } else if (currentRules.late_fee_type === 'PERCENTAGE' && currentRules.late_fee_value > 0) {
+          document.getElementById('view-late-fee').textContent = (currentRules.late_fee_value / 100) + '% ao ciclo';
+        } else {
+          document.getElementById('view-late-fee').textContent = 'Sem penalização';
+        }
+
+        document.getElementById('view-early-payout').textContent = currentRules.allow_early_payout ? 'Autorizada' : 'Não autorizada';
+
+        document.getElementById('view-kyc-required-label').textContent = currentRules.require_identity_verification !== false
+          ? 'Obrigatória (Bilhete de Identidade verificado)'
+          : 'Dispensada (Adesão flexível)';
+
+        document.getElementById('view-approval-required-label').textContent = currentRules.require_admin_approval_to_join !== false
+          ? 'Exigida para todas as adesões'
+          : 'Adesão automática imediata';
+
+        if (currentRules.terms_and_conditions) {
+          document.getElementById('view-terms-box').textContent = currentRules.terms_and_conditions;
+        }
+
+        const isEditable = activeGroup.status === 'FORMATION' || activeGroup.status === 'DRAFT';
+        if (isLeaderOrAdmin && isEditable) {
+          editTriggerBtn.classList.remove('d-none');
+          editTriggerBtn.classList.add('d-inline-flex');
+        } else if (!isEditable) {
+          document.getElementById('rules-status-alert-text').textContent =
+            'Este grupo encontra-se em funcionamento ativo (ACTIVE). As regras operacionais e financeiras tornaram-se imutáveis para proteção mútua de todos os participantes.';
+        }
+      }
+
+      if (editTriggerBtn) {
+        editTriggerBtn.addEventListener('click', () => {
+          document.getElementById('edit-rotation-type').value = currentRules.rotation_type || 'FIXED';
+          document.getElementById('edit-grace-period').value = currentRules.grace_period_days !== undefined ? currentRules.grace_period_days : 2;
+          document.getElementById('edit-late-fee-type').value = currentRules.late_fee_type || 'FIXED';
+          document.getElementById('edit-late-fee-value').value = currentRules.late_fee_value || 0;
+          document.getElementById('edit-require-approval').checked = currentRules.require_admin_approval_to_join !== false;
+          document.getElementById('edit-require-kyc').checked = currentRules.require_identity_verification !== false;
+          document.getElementById('edit-allow-early-payout').checked = Boolean(currentRules.allow_early_payout);
+          document.getElementById('edit-terms-box').value = currentRules.terms_and_conditions || '';
+
+          viewPanel.classList.add('d-none');
+          editPanel.classList.remove('d-none');
+          editTriggerBtn.classList.add('d-none');
+        });
+      }
+
+      if (cancelEditBtn) {
+        cancelEditBtn.addEventListener('click', () => {
+          editPanel.classList.add('d-none');
+          viewPanel.classList.remove('d-none');
+          if (isLeaderOrAdmin) editTriggerBtn.classList.remove('d-none');
+        });
+      }
+
+      if (formUpdate) {
+        formUpdate.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const rotationType = document.getElementById('edit-rotation-type').value;
+          const gracePeriodDays = Number(document.getElementById('edit-grace-period').value);
+          const lateFeeType = document.getElementById('edit-late-fee-type').value;
+          const lateFeeValue = Number(document.getElementById('edit-late-fee-value').value);
+          const requireAdminApprovalToJoin = document.getElementById('edit-require-approval').checked;
+          const requireIdentityVerification = document.getElementById('edit-require-kyc').checked;
+          const allowEarlyPayout = document.getElementById('edit-allow-early-payout').checked;
+          const termsAndConditions = document.getElementById('edit-terms-box').value.trim() || null;
+
+          const payload = {
+            rotationType,
+            gracePeriodDays,
+            lateFeeType,
+            lateFeeValue,
+            requireAdminApprovalToJoin,
+            requireIdentityVerification,
+            allowEarlyPayout,
+            termsAndConditions
+          };
+
+          try {
+            if (window.Alerts) window.Alerts.showLoading('A atualizar regulamento...', 'Validando alterações e nova versão.');
+
+            const res = await window.apiClient.patch(`/groups/${groupId}/rules`, payload);
+            currentRules = res.data && res.data.rules ? res.data.rules : res.data;
+
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              await window.Alerts.success('Regulamento Atualizado!', 'As novas regras foram consolidadas com sucesso.');
+            }
+
+            hydrateRulesView();
+            editPanel.classList.add('d-none');
+            viewPanel.classList.remove('d-none');
+            if (isLeaderOrAdmin) editTriggerBtn.classList.remove('d-none');
+          } catch (err) {
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              window.Alerts.error(err.message || 'Falha ao atualizar o regulamento do grupo.');
+            }
+          }
+        });
+      }
+
+      /* ====================================================================
+         INIT
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        initAvatarFallback();
+        // Hidrata o avatar do navbar com a foto real do backend (igual ao Perfil).
+        hydrateNavbarAvatar();
+        setupGlobalActions();
+        initializePage();
+      });
+    })();
+  </script>
+</body>
+</html>

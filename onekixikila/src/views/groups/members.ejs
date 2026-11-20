@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Membros & Vagas — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Sidebar + Top Bar: arredondados. Cards centrais: quadrados.
+       Cores 100% roxo.
+       Escala MAIOR (igual ao Perfil / Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+      --ok-content-max-width: 1280px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL — ARREDONDADA
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+    .ok-badge-dot {
+      position: absolute; top: 10px; right: 10px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background-color: #ef4444;
+      border: 2px solid var(--ok-bg-surface);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* =========================================================================
+       TOP BAR — ARREDONDADA — CENTRALIZADA AO EIXO DO CONTEÚDO
+       ========================================================================= */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 0 auto 26px auto;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      padding: 0;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+      flex-shrink: 1;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO — ARREDONDADO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto 30px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-breadcrumb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      font-size: 0.86rem; font-weight: 700;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .ok-breadcrumb-btn:hover {
+      background: var(--ok-pill-bg-hover);
+      color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-border);
+      transform: translateX(-2px);
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-purple-soft);
+      border: 1px solid var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 10px var(--ok-purple-vibrant);
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+    }
+
+    .ok-btn-confirm-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff; border: none;
+      font-size: 0.86rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-confirm-pill:hover { transform: translateY(-2px); color: #ffffff; }
+
+    .ok-btn-ghost-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.86rem; font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-ghost-pill:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Nav pills internas do grupo */
+    .ok-group-nav-pills {
+      display: flex; gap: 8px;
+      padding: 8px;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      overflow-x: auto;
+      margin-bottom: 30px;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin-left: auto; margin-right: auto;
+      scrollbar-width: none;
+    }
+    .ok-group-nav-pills::-webkit-scrollbar { display: none; }
+    .ok-group-nav-pill {
+      padding: 10px 20px;
+      border-radius: var(--ok-radius-pill);
+      font-size: 0.84rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .ok-group-nav-pill:hover {
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+    }
+    .ok-group-nav-pill.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+    }
+
+    /* =========================================================================
+       CARDS CENTRAIS — QUADRADOS
+       ========================================================================= */
+    .ok-members-layout {
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .ok-members-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 0;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .ok-members-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .ok-members-card-header h5 {
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ok-members-card-body { padding: 0; }
+
+    /* Tabela */
+    .ok-members-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ok-members-table thead {
+      background: var(--ok-pill-bg);
+    }
+    .ok-members-table thead th {
+      padding: 14px 16px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ok-text-muted);
+      text-align: left;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      white-space: nowrap;
+    }
+    .ok-members-table tbody tr {
+      border-bottom: 1px solid var(--ok-border-subtle);
+      transition: background 0.2s ease;
+    }
+    .ok-members-table tbody tr:hover {
+      background: var(--ok-stream-hover);
+    }
+    .ok-members-table tbody tr:last-child { border-bottom: none; }
+    .ok-members-table tbody td {
+      padding: 14px 16px;
+      font-size: 0.86rem;
+      color: var(--ok-text-primary);
+      vertical-align: middle;
+    }
+
+    /* Avatar nos itens */
+    .ok-avatar-initial {
+      width: 38px; height: 38px;
+      border-radius: 0;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: 0.92rem;
+      flex-shrink: 0;
+    }
+
+    /* Badges */
+    .ok-badge-purple {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px;
+      border-radius: 0;
+      font-size: 0.72rem; font-weight: 800;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-badge-soft {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px;
+      border-radius: 0;
+      font-size: 0.72rem; font-weight: 700;
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-muted);
+      border: 1px solid var(--ok-border-subtle);
+    }
+
+    /* Botão de ação */
+    .ok-row-action-btn {
+      width: 32px; height: 32px; border-radius: 0;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      color: var(--ok-text-primary);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-row-action-btn:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-purple-soft);
+    }
+
+    /* Botões Aprovar/Rejeitar */
+    .ok-action-approve {
+      height: 36px; padding: 0 14px;
+      border-radius: 0;
+      background: var(--ok-purple-vibrant);
+      color: #ffffff; border: none;
+      font-size: 0.78rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .ok-action-approve:hover { background: var(--ok-purple-primary); }
+
+    .ok-action-reject {
+      height: 36px; padding: 0 14px;
+      border-radius: 0;
+      background: transparent;
+      color: #f43f5e;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      font-size: 0.78rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .ok-action-reject:hover { background: #f43f5e; color: #ffffff; }
+
+    /* Filtros */
+    .ok-members-filter {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+    .ok-members-filter option { color: #0f172a; }
+
+    /* Card de pendentes com borda roxa */
+    .ok-pending-card {
+      border-left: 4px solid var(--ok-purple-vibrant) !important;
+    }
+
+    /* Empty state */
+    .ok-empty-state {
+      text-align: center; padding: 3rem 1.5rem;
+      color: var(--ok-text-muted);
+    }
+    .ok-empty-state svg {
+      opacity: 0.4; margin-bottom: 1rem;
+      display: block; margin-inline: auto;
+    }
+    .ok-empty-state h6 {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    /* Modais quadrados */
+    .modal-content {
+      background: var(--ok-bg-surface) !important;
+      border: 1px solid var(--ok-border-subtle) !important;
+      border-radius: 0 !important;
+      color: var(--ok-text-primary) !important;
+    }
+    .modal-header, .modal-footer { border-color: var(--ok-border-subtle) !important; }
+    .modal-title { color: var(--ok-text-primary) !important; }
+    .form-label { color: var(--ok-text-primary); font-size: 0.86rem; font-weight: 700; }
+    .form-control, .form-select {
+      background: var(--ok-input-bg) !important;
+      border: 1px solid var(--ok-border-subtle) !important;
+      color: var(--ok-text-primary) !important;
+      border-radius: 0 !important;
+      height: 48px;
+      font-size: 0.9rem;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--ok-purple-vibrant) !important;
+      box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+      background: var(--ok-bg-surface) !important;
+    }
+    .form-control::placeholder { color: var(--ok-text-muted) !important; }
+    .form-select option { color: #0f172a; }
+    textarea.form-control { height: auto; min-height: 100px; padding: 12px 16px; }
+    .btn-close { filter: invert(1); }
+    html[data-theme="light"] .btn-close { filter: none; }
+
+    .form-check-input {
+      background-color: var(--ok-meter-bg);
+      border-color: var(--ok-border-subtle);
+    }
+    .form-check-input:checked {
+      background-color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-vibrant);
+    }
+    .form-check-label { color: var(--ok-text-primary); }
+
+    /* Dropdown interno */
+    .dropdown-menu {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      box-shadow: 0 8px 24px var(--ok-shadow-card);
+    }
+    .dropdown-item { color: var(--ok-text-primary); }
+    .dropdown-item:hover { background: var(--ok-purple-soft); color: var(--ok-purple-vibrant); }
+    .dropdown-divider { border-color: var(--ok-border-subtle); }
+
+    /* Responsividade */
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.7rem; }
+      .ok-members-table { font-size: 0.78rem; }
+      .ok-members-table thead th,
+      .ok-members-table tbody td { padding: 10px 8px; }
+      .ok-search-capsule { width: 100%; }
+      .ok-top-nav { gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      .ok-top-nav { flex-wrap: wrap; height: auto; padding: 10px 0; }
+      .ok-nav-actions { margin-left: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link active" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Top Bar — Centralizada ao eixo do conteúdo -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar membros, contactos..." autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" style="font-size: 0.92rem; line-height: 1.15;" id="ok-nav-fullname"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" style="font-size: 0.76rem;" id="ok-nav-role"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <a href="/groups/<%= groupId %>" class="ok-breadcrumb-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Voltar ao Grupo
+        </a>
+        <h1 class="ok-page-title-main">
+          Membros & Vagas
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            <span id="members-quorum-badge">0 / 0 vagas</span>
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <span id="group-name-badge">Grupo</span> &bull; Gestão de filiações, cargos internos e restrições operacionais
+        </p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="/groups/<%= groupId %>/invitations" class="ok-btn-confirm-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
+          Convidar Membro
+        </a>
+      </div>
+    </section>
+
+    <!-- Nav pills internas -->
+    <div class="ok-group-nav-pills">
+      <a href="/groups/<%= groupId %>" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Visão Geral
+      </a>
+      <a href="/groups/<%= groupId %>/members" class="ok-group-nav-pill active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        Membros & Vagas (<span id="tab-members-count">0</span>)
+      </a>
+      <a href="/groups/<%= groupId %>/schedule" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        Calendário
+      </a>
+      <a href="/groups/<%= groupId %>/rules" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Regras
+      </a>
+      <a href="/groups/<%= groupId %>/invitations" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        Convites
+      </a>
+      <a href="/groups/<%= groupId %>/chat" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        Chat
+      </a>
+    </div>
+
+    <!-- Loading state -->
+    <div id="members-loading-state" class="ok-empty-state" style="max-width:var(--ok-content-max-width);margin:0 auto;">
+      <div class="spinner-border mb-3" role="status" style="color: var(--ok-purple-vibrant); width: 3rem; height: 3rem;"></div>
+      <h6>A carregar lista de membros e vagas...</h6>
+      <p class="small">A consultar filiações, papéis internos, turnos e restrições no sistema.</p>
+    </div>
+
+    <!-- Conteúdo principal (oculto até hidratação) -->
+    <div id="members-content-wrapper" class="d-none ok-members-layout" data-group-id="<%= groupId %>">
+
+      <!-- Card de pendentes -->
+      <div class="ok-members-card ok-pending-card d-none" id="pending-requests-card">
+        <div class="ok-members-card-header">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Pedidos de Adesão Pendentes
+            <span class="ok-badge-purple" id="pending-requests-count">0</span>
+          </h5>
+        </div>
+        <div class="table-responsive">
+          <table class="ok-members-table">
+            <thead>
+              <tr>
+                <th>Candidato</th>
+                <th>Contacto</th>
+                <th>Data do Pedido</th>
+                <th class="text-end">Decisão</th>
+              </tr>
+            </thead>
+            <tbody id="pending-requests-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Card principal de membros -->
+      <div class="ok-members-card">
+        <div class="ok-members-card-header">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+            Membros Ativos & Ordem das Vagas
+          </h5>
+
+          <div class="d-flex gap-2 flex-wrap align-items-center">
+            <span class="ok-badge-soft" id="active-members-count-badge">0 participantes</span>
+            <select class="ok-members-filter" id="filter-member-role">
+              <option value="">Todos os Cargos</option>
+              <option value="PRIMARY_LEADER">Líder Titular</option>
+              <option value="VICE_LEADER">Vice-Líder</option>
+              <option value="TREASURER">Tesoureiro</option>
+              <option value="SECRETARY">Secretário</option>
+              <option value="MEMBER">Membro Regular</option>
+            </select>
+            <select class="ok-members-filter" id="filter-member-status">
+              <option value="">Todos os Estados</option>
+              <option value="ACTIVE" selected>Ativos</option>
+              <option value="SUSPENDED">Suspensos</option>
+              <option value="DEFAULTED">Inadimplentes</option>
+              <option value="LEFT">Ex-membros</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="ok-members-table">
+            <thead>
+              <tr>
+                <th style="width: 100px;">Vaga</th>
+                <th>Membro</th>
+                <th>Contacto</th>
+                <th>Cargo</th>
+                <th>Estado</th>
+                <th>Restrições</th>
+                <th>Adesão</th>
+                <th class="text-end">Gestão</th>
+              </tr>
+            </thead>
+            <tbody id="members-table-body"></tbody>
+          </table>
+        </div>
+
+        <div id="members-empty-state" class="ok-empty-state d-none">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+          </svg>
+          <h6>Nenhum membro encontrado</h6>
+          <p class="small mb-0">Não existem participantes que correspondam aos filtros selecionados.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL: SUSPENDER MEMBRO
+       ====================================================================== -->
+  <div class="modal fade" id="modal-suspend-member" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            Suspender Participante
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="form-suspend-member">
+          <input type="hidden" name="membershipId" id="suspend-membership-id">
+          <div class="modal-body py-4">
+            <p class="text-muted small">
+              A suspensão temporária impede o membro de interagir no chat e pode restringir novas deliberações. As obrigações de quota continuam exigíveis.
+            </p>
+            <div class="mb-3">
+              <label class="form-label">Justificativa Formal <span class="text-danger">*</span></label>
+              <textarea class="form-control" name="reason" rows="3" placeholder="Indique o motivo disciplinar ou de litígio..." required minlength="5" maxlength="255"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Suspenso Até (Opcional)</label>
+              <input type="date" class="form-control" name="suspendedUntil">
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="ok-btn-confirm-pill" style="height: 44px; font-size: 0.84rem;">
+              Confirmar Suspensão
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: RESTRIÇÕES
+       ====================================================================== -->
+  <div class="modal fade" id="modal-manage-restrictions" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            Restrições Operacionais
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="form-manage-restrictions">
+          <input type="hidden" name="membershipId" id="restrictions-membership-id">
+          <div class="modal-body py-4">
+            <p class="text-muted small mb-4">
+              Defina as sanções operacionais cautelares para o participante selecionado:
+            </p>
+
+            <div class="form-check form-switch mb-3 p-3 border" style="border-color: var(--ok-border-subtle) !important;">
+              <input class="form-check-input" type="checkbox" role="switch" id="switch-ban-chat" name="isBannedFromChat">
+              <label class="form-check-label fw-bold ms-2" for="switch-ban-chat" style="font-size: 0.9rem;">
+                Silenciar no Chat
+                <span class="d-block small mt-1" style="font-weight: 400; color: var(--ok-text-muted);">Impede envio de mensagens, áudios e documentos.</span>
+              </label>
+            </div>
+
+            <div class="form-check form-switch mb-3 p-3 border" style="border-color: var(--ok-border-subtle) !important;">
+              <input class="form-check-input" type="checkbox" role="switch" id="switch-restrict-contrib" name="isContributionRestricted">
+              <label class="form-check-label fw-bold ms-2" for="switch-restrict-contrib" style="font-size: 0.9rem;">
+                Bloquear Liquidação de Quotas
+                <span class="d-block small mt-1" style="font-weight: 400; color: var(--ok-text-muted);">Suspende liquidação automática até resolução.</span>
+              </label>
+            </div>
+
+            <div class="form-check form-switch mb-0 p-3 border" style="border-color: var(--ok-border-subtle) !important;">
+              <input class="form-check-input" type="checkbox" role="switch" id="switch-restrict-payout" name="isPayoutRestricted">
+              <label class="form-check-label fw-bold ms-2" for="switch-restrict-payout" style="font-size: 0.9rem;">
+                Retenção Cautelar de Desembolso
+                <span class="d-block small mt-1" style="font-weight: 400; color: var(--ok-text-muted);">Impede recebimento do bolo caso seja a vez do participante.</span>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="ok-btn-confirm-pill" style="height: 44px; font-size: 0.84rem;">
+              Guardar Restrições
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: DELEGAR CARGO
+       ====================================================================== -->
+  <div class="modal fade" id="modal-delegate-role" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            Designar Cargo de Governança
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="form-delegate-role">
+          <input type="hidden" name="targetUserId" id="delegate-target-user-id">
+          <div class="modal-body py-4">
+            <div class="mb-3">
+              <label class="form-label">Cargo Interno no Grupo</label>
+              <select class="form-select" name="leadershipRole" id="delegate-leadership-role-select" required>
+                <option value="VICE_LEADER" selected>Vice-Líder (Poderes de moderação)</option>
+                <option value="TREASURER">Tesoureiro (Supervisão de quotas)</option>
+                <option value="SECRETARY">Secretário (Apoio administrativo)</option>
+                <option value="ACTING_LEADER">Líder Interino (Substituição temporária)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mandato Válido Até (Opcional)</label>
+              <input type="date" class="form-control" name="delegatedUntil">
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="ok-btn-confirm-pill" style="height: 44px; font-size: 0.84rem;">
+              Designar Cargo
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         HELPERS DE AVATAR (replicados do Perfil para consistência total)
+         ==================================================================== */
+      const DEFAULT_AVATAR = '/assets/images/avatar-default.png';
+      const FALLBACK_DATA_URI = 'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E';
+
+      function isAbsoluteUrl(str) {
+        return /^https?:\/\//i.test(str);
+      }
+
+      function resolveAvatarUrlForSave(rawUrl) {
+        if (!rawUrl) return null;
+        const trimmed = String(rawUrl).trim();
+        if (!trimmed) return null;
+        if (isAbsoluteUrl(trimmed) || trimmed.startsWith('/uploads/') || trimmed.startsWith('/assets/')) {
+          return trimmed;
+        }
+        return `/uploads/${trimmed.replace(/^\/+/, '')}`;
+      }
+
+      function resolveAvatarUrlForRender(rawUrl) {
+        if (!rawUrl) return null;
+        const normalized = resolveAvatarUrlForSave(rawUrl);
+        if (!normalized) return null;
+        if (normalized === DEFAULT_AVATAR) return null;
+        return normalized;
+      }
+
+      function applyAvatarToImg(imgEl, url) {
+        if (!imgEl) return;
+        const nextSrc = url || DEFAULT_AVATAR;
+
+        if (imgEl.__okFallbackHandler) {
+          imgEl.removeEventListener('error', imgEl.__okFallbackHandler);
+          imgEl.__okFallbackHandler = null;
+        }
+
+        const onErr = function () {
+          const fb = imgEl.getAttribute('data-fallback') || FALLBACK_DATA_URI;
+          if (fb && imgEl.src !== fb) {
+            imgEl.src = fb;
+          }
+        };
+        imgEl.__okFallbackHandler = onErr;
+        imgEl.addEventListener('error', onErr);
+
+        if (imgEl.getAttribute('src') !== nextSrc) {
+          imgEl.setAttribute('src', nextSrc);
+        }
+      }
+
+      function pickAvatarField(obj) {
+        if (!obj) return null;
+        return obj.avatarUrl || obj.avatar_url || obj.avatar || null;
+      }
+
+      /**
+       * Busca o perfil do utilizador e atualiza o avatar do navbar com a foto real.
+       * Replica o comportamento do Perfil (fetch /users/profile → resolveAvatarUrlForRender → applyAvatarToImg).
+       * Silencioso em caso de erro: o EJS já renderizou um fallback inicial.
+       */
+      async function hydrateNavbarAvatar() {
+        const navAvatar = document.getElementById('ok-nav-avatar');
+        const navName = document.getElementById('ok-nav-fullname');
+        const navRole = document.getElementById('ok-nav-role');
+        if (!navAvatar || !window.apiClient) return;
+
+        try {
+          const res = await window.apiClient.get('/users/profile');
+          const raw =
+            (res && res.data && res.data.user) ||
+            (res && res.data && res.data.data) ||
+            (res && res.data) ||
+            res;
+          if (!raw) return;
+
+          const avatarField = pickAvatarField(raw);
+          const normalizedAvatar = resolveAvatarUrlForRender(avatarField);
+          applyAvatarToImg(navAvatar, normalizedAvatar);
+
+          const fullName = raw.fullName || raw.full_name || '';
+          const role = raw.role || 'Utilizador';
+          if (navName && fullName) navName.textContent = String(fullName).split(' ')[0];
+          if (navRole) navRole.textContent = role;
+        } catch (err) {
+          // Silencioso: EJS já tem fallback. Apenas loga em modo debug.
+          console.warn('[NAV:AVATAR_HYDRATE_WARN]', err && err.message ? err.message : err);
+        }
+      }
+
+      function initAvatarFallback() {
+        const img = document.getElementById('ok-nav-avatar');
+        if (!img) return;
+        // Garante que o handler de fallback está ligado já no load inicial
+        // (antes mesmo do hydrateNavbarAvatar completar).
+        applyAvatarToImg(img, resolveAvatarUrlForRender(img.getAttribute('src')));
+      }
+
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient) window.apiClient.clearSession();
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         LÓGICA DOS MEMBROS — PRESERVADA INTEGRALMENTE
+         ==================================================================== */
+      const groupId = '<%= groupId %>';
+      let activeGroup = null;
+      let allMembers = [];
+      let currentUserId = null;
+      let isLeaderOrAdmin = false;
+
+      const loadingEl = document.getElementById('members-loading-state');
+      const contentEl = document.getElementById('members-content-wrapper');
+      const tableBody = document.getElementById('members-table-body');
+      const emptyState = document.getElementById('members-empty-state');
+      const pendingCard = document.getElementById('pending-requests-card');
+      const pendingTableBody = document.getElementById('pending-requests-table-body');
+      const pendingCountEl = document.getElementById('pending-requests-count');
+      const filterRoleSelect = document.getElementById('filter-member-role');
+      const filterStatusSelect = document.getElementById('filter-member-status');
+
+      async function initializePage() {
+        try {
+          if (!window.apiClient) return;
+
+          currentUserId = window.App ? window.App.resolveCurrentUserId ? window.App.resolveCurrentUserId() : null : null;
+
+          const groupRes = await window.apiClient.get('/groups/' + groupId);
+          activeGroup = groupRes.data && groupRes.data.group ? groupRes.data.group : groupRes.data;
+
+          document.getElementById('group-name-badge').textContent = activeGroup.name || 'Grupo';
+
+          isLeaderOrAdmin = Boolean(
+            activeGroup.leader_id === currentUserId ||
+            activeGroup.creator_id === currentUserId ||
+            (window.App && window.App.user && (window.App.user.role === 'ADMIN' || window.App.user.role === 'AUDITOR'))
+          );
+
+          await loadMembersList();
+
+          loadingEl.classList.add('d-none');
+          contentEl.classList.remove('d-none');
+        } catch (err) {
+          loadingEl.innerHTML = `
+            <div class="ok-empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <h6>Erro ao Carregar Participantes</h6>
+              <p class="small mb-3">${err.message || 'Falha ao consultar a lista de membros do grupo.'}</p>
+              <a href="/groups/${groupId}" class="ok-btn-ghost-pill" style="height: 40px; padding: 0 16px; font-size: 0.82rem; text-decoration: none;">Voltar ao Grupo</a>
+            </div>
+          `;
+        }
+      }
+
+      async function loadMembersList() {
+        try {
+          const res = await window.apiClient.get(`/groups/${groupId}/members`);
+          allMembers = res.data && res.data.members ? res.data.members : res.data || [];
+
+          const activeCount = allMembers.filter(m => m.status === 'ACTIVE').length;
+          const maxCount = activeGroup.max_members || 12;
+
+          document.getElementById('members-quorum-badge').textContent = `${activeCount} / ${maxCount} vagas`;
+          document.getElementById('tab-members-count').textContent = activeCount;
+          document.getElementById('active-members-count-badge').textContent = `${activeCount} participante(s) ativo(s)`;
+
+          const pendingList = allMembers.filter(m => m.status === 'PENDING_APPROVAL');
+          if (isLeaderOrAdmin && pendingList.length > 0) {
+            renderPendingRequests(pendingList);
+            pendingCard.classList.remove('d-none');
+          } else {
+            pendingCard.classList.add('d-none');
+          }
+
+          renderMembersTable();
+        } catch (error) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="8" class="text-center py-4" style="color: #f43f5e; font-size: 0.86rem;">
+                Falha ao listar participantes.
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      function renderPendingRequests(pendingList) {
+        pendingCountEl.textContent = pendingList.length;
+        let html = '';
+
+        pendingList.forEach(m => {
+          const name = m.full_name || m.preferred_name || 'Utilizador';
+          const email = m.email || '—';
+          const phone = m.phone_number || '—';
+          const joinedDate = window.App ? window.App.formatDate(m.joined_at || m.created_at, true) : 'Hoje';
+
+          html += `
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="ok-avatar-initial">
+                    ${name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <strong style="color: var(--ok-text-primary); display: block;">${name}</strong>
+                    <span style="color: var(--ok-text-muted); font-size: 0.78rem;">${email}</span>
+                  </div>
+                </div>
+              </td>
+              <td style="color: var(--ok-text-muted); font-family: monospace; font-size: 0.82rem;">${phone}</td>
+              <td style="color: var(--ok-text-muted); font-size: 0.82rem;">${joinedDate}</td>
+              <td class="text-end">
+                <div class="d-flex gap-2 justify-content-end">
+                  <button type="button" class="ok-action-approve" data-action="approve-member" data-membership-id="${m.membership_id || m.id}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Aprovar
+                  </button>
+                  <button type="button" class="ok-action-reject" data-action="reject-member" data-membership-id="${m.membership_id || m.id}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    Rejeitar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        pendingTableBody.innerHTML = html;
+
+        pendingTableBody.querySelectorAll('[data-action="approve-member"]').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const membershipId = btn.getAttribute('data-membership-id');
+            await handlePendingAction(membershipId, 'approve');
+          });
+        });
+
+        pendingTableBody.querySelectorAll('[data-action="reject-member"]').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const membershipId = btn.getAttribute('data-membership-id');
+            await handlePendingAction(membershipId, 'reject');
+          });
+        });
+      }
+
+      async function handlePendingAction(membershipId, action) {
+        try {
+          if (window.Alerts) {
+            const confirm = await window.Alerts.confirm({
+              title: action === 'approve' ? 'Aprovar Adesão?' : 'Rejeitar Pedido?',
+              text: action === 'approve'
+                ? 'O candidato passará a integrar o grupo como membro ativo.'
+                : 'O pedido será recusado e o candidato removido da fila.',
+              confirmButtonText: action === 'approve' ? 'Sim, aprovar' : 'Sim, rejeitar',
+              isDangerous: action === 'reject'
+            });
+            if (!confirm) return;
+          }
+
+          if (window.Alerts) window.Alerts.showLoading('A processar...', 'Atualizando estado da filiação.');
+
+          await window.apiClient.post(`/groups/memberships/${membershipId}/${action}`, {});
+
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.success(
+              action === 'approve' ? 'Adesão Aprovada!' : 'Pedido Rejeitado',
+              action === 'approve' ? 'O participante já está ativo no grupo.' : 'O pedido foi rejeitado.'
+            );
+          }
+
+          await loadMembersList();
+        } catch (err) {
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.error('Falha na Operação', err.message || 'Erro ao processar.');
+          }
+        }
+      }
+
+      function renderMembersTable() {
+        const roleFilter = filterRoleSelect.value;
+        const statusFilter = filterStatusSelect.value;
+
+        let filtered = allMembers.filter(m => m.status !== 'PENDING_APPROVAL');
+
+        if (statusFilter) {
+          filtered = filtered.filter(m => m.status === statusFilter);
+        }
+
+        if (roleFilter) {
+          if (roleFilter === 'PRIMARY_LEADER') {
+            filtered = filtered.filter(m => m.is_leader);
+          } else {
+            filtered = filtered.filter(m => m.role === roleFilter && !m.is_leader);
+          }
+        }
+
+        if (filtered.length === 0) {
+          tableBody.innerHTML = '';
+          emptyState.classList.remove('d-none');
+          return;
+        }
+
+        emptyState.classList.add('d-none');
+        let html = '';
+
+        filtered.forEach(m => {
+          const isLeader = Boolean(m.is_leader);
+          const isSelf = m.user_id === currentUserId;
+          const name = m.full_name || m.preferred_name || 'Participante';
+          const slot = m.slot_number ? `<span class="ok-badge-purple">Vaga #${m.slot_number}</span>` : '<span style="color: var(--ok-text-muted); font-size: 0.82rem;">—</span>';
+          const roleBadge = getMemberRoleBadge(m.role, isLeader);
+          const statusBadge = getMemberStatusBadge(m.status);
+          const restrictions = getRestrictionsBadge(m);
+          const joinedAt = window.App ? window.App.formatDate(m.joined_at, false) : '—';
+          const phone = m.phone_number ? `<span style="font-family: monospace; font-size: 0.82rem; color: var(--ok-text-muted);">${m.phone_number}</span>` : '—';
+
+          html += `
+            <tr>
+              <td>${slot}</td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="ok-avatar-initial">
+                    ${name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <strong style="color: var(--ok-text-primary); display: block;">
+                      ${name} ${isSelf ? '<span class="ok-badge-purple" style="font-size: 0.65rem;">Você</span>' : ''}
+                    </strong>
+                    <span style="color: var(--ok-text-muted); font-size: 0.76rem;">${m.email || ''}</span>
+                  </div>
+                </div>
+              </td>
+              <td>${phone}</td>
+              <td>${roleBadge}</td>
+              <td>${statusBadge}</td>
+              <td>${restrictions}</td>
+              <td style="color: var(--ok-text-muted); font-size: 0.82rem;">${joinedAt}</td>
+              <td class="text-end">
+                ${isLeaderOrAdmin && !isLeader ? `
+                  <div class="dropdown">
+                    <button class="ok-row-action-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <button class="dropdown-item" onclick="window.openRestrictionsModal('${m.membership_id || m.id}', ${Boolean(m.is_banned_from_chat)}, ${Boolean(m.is_contribution_restricted)}, ${Boolean(m.is_payout_restricted)})">
+                          Restrições Operacionais
+                        </button>
+                      </li>
+                      <li>
+                        <button class="dropdown-item" onclick="window.openDelegateModal('${m.user_id}')">
+                          Designar Cargo
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider"></li>
+                      ${m.status === 'ACTIVE' ? `
+                        <li>
+                          <button class="dropdown-item text-warning" onclick="window.openSuspendModal('${m.membership_id || m.id}')">
+                            Suspender Membro
+                          </button>
+                        </li>
+                      ` : m.status === 'SUSPENDED' ? `
+                        <li>
+                          <button class="dropdown-item text-success" data-action="reactivate-member" data-membership-id="${m.membership_id || m.id}">
+                            Reativar Filiação
+                          </button>
+                        </li>
+                      ` : ''}
+                    </ul>
+                  </div>
+                ` : '<span style="color: var(--ok-text-muted); font-size: 0.82rem;">—</span>'}
+              </td>
+            </tr>
+          `;
+        });
+
+        tableBody.innerHTML = html;
+
+        tableBody.querySelectorAll('[data-action="reactivate-member"]').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const membershipId = btn.getAttribute('data-membership-id');
+            try {
+              if (window.Alerts) window.Alerts.showLoading('A reativar...', 'Restaurando filiação do membro.');
+              await window.apiClient.post(`/groups/memberships/${membershipId}/reactivate`, {});
+              if (window.Alerts) {
+                window.Alerts.closeLoading();
+                window.Alerts.success('Membro Reativado!', 'O participante voltou ao estado ativo.');
+              }
+              await loadMembersList();
+            } catch (err) {
+              if (window.Alerts) {
+                window.Alerts.closeLoading();
+                window.Alerts.error(err.message || 'Falha ao reativar membro.');
+              }
+            }
+          });
+        });
+      }
+
+      function getMemberRoleBadge(role, isLeader) {
+        if (isLeader) {
+          return '<span class="ok-badge-purple">Líder Titular</span>';
+        }
+        switch (role) {
+          case 'VICE_LEADER':
+            return '<span class="ok-badge-purple">Vice-Líder</span>';
+          case 'TREASURER':
+            return '<span class="ok-badge-purple">Tesoureiro</span>';
+          case 'SECRETARY':
+            return '<span class="ok-badge-purple">Secretário</span>';
+          default:
+            return '<span class="ok-badge-soft">Membro</span>';
+        }
+      }
+
+      function getMemberStatusBadge(status) {
+        switch (status) {
+          case 'ACTIVE':
+            return '<span class="ok-badge-purple">Ativo</span>';
+          case 'SUSPENDED':
+            return '<span class="ok-badge-soft" style="color: #f59e0b;">Suspenso</span>';
+          case 'DEFAULTED':
+            return '<span class="ok-badge-soft" style="color: #f43f5e;">Inadimplente</span>';
+          case 'LEFT':
+            return '<span class="ok-badge-soft">Saiu do Grupo</span>';
+          default:
+            return '<span class="ok-badge-soft">' + status + '</span>';
+        }
+      }
+
+      function getRestrictionsBadge(m) {
+        const badges = [];
+        if (m.is_banned_from_chat) badges.push('<span class="ok-badge-soft" style="color: #f43f5e;">Chat</span>');
+        if (m.is_contribution_restricted) badges.push('<span class="ok-badge-soft" style="color: #f59e0b;">Quota</span>');
+        if (m.is_payout_restricted) badges.push('<span class="ok-badge-soft">Bolo</span>');
+
+        return badges.length > 0 ? `<div class="d-flex gap-1 flex-wrap">${badges.join('')}</div>` : '<span style="color: var(--ok-text-muted); font-size: 0.78rem;">Nenhuma</span>';
+      }
+
+      window.openSuspendModal = function (membershipId) {
+        document.getElementById('suspend-membership-id').value = membershipId;
+        const modal = new bootstrap.Modal(document.getElementById('modal-suspend-member'));
+        modal.show();
+      };
+
+      window.openRestrictionsModal = function (membershipId, chatBanned, contribRestricted, payoutRestricted) {
+        document.getElementById('restrictions-membership-id').value = membershipId;
+        document.getElementById('switch-ban-chat').checked = chatBanned;
+        document.getElementById('switch-restrict-contrib').checked = contribRestricted;
+        document.getElementById('switch-restrict-payout').checked = payoutRestricted;
+
+        const modal = new bootstrap.Modal(document.getElementById('modal-manage-restrictions'));
+        modal.show();
+      };
+
+      window.openDelegateModal = function (userId) {
+        document.getElementById('delegate-target-user-id').value = userId;
+        const modal = new bootstrap.Modal(document.getElementById('modal-delegate-role'));
+        modal.show();
+      };
+
+      const formSuspend = document.getElementById('form-suspend-member');
+      if (formSuspend) {
+        formSuspend.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const membershipId = document.getElementById('suspend-membership-id').value;
+          const reason = formSuspend.querySelector('[name="reason"]').value.trim();
+          const suspendedUntil = formSuspend.querySelector('[name="suspendedUntil"]').value || null;
+
+          try {
+            if (window.Alerts) window.Alerts.showLoading('A suspender...', 'Aplicando sanção disciplinar.');
+            await window.apiClient.post(`/groups/memberships/${membershipId}/suspend`, { reason, suspendedUntil });
+            bootstrap.Modal.getInstance(document.getElementById('modal-suspend-member')).hide();
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              window.Alerts.toast('Participante suspenso com sucesso.', 'info');
+            }
+            await loadMembersList();
+          } catch (err) {
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              window.Alerts.error(err.message || 'Falha ao suspender participante.');
+            }
+          }
+        });
+      }
+
+      const formRestrictions = document.getElementById('form-manage-restrictions');
+      if (formRestrictions) {
+        formRestrictions.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const membershipId = document.getElementById('restrictions-membership-id').value;
+          const isBannedFromChat = document.getElementById('switch-ban-chat').checked;
+          const isContributionRestricted = document.getElementById('switch-restrict-contrib').checked;
+          const isPayoutRestricted = document.getElementById('switch-restrict-payout').checked;
+
+          try {
+            if (window.Alerts) window.Alerts.showLoading('A guardar...', 'Atualizando restrições cautelares.');
+            await window.apiClient.patch(`/groups/memberships/${membershipId}/restrictions`, {
+              isBannedFromChat,
+              isContributionRestricted,
+              isPayoutRestricted
+            });
+            bootstrap.Modal.getInstance(document.getElementById('modal-manage-restrictions')).hide();
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              window.Alerts.toast('Restrições atualizadas.', 'success');
+            }
+            await loadMembersList();
+          } catch (err) {
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              window.Alerts.error(err.message || 'Falha ao atualizar restrições.');
+            }
+          }
+        });
+      }
+
+      const formDelegate = document.getElementById('form-delegate-role');
+      if (formDelegate) {
+        formDelegate.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const targetUserId = document.getElementById('delegate-target-user-id').value;
+          const leadershipRole = document.getElementById('delegate-leadership-role-select').value;
+          const delegatedUntil = formDelegate.querySelector('[name="delegatedUntil"]').value || null;
+
+          try {
+            if (window.Alerts) window.Alerts.showLoading('A designar...', 'Atribuindo cargo de liderança.');
+            await window.apiClient.post(`/groups/${groupId}/leadership/delegate`, {
+              targetUserId,
+              leadershipRole,
+              delegatedUntil
+            });
+            bootstrap.Modal.getInstance(document.getElementById('modal-delegate-role')).hide();
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              window.Alerts.success('Cargo Atribuído!', 'O participante assumiu as novas funções de governança.');
+            }
+            await loadMembersList();
+          } catch (err) {
+            if (window.Alerts) {
+              window.Alerts.closeLoading();
+              window.Alerts.error(err.message || 'Erro ao designar cargo de liderança.');
+            }
+          }
+        });
+      }
+
+      filterRoleSelect.addEventListener('change', renderMembersTable);
+      filterStatusSelect.addEventListener('change', renderMembersTable);
+
+      /* ====================================================================
+         INIT
+         ==================================================================== */
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        initAvatarFallback();
+        // Hidrata o avatar do navbar com a foto real do backend (igual ao Perfil).
+        hydrateNavbarAvatar();
+        setupGlobalActions();
+        initializePage();
+      });
+    })();
+  </script>
+</body>
+</html>

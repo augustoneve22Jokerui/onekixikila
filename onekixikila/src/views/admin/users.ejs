@@ -1,0 +1,2548 @@
+<%- include('../partials/head') %>
+<%
+  const adminUser = (typeof user !== 'undefined' && user) ? user : {};
+  const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador';
+  const adminRoleForPage = String(adminUser.role || '').toUpperCase();
+  const adminIdForPage = String(adminUser.id || '');
+  const canAccessAdminPage = (...roles) => roles.includes(adminRoleForPage);
+  const canViewAuditTrail = canAccessAdminPage('ADMIN', 'AUDITOR');
+  const adminDisplayName = adminUserName || 'Administrador';
+%>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     ONEKIXIKILA ADMIN — UTILIZADORES · ULTRA APPLE LIGHT EDITION
+     Paleta dupla (dark/light), superfícies em camadas, sombras difusas,
+     cantos suaves, timeline multi-etapa nos modais, conteúdo centralizado.
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-color-token-001: rgba(124, 58, 237, 0.14);
+    --ok-color-token-002: rgba(5, 5, 8, 0);
+    --ok-color-token-003: rgba(124, 58, 237, 0.10);
+    --ok-color-token-004: rgba(244, 245, 249, 0);
+    --ok-color-token-005: #7c3aed;
+    --ok-color-token-006: #4c1d95;
+    --ok-color-token-007: rgba(124, 58, 237, 0.4);
+    --ok-color-token-008: #8b5cf6;
+    --ok-color-token-009: #6d28d9;
+    --ok-color-token-010: #ffffff;
+    --ok-color-token-011: rgba(139, 92, 246, 0.5);
+    --ok-color-token-012: #ef4444;
+    --ok-color-token-013: #fff;
+    --ok-color-token-014: #c084fc;
+    --ok-color-token-015: rgba(16, 185, 129, 0.15);
+    --ok-color-token-016: rgba(16, 185, 129, 0.3);
+    --ok-color-token-017: #10b981;
+    --ok-color-token-018: #0f172a;
+    --ok-color-token-019: #bef264;
+    --ok-color-token-020: rgba(0,0,0,0.08);
+    --ok-color-token-021: rgba(255,255,255,0.15);
+    --ok-color-token-022: rgba(245, 158, 11, 0.15);
+    --ok-color-token-023: #f59e0b;
+    --ok-color-token-024: rgba(244, 63, 94, 0.15);
+    --ok-color-token-025: #f43f5e;
+    --ok-color-token-026: rgba(6, 182, 212, 0.15);
+    --ok-color-token-027: #06b6d4;
+    --ok-color-token-028: rgba(6, 182, 212, 0.08);
+    --ok-color-token-029: rgba(6, 182, 212, 0.22);
+    --ok-color-token-030: #b6e7ee;
+    --ok-color-token-031: #67e8f9;
+    --ok-color-token-032: rgba(139, 92, 246, 0.35);
+    --ok-color-token-033: rgba(255, 255, 255, 0.02);
+    --ok-color-token-034: rgba(139, 92, 246, 0.28);
+    --ok-color-token-035: rgba(6, 182, 212, 0.14);
+    --ok-color-token-036: #ddd6fe;
+    --ok-color-token-037: rgba(6, 182, 212, 0.12);
+    --ok-color-token-038: rgba(6, 182, 212, 0.25);
+    --ok-color-token-039: rgba(245, 158, 11, 0.12);
+    --ok-color-token-040: rgba(245, 158, 11, 0.25);
+    --ok-color-token-041: #fcd34d;
+    --ok-color-token-042: rgba(16, 185, 129, 0.12);
+    --ok-color-token-043: rgba(16, 185, 129, 0.25);
+    --ok-color-token-044: #6ee7b7;
+    --ok-color-token-045: rgba(244, 63, 94, 0.12);
+    --ok-color-token-046: rgba(244, 63, 94, 0.25);
+    --ok-color-token-047: #fda4af;
+    --ok-color-token-048: #08080e;
+    --ok-color-token-049: #101018;
+    --ok-color-token-050: rgba(255, 255, 255, 0.06);
+    --ok-color-token-051: rgba(255, 255, 255, 0.03);
+    --ok-color-token-052: rgba(255, 255, 255, 0.09);
+    --ok-color-token-053: #e2e8f0;
+    --ok-color-token-054: #f1f5f9;
+    --ok-color-token-055: rgba(0, 0, 0, 0.55);
+    --ok-color-token-056: rgba(0, 0, 0, 0.35);
+    --ok-color-token-057: rgba(124, 58, 237, 0.18);
+    --ok-color-token-058: rgba(124, 58, 237, 0.06);
+    --ok-color-token-059: rgba(255, 255, 255, 0.02);
+    --ok-color-token-060: rgba(255, 255, 255, 0.005);
+    --ok-color-transparent: transparent;
+    --ok-color-white: #ffffff;
+    --ok-color-black: #000000;
+
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+    --ok-bg-window: #0f0f16;
+    --ok-bg-window-inner: #14141c;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+    --ok-shadow-window: 0 40px 120px rgba(0, 0, 0, 0.75), 0 12px 36px rgba(0, 0, 0, 0.55);
+    --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --ok-glass-tint: rgba(15, 15, 22, 0.72);
+    --ok-glass-tint-strong: rgba(15, 15, 22, 0.92);
+    --ok-divider: rgba(255, 255, 255, 0.06);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-pill: 9999px;
+    --ok-radius-card: 12px;
+    --ok-radius-md: 12px;
+    --ok-radius-window: 18px;
+    --ok-radius-inner: 12px;
+    --ok-radius-circle: 50%;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1180px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+    --ok-bg-window: #ffffff;
+    --ok-bg-window-inner: #fafafa;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.22);
+    --ok-purple-glow: rgba(124, 58, 237, 0.22);
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.08);
+    --ok-border-strong: rgba(15, 23, 42, 0.14);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.06);
+    --ok-shadow-card: rgba(15, 23, 42, 0.08);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    --ok-shadow-window: 0 24px 70px rgba(15, 23, 42, 0.16), 0 4px 14px rgba(15, 23, 42, 0.06);
+    --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --ok-glass-tint: rgba(255, 255, 255, 0.72);
+    --ok-glass-tint-strong: rgba(255, 255, 255, 0.94);
+    --ok-divider: rgba(15, 23, 42, 0.06);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+      --ok-bg-window: #ffffff;
+      --ok-bg-window-inner: #fafafa;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.22);
+      --ok-purple-glow: rgba(124, 58, 237, 0.22);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.08);
+      --ok-border-strong: rgba(15, 23, 42, 0.14);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.06);
+      --ok-shadow-card: rgba(15, 23, 42, 0.08);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      --ok-shadow-window: 0 24px 70px rgba(15, 23, 42, 0.16), 0 4px 14px rgba(15, 23, 42, 0.06);
+      --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      --ok-glass-tint: rgba(255, 255, 255, 0.72);
+      --ok-glass-tint-strong: rgba(255, 255, 255, 0.94);
+      --ok-divider: rgba(15, 23, 42, 0.06);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ok-bg-canvas);
+    color: var(--ok-text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, var(--ok-color-token-001) 0%, var(--ok-color-token-002) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, var(--ok-color-token-003) 0%, var(--ok-color-token-004) 70%);
+  }
+
+  /* =========================================================================
+     RAIL SIDEBAR SLIM TECH
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-md);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+    overflow-y: auto; overflow-x: hidden;
+  }
+  .ok-rail-sidebar::-webkit-scrollbar { width: 0; }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: var(--ok-radius-md);
+    background: linear-gradient(135deg, var(--ok-color-token-005) 0%, var(--ok-color-token-006) 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px var(--ok-color-token-007);
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+  .ok-brand-emblem svg { width: 24px; height: 24px; stroke: var(--ok-color-token-010); }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  .ok-rail-group-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ok-text-muted);
+    margin: 10px 0 2px 0;
+    text-align: center;
+    width: 100%;
+    opacity: 0.7;
+  }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: var(--ok-radius-md);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: var(--ok-color-transparent);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    box-shadow: 0 8px 20px var(--ok-color-token-011);
+  }
+  .ok-rail-link.active svg { stroke: var(--ok-color-token-010); }
+  .ok-rail-link svg { width: 20px; height: 20px; }
+
+  .admin-rail-count {
+    position: absolute; top: 2px; right: 1px;
+    min-width: 18px; height: 18px; padding: 0 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    background: var(--ok-color-token-012); color: var(--ok-color-token-013);
+    border: 2px solid var(--ok-bg-surface);
+    font-size: 9px; font-weight: 800;
+  }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+    padding-top: 14px;
+    margin-top: 8px;
+    border-top: 1px solid var(--ok-border-subtle);
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CENTRALIZADO (corrigido)
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 20px);
+    padding: 20px 20px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+
+  /* Top nav — alinhado ao centro do conteúdo */
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* Barra de pesquisa — alinhada ao início do conteúdo */
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 0;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex; align-items: center;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: var(--ok-radius-md);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    color: inherit;
+  }
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%; object-fit: cover;
+    background: var(--ok-purple-soft);
+    border: 2px solid var(--ok-purple-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); font-weight: 800; font-size: 0.9rem;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: var(--ok-radius-md);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+
+  .ok-page-title-main {
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, var(--ok-color-token-014) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-color-token-015);
+    border: 1px solid var(--ok-color-token-016);
+    color: var(--ok-color-token-017);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: var(--ok-color-token-017);
+    box-shadow: 0 0 8px var(--ok-color-token-017);
+  }
+
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 780px;
+  }
+
+  .admin-hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-btn-pill-soft {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    font-weight: 700;
+    border-radius: var(--ok-radius-pill);
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ok-btn-pill-soft:hover {
+    background: var(--ok-purple-vibrant);
+    color: var(--ok-color-token-010);
+  }
+  .ok-btn-pill-soft[disabled] { opacity: 0.65; cursor: wait; }
+
+  .admin-currency-badge {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-muted);
+    font-size: 0.72rem; font-weight: 800;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* =========================================================================
+     FAIXA DE 4 CARDS CHAPADOS (KPIs)
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 24px auto;
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+    width: 100%;
+  }
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+    color: inherit;
+  }
+  .ok-flat-card-box.theme-white { background-color: var(--ok-color-token-010); color: var(--ok-color-token-018); }
+  .ok-flat-card-box.theme-lime { background-color: var(--ok-color-token-019); color: var(--ok-color-token-018); }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: var(--ok-color-token-010); color: var(--ok-color-token-018);
+    border-left: 1px solid var(--ok-color-token-020);
+  }
+  .ok-flat-card-box.theme-purple { background-color: var(--ok-color-token-005); color: var(--ok-color-token-010); }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: var(--ok-color-token-018); }
+  .theme-purple .ok-flat-icon-container svg { stroke: var(--ok-color-token-010); }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: var(--ok-color-token-015); color: var(--ok-color-token-017); }
+  .theme-purple .ok-flat-trend { background: var(--ok-color-token-021); color: var(--ok-color-token-010); }
+  .ok-flat-trend.warning { background: var(--ok-color-token-022); color: var(--ok-color-token-023); }
+  .ok-flat-trend.danger { background: var(--ok-color-token-024); color: var(--ok-color-token-025); }
+  .ok-flat-trend.info { background: var(--ok-color-token-026); color: var(--ok-color-token-027); }
+
+  /* =========================================================================
+     CARDS BASE
+     ========================================================================= */
+  .admin-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-window);
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 20px auto;
+    width: 100%;
+  }
+
+  .admin-note {
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-text-secondary);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    padding: 0.85rem 1rem;
+    display: flex; align-items: flex-start; gap: 8px;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+  .admin-note i { color: var(--ok-purple-vibrant); flex-shrink: 0; }
+  .admin-note.warning {
+    background: var(--ok-color-token-028);
+    border-color: var(--ok-color-token-029);
+    color: var(--ok-color-token-030);
+  }
+  .admin-note.warning i { color: var(--ok-color-token-031); }
+  .admin-note a { color: var(--ok-accent-cyan); text-decoration: underline; }
+
+  /* =========================================================================
+     FILTROS
+     ========================================================================= */
+  .users-filter-card { padding: 1.15rem 1.25rem; }
+  .users-filter-card h2 {
+    font-size: 0.95rem; font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0; font-family: 'Space Grotesk', sans-serif;
+  }
+  .users-filter-card .form-label,
+  .users-modal .form-label {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
+  }
+  .users-filter-card .form-control,
+  .users-filter-card .form-select,
+  .users-modal .form-control,
+  .users-modal .form-select {
+    background: var(--ok-bg-elevated) !important;
+    border: 1px solid var(--ok-border-strong) !important;
+    color: var(--ok-text-primary) !important;
+    min-height: 43px;
+    border-radius: var(--ok-radius-md);
+  }
+  .users-filter-card .form-control::placeholder,
+  .users-modal textarea::placeholder { color: var(--ok-text-muted); }
+  .users-filter-card .form-control:focus,
+  .users-filter-card .form-select:focus,
+  .users-modal .form-control:focus,
+  .users-modal .form-select:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+  }
+  .users-filter-card option,
+  .users-modal option {
+    background: var(--ok-bg-elevated);
+    color: var(--ok-text-primary);
+  }
+  .users-filter-card .input-group-text {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-strong);
+    color: var(--ok-text-muted);
+    border-radius: var(--ok-radius-md) 0 0 var(--ok-radius-md);
+  }
+  .users-filter-card .input-group .form-control {
+    border-radius: 0 var(--ok-radius-md) var(--ok-radius-md) 0 !important;
+  }
+
+  .btn-primary-ok {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    border: none; color: var(--ok-color-token-010);
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px var(--ok-color-token-032);
+    transition: all 0.2s ease;
+  }
+  .btn-primary-ok:hover { transform: translateY(-1px); color: var(--ok-color-token-013); }
+  .btn-primary-ok[disabled] { opacity: 0.65; cursor: wait; }
+  .btn-ghost-ok {
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-primary);
+    border-radius: var(--ok-radius-md);
+    min-height: 43px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  .btn-ghost-ok:hover {
+    background: var(--ok-pill-bg-hover);
+    color: var(--ok-purple-vibrant);
+  }
+
+  /* =========================================================================
+     TABELA
+     ========================================================================= */
+  .users-table-wrap {
+    overflow: auto;
+    border-radius: var(--ok-radius-window);
+  }
+  .users-table { min-width: 930px; margin: 0; }
+  .users-table thead th {
+    color: var(--ok-text-muted);
+    background: var(--ok-color-token-033);
+    border-bottom: 1px solid var(--ok-border-subtle);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    padding: 0.95rem 0.85rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .users-table tbody td {
+    border-bottom: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-secondary);
+    padding: 0.95rem 0.85rem;
+    vertical-align: middle;
+    font-size: 0.84rem;
+  }
+  .users-table tbody tr:last-child td { border-bottom: 0; }
+  .users-table tbody tr { transition: background 0.15s ease; }
+  .users-table tbody tr:hover { background: var(--ok-stream-hover); }
+
+  .user-avatar {
+    align-items: center;
+    background: linear-gradient(140deg, var(--ok-color-token-034), var(--ok-color-token-035));
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-color-token-036);
+    display: inline-flex;
+    flex: 0 0 40px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+  }
+  .user-name {
+    color: var(--ok-text-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .user-subtext {
+    color: var(--ok-text-muted);
+    font-size: 0.72rem;
+    margin-top: 0.2rem;
+    overflow-wrap: anywhere;
+  }
+
+  .user-badge {
+    border: 1px solid transparent;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.025em;
+    padding: 0.34rem 0.58rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  .user-badge.role-admin { background: var(--ok-color-token-045); border-color: var(--ok-color-token-046); color: var(--ok-color-token-047); }
+  .user-badge.role-auditor { background: var(--ok-color-token-039); border-color: var(--ok-color-token-040); color: var(--ok-color-token-041); }
+  .user-badge.role-support, .user-badge.role-finance { background: var(--ok-color-token-037); border-color: var(--ok-color-token-038); color: var(--ok-color-token-031); }
+  .user-badge.role-leader, .user-badge.role-member { background: var(--ok-color-token-042); border-color: var(--ok-color-token-043); color: var(--ok-color-token-044); }
+  .user-badge.role-neutral, .user-badge.kyc-neutral { background: var(--ok-pill-bg); border-color: var(--ok-border-subtle); color: var(--ok-text-secondary); }
+  .user-badge.state-active, .user-badge.kyc-verified { background: var(--ok-color-token-042); border-color: var(--ok-color-token-043); color: var(--ok-color-token-044); }
+  .user-badge.state-pending { background: var(--ok-color-token-039); border-color: var(--ok-color-token-040); color: var(--ok-color-token-041); }
+  .user-badge.state-suspended { background: var(--ok-color-token-039); border-color: var(--ok-color-token-040); color: var(--ok-color-token-041); }
+  .user-badge.state-blocked { background: var(--ok-color-token-045); border-color: var(--ok-color-token-046); color: var(--ok-color-token-047); }
+  .user-badge.state-other { background: var(--ok-pill-bg); border-color: var(--ok-border-subtle); color: var(--ok-text-secondary); }
+
+  .users-actions { display: flex; justify-content: flex-end; gap: 0.4rem; }
+  .users-actions .btn {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 36px;
+    border-radius: var(--ok-radius-circle);
+    transition: all 0.15s ease;
+  }
+  .users-actions .btn:hover { transform: translateY(-1px); }
+  .users-actions .btn-outline-info {
+    border-color: var(--ok-color-token-038);
+    color: var(--ok-color-token-027);
+    background: var(--ok-color-token-028);
+  }
+  .users-actions .btn-outline-info:hover {
+    background: var(--ok-color-token-026);
+    border-color: var(--ok-color-token-027);
+    color: var(--ok-color-token-027);
+  }
+  .users-actions .btn-outline-primary {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    background: var(--ok-purple-soft);
+  }
+  .users-actions .btn-outline-primary:hover {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-vibrant);
+    color: var(--ok-purple-vibrant);
+  }
+  .users-actions .btn-outline-warning {
+    border-color: var(--ok-color-token-040);
+    color: var(--ok-color-token-023);
+    background: var(--ok-color-token-039);
+  }
+  .users-actions .btn-outline-warning:hover {
+    background: var(--ok-color-token-022);
+    border-color: var(--ok-color-token-023);
+    color: var(--ok-color-token-023);
+  }
+  .users-actions .btn-outline-success {
+    border-color: var(--ok-color-token-043);
+    color: var(--ok-color-token-017);
+    background: var(--ok-color-token-042);
+  }
+  .users-actions .btn-outline-success:hover {
+    background: var(--ok-color-token-015);
+    border-color: var(--ok-color-token-017);
+    color: var(--ok-color-token-017);
+  }
+
+  /* =========================================================================
+     PAGINAÇÃO
+     ========================================================================= */
+  .users-card-footer {
+    align-items: center;
+    border-top: 1px solid var(--ok-border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+  }
+  .users-pagination {
+    display: flex; flex-wrap: wrap; gap: 0.35rem;
+    list-style: none; margin: 0; padding: 0;
+  }
+  .users-pagination button {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 9px;
+    color: var(--ok-text-secondary);
+    min-width: 36px;
+    padding: 0.4rem 0.65rem;
+    font-weight: 700;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .users-pagination button:hover:not(:disabled),
+  .users-pagination button.is-current {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+  }
+  .users-pagination button.is-current {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+  }
+  .users-pagination button:disabled { cursor: not-allowed; opacity: 0.4; }
+
+  /* =========================================================================
+     ESTADOS
+     ========================================================================= */
+  .users-state-box {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-window);
+    color: var(--ok-text-muted);
+    padding: 2.75rem 1rem;
+    text-align: center;
+    background: var(--ok-bg-surface);
+  }
+  .users-state-box i {
+    color: var(--ok-purple-vibrant);
+    display: block;
+    font-size: 1.7rem;
+    margin-bottom: 0.7rem;
+  }
+
+  /* =========================================================================
+     ✦ MODAIS ULTRA APPLE LIGHT ✦
+     ========================================================================= */
+  .users-modal .modal-dialog {
+    max-width: 640px;
+    width: calc(100% - 2rem);
+    margin: 1.75rem auto;
+  }
+  .users-modal .modal-dialog.modal-lg { max-width: 720px; }
+
+  .users-modal .modal-content {
+    background: var(--ok-bg-window);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-window);
+    color: var(--ok-text-primary);
+    box-shadow: var(--ok-shadow-window);
+    overflow: hidden;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  .users-modal .modal-header {
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint-strong);
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .users-modal .modal-title {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    color: var(--ok-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .users-modal .modal-title i { color: var(--ok-purple-vibrant); }
+  .users-modal .modal-footer {
+    padding: 0.85rem 1.15rem;
+    border-top: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint);
+    gap: 0.5rem;
+  }
+  .users-modal .btn-close {
+    background: transparent;
+    opacity: 0.65;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    filter: none;
+    background-image: none;
+    position: relative;
+    transition: all 0.15s ease;
+    box-shadow: none;
+  }
+  .users-modal .btn-close::before {
+    content: '×';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ok-text-muted);
+    line-height: 1;
+  }
+  .users-modal .btn-close:hover { opacity: 1; background: var(--ok-pill-bg); }
+  .users-modal .btn-close:hover::before { color: var(--ok-text-primary); }
+  html[data-theme="light"] .users-modal .btn-close { filter: none; }
+  html[data-theme="light"] .users-modal .btn-close::before { color: var(--ok-text-muted); }
+  html[data-theme="light"] .users-modal .btn-close:hover::before { color: var(--ok-text-primary); }
+
+  .users-modal .modal-body {
+    padding: 1.15rem 1.2rem;
+    background: var(--ok-bg-window);
+  }
+
+  /* Timeline multi-etapa */
+  .users-timeline {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    background: var(--ok-bg-window-inner);
+    border-bottom: 1px solid var(--ok-divider);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .users-timeline::-webkit-scrollbar { display: none; }
+
+  .users-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.65rem 0.35rem 0.35rem;
+    border-radius: var(--ok-radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ok-text-muted);
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+    flex-shrink: 0;
+  }
+  .users-step .dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--ok-text-muted);
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+  .users-step.active {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    border-color: var(--ok-purple-border);
+  }
+  .users-step.active .dot {
+    background: var(--ok-purple-vibrant);
+    color: var(--ok-color-token-010);
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 4px 12px var(--ok-color-token-011);
+  }
+  .users-step.done { color: var(--ok-color-token-017); }
+  .users-step.done .dot {
+    background: var(--ok-color-token-015);
+    border-color: var(--ok-color-token-016);
+    color: var(--ok-color-token-017);
+  }
+  .users-step.done .dot::before { content: '✓'; }
+  .users-step.done .dot span { display: none; }
+
+  .users-step-sep {
+    width: 14px; height: 1.5px;
+    background: var(--ok-border-subtle);
+    flex-shrink: 0;
+  }
+  .users-step-sep.done { background: var(--ok-color-token-016); }
+
+  /* Painéis de etapa */
+  .users-pane {
+    display: none;
+    animation: usersFadeIn 0.3s ease;
+  }
+  .users-pane.active { display: block; }
+  @keyframes usersFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .users-pane-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ok-purple-vibrant);
+    margin: 0 0 0.75rem;
+  }
+
+  .users-field-grid {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .user-detail-box {
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    padding: 0.7rem 0.85rem;
+    transition: all 0.15s ease;
+  }
+  .user-detail-box:hover { border-color: var(--ok-border-strong); }
+  .user-detail-label {
+    color: var(--ok-text-muted);
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.28rem;
+    text-transform: uppercase;
+  }
+  .user-detail-value {
+    color: var(--ok-text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+  .user-detail-value.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.02em;
+  }
+
+  /* Header summary */
+  .users-header-summary {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.85rem;
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+  }
+  .users-header-summary .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(140deg, var(--ok-color-token-034), var(--ok-color-token-035));
+    border: 1px solid var(--ok-purple-border);
+    color: var(--ok-color-token-036);
+    font-weight: 800;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .users-header-summary .info { min-width: 0; flex: 1; }
+  .users-header-summary .name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .users-header-summary .sub {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    margin: 0.15rem 0 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .users-header-summary .badges {
+    display: flex; gap: 0.35rem; flex-wrap: wrap;
+    margin-top: 0.35rem;
+  }
+
+  /* Confirm card */
+  .users-confirm-card {
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    padding: 1rem;
+    display: flex; flex-direction: column; gap: 0.65rem;
+  }
+  .users-confirm-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--ok-divider);
+  }
+  .users-confirm-row:last-child { border-bottom: 0; }
+  .users-confirm-row .label {
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .users-confirm-row .value {
+    color: var(--ok-text-primary);
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  /* Wizard footer */
+  .users-wizard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.85rem 1.15rem;
+    border-top: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint);
+    flex-wrap: wrap;
+  }
+  .users-wizard-progress {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ok-text-muted);
+    letter-spacing: 0.02em;
+  }
+  .users-wizard-progress strong { color: var(--ok-purple-vibrant); }
+  .users-wizard-actions { display: flex; gap: 0.4rem; align-items: center; }
+
+  .ok-btn-apple {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .ok-btn-apple.primary {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    box-shadow: 0 6px 18px var(--ok-color-token-032);
+  }
+  .ok-btn-apple.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px var(--ok-color-token-032); color: var(--ok-color-token-010); }
+  .ok-btn-apple.secondary {
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border: 1px solid var(--ok-border-subtle);
+  }
+  .ok-btn-apple.secondary:hover {
+    background: var(--ok-pill-bg-hover);
+    color: var(--ok-purple-vibrant);
+    border-color: var(--ok-purple-border);
+  }
+  .ok-btn-apple[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  /* Alertas inline */
+  #users-page-alert {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 16px auto;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.85rem;
+  }
+
+  .users-modal .alert-warning {
+    background: var(--ok-color-token-039);
+    border: 1px solid var(--ok-color-token-040);
+    color: var(--ok-color-token-041);
+  }
+  html[data-theme="light"] .users-modal .alert-warning { color: var(--ok-color-token-023); }
+
+  .users-modal textarea.form-control {
+    background: var(--ok-input-bg) !important;
+    border: 1px solid var(--ok-border-subtle) !important;
+    color: var(--ok-text-primary) !important;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.84rem;
+    padding: 0.6rem 0.85rem;
+  }
+  .users-modal textarea.form-control:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+  }
+  .users-modal .form-text { color: var(--ok-text-muted); font-size: 0.72rem; }
+
+  /* Animações */
+  .users-modal.fade .modal-dialog {
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 0.1), opacity 0.28s ease;
+  }
+  .users-modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+  }
+
+  /* Footer */
+  .admin-footer {
+    border-top: 1px solid var(--ok-border-subtle);
+    background: var(--ok-color-transparent);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    color: var(--ok-text-muted);
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 1;
+    margin-top: 2rem;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+    .admin-hero-actions { width: 100%; justify-content: space-between; }
+    .users-card-footer { flex-direction: column; align-items: flex-start; }
+    .users-pagination { width: 100%; }
+    .users-modal .modal-dialog { max-width: calc(100% - 1.5rem); }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+    .users-field-grid { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  .text-danger { color: var(--ok-accent-rose) !important; }
+  .text-muted { color: var(--ok-text-muted) !important; }
+  .btn-outline-info { --bs-btn-color: var(--ok-accent-cyan); --bs-btn-border-color: var(--ok-accent-cyan); --bs-btn-hover-color: var(--ok-text-primary); --bs-btn-hover-bg: var(--ok-accent-cyan); --bs-btn-hover-border-color: var(--ok-accent-cyan); }
+  .btn-outline-primary { --bs-btn-color: var(--ok-purple-vibrant); --bs-btn-border-color: var(--ok-purple-vibrant); --bs-btn-hover-color: var(--ok-text-primary); --bs-btn-hover-bg: var(--ok-purple-primary); --bs-btn-hover-border-color: var(--ok-purple-primary); }
+  .alert-danger { --bs-alert-color: var(--ok-accent-rose); --bs-alert-bg: var(--ok-color-token-045); --bs-alert-border-color: var(--ok-accent-rose); }
+  .alert-warning { --bs-alert-color: var(--ok-color-token-023); --bs-alert-bg: var(--ok-color-token-039); --bs-alert-border-color: var(--ok-color-token-023); }
+  .alert-success { --bs-alert-color: var(--ok-color-token-017); --bs-alert-bg: var(--ok-color-token-015); --bs-alert-border-color: var(--ok-accent-emerald); }
+  .alert-info { --bs-alert-color: var(--ok-accent-cyan); --bs-alert-bg: var(--ok-color-token-026); --bs-alert-border-color: var(--ok-accent-cyan); }
+</style>
+
+<body data-admin-role="<%= adminRoleForPage %>" data-admin-user-id="<%= adminIdForPage %>">
+  <div class="ok-ambient-glow-core" aria-hidden="true"></div>
+
+  <!-- ======================================================================
+       SIDEBAR SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila — Administração" aria-label="Painel administrativo OneKixikila">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ok-color-token-010)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav" aria-label="Ferramentas de administração">
+      <a href="/admin" class="ok-rail-link" title="Dashboard executivo" aria-label="Dashboard executivo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'SUPPORT_AGENT')) { %>
+      <a href="/admin/users" class="ok-rail-link active" title="Utilizadores" aria-label="Utilizadores" aria-current="page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR')) { %>
+      <a href="/admin/groups" class="ok-rail-link" title="Grupos de Kixikila" aria-label="Grupos de Kixikila">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão de identidade KYC" aria-label="Revisão KYC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2.5"></circle><path d="M5.5 17c.8-2 2-3 3.5-3s2.7 1 3.5 3M15 9h3M15 13h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas" aria-label="Disputas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path><path d="M12 8v4M12 16h.01"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-disputes">0</span>
+      </a>
+      <% } %>
+      <% if (canAccessAdminPage('ADMIN', 'AUDITOR', 'FINANCIAL_OPERATOR')) { %>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos e saídas" aria-label="Pagamentos e saídas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20M6 15h3"></path></svg>
+        <span class="admin-rail-count d-none" id="sidebar-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios financeiros" aria-label="Relatórios financeiros">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path><path d="M14 9h5v5"></path></svg>
+      </a>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas e limites" aria-label="Configurações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.6a8 8 0 0 1-1.6.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.6-.9l-1.7.6-1.4-2.4 1.4-1.1A8 8 0 0 1 7 13l-1.8-.3V9.9L7 9.6a8 8 0 0 1 .7-1.6L6.3 6.8l1.4-2.4 1.7.6a8 8 0 0 1 1.6-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.6.9l1.7-.6 1.4 2.4-1.4 1.2a8 8 0 0 1 .7 1.6l1.8.3v2.8l-1.8.3a8 8 0 0 1-.7 1.6z"></path></svg>
+      </a>
+      <% } %>
+      <% if (canViewAuditTrail) { %>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria forense" aria-label="Auditoria forense">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M8 13h8M8 17h8"></path></svg>
+      </a>
+      <% } %>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/notifications" class="ok-rail-link" title="Notificações" aria-label="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+      <a href="/profile" class="ok-rail-link" title="Perfil" aria-label="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar sessão" aria-label="Terminar sessão" style="background:var(--ok-color-transparent);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- TOP BAR -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" id="global-dashboard-search" placeholder="Pesquisar nome, e-mail ou telefone..." autocomplete="off" aria-label="Pesquisar utilizadores">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu" aria-expanded="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <span class="admin-currency-badge d-none d-md-inline-flex" id="admin-utc-clock" style="font-family:'Space Grotesk',monospace;letter-spacing:0.02em;">--:--:-- UTC</span>
+
+        <a href="/dashboard" class="ok-action-circle d-none d-sm-inline-flex" title="Painel do Membro" aria-label="Painel do Membro">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill" aria-label="Perfil do administrador">
+          <span class="ok-profile-avatar-nav" aria-hidden="true"><%= String(adminDisplayName).trim().charAt(0).toUpperCase() || 'A' %></span>
+          <div class="d-flex flex-column text-start admin-profile-text">
+            <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1;"><%= adminDisplayName %></span>
+            <span class="text-muted" style="font-size: 0.7rem;"><%= adminRoleForPage.replaceAll('_', ' ') || 'ADMIN' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <h1 class="ok-page-title-main">
+          Utilizadores <span class="user-highlight">e Contas</span>
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Governança & Risco
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          Diretório de contas, revisão do estado operacional e gestão controlada de papéis globais. As alterações ficam sujeitas às permissões e à auditoria do servidor.
+        </p>
+      </div>
+
+      <div class="admin-hero-actions">
+        <button type="button" id="users-refresh-btn" class="ok-btn-pill-soft">
+          <i class="bi bi-arrow-clockwise" aria-hidden="true"></i> Atualizar lista
+        </button>
+      </div>
+    </section>
+
+    <!-- Alertas inline -->
+    <div id="users-page-alert" class="alert d-none" role="alert" aria-live="polite"></div>
+
+    <!-- SESSÃO 1: 4 CARDS KPI -->
+    <div class="ok-flat-quad-strip" aria-label="Resumo dos resultados carregados">
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+              <path d="M18 26H30" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Resultados filtrados</h5>
+          <p class="ok-flat-desc">No diretório, conforme os filtros aplicados.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-total">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Diretório
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Ativas nesta página</h5>
+          <p class="ok-flat-desc">Contas no estado ACTIVE.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-active">—</span>
+          <div class="ok-flat-trend">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Ativas
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M24 14v12m0 6h.01" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Pendentes nesta página</h5>
+          <p class="ok-flat-desc">Estado operacional pendente de verificação.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-pending">—</span>
+          <div class="ok-flat-trend warning">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            A verificar
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M18 24h12M24 18v12" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Restritas nesta página</h5>
+          <p class="ok-flat-desc">Suspensas, bloqueadas ou desativadas.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-restricted">—</span>
+          <div class="ok-flat-trend danger">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2 1 21h22L12 2zm0 6v6m0 3h.01"/></svg>
+            Restrição
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSÃO 2: FILTROS -->
+    <section class="admin-card users-filter-card" aria-labelledby="users-filter-title">
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-funnel" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>
+        <h2 id="users-filter-title">Pesquisa e filtros</h2>
+      </div>
+      <form id="users-filter-form" class="row g-2 align-items-end" role="search">
+        <div class="col-12 col-lg-5">
+          <label for="filter-search" class="form-label">Pesquisa</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+            <input type="search" class="form-control" id="filter-search" name="search" maxlength="100" autocomplete="off" placeholder="Nome, e-mail ou telefone">
+          </div>
+        </div>
+        <div class="col-6 col-lg-2">
+          <label for="filter-role" class="form-label">Papel</label>
+          <select class="form-select" id="filter-role" name="role">
+            <option value="">Todos os papéis</option>
+            <option value="USER">Utilizador (USER)</option>
+            <option value="MEMBER">Membro (MEMBER)</option>
+            <option value="GROUP_LEADER">Líder de grupo</option>
+            <option value="MODERATOR">Moderador</option>
+            <option value="SUPPORT_AGENT">Agente de suporte</option>
+            <option value="FINANCIAL_OPERATOR">Operador financeiro</option>
+            <option value="AUDITOR">Auditor</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-2">
+          <label for="filter-status" class="form-label">Estado da conta</label>
+          <select class="form-select" id="filter-status" name="status">
+            <option value="">Todos os estados</option>
+            <option value="ACTIVE">Ativa</option>
+            <option value="PENDING_VERIFICATION">Pendente</option>
+            <option value="SUSPENDED">Suspensa</option>
+            <option value="BLOCKED">Bloqueada</option>
+            <option value="DEACTIVATED">Desativada</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-1">
+          <label for="filter-limit" class="form-label">Por página</label>
+          <select class="form-select" id="filter-limit" name="limit">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+        <div class="col-6 col-lg-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary-ok flex-grow-1" aria-label="Pesquisar">
+            <i class="bi bi-search me-1" aria-hidden="true"></i>Pesquisar
+          </button>
+          <button type="reset" class="btn btn-ghost-ok" id="users-reset-btn" aria-label="Limpar filtros" title="Limpar filtros">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Loading / Erro -->
+    <div id="users-loading" class="admin-card users-state-box mb-4" role="status" aria-live="polite">
+      <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+      A carregar diretório de utilizadores…
+    </div>
+    <div id="users-error" class="admin-card users-state-box d-none mb-4" role="alert"></div>
+
+    <!-- SESSÃO 3: TABELA -->
+    <section class="admin-card mb-4 d-none" id="users-table-card" aria-labelledby="users-table-title">
+      <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom:1px solid var(--ok-border-subtle);">
+        <div>
+          <h2 id="users-table-title" style="font-size:1.05rem;font-weight:800;color:var(--ok-text-primary);margin:0;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;">
+            <i class="bi bi-person-vcard" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></i>
+            Diretório de contas
+          </h2>
+          <p class="mb-0" id="users-table-caption" style="font-size:0.78rem;color:var(--ok-text-muted);">Dados obtidos do serviço administrativo.</p>
+        </div>
+        <span class="admin-currency-badge" id="users-total-pill"></span>
+      </div>
+
+      <div class="users-table-wrap">
+        <table class="table users-table">
+          <thead>
+            <tr>
+              <th class="ps-4">Utilizador</th>
+              <th>Contacto</th>
+              <th>Identidade</th>
+              <th>Papel global</th>
+              <th>Estado operacional</th>
+              <th>Registo</th>
+              <th class="text-end pe-4">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="users-card-footer">
+        <span class="small" style="color:var(--ok-text-muted);" id="users-pagination-info">—</span>
+        <ul class="users-pagination" id="users-pagination" aria-label="Paginação"></ul>
+      </div>
+    </section>
+
+    <div class="admin-note warning" style="max-width:var(--ok-content-max);margin:0 auto 20px auto;">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      <span>O estado da conta é independente da revisão de identidade (KYC). Ativar uma conta pendente não aprova automaticamente documentos ou níveis de identidade; use <a href="/admin/identity-review">Revisão KYC</a> para essa decisão. A API continua a validar permissões, razões e registos de auditoria.</span>
+    </div>
+
+    <footer class="admin-footer">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Gestão de contas sujeita aos controlos de acesso e à trilha de auditoria.</span>
+    </footer>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL 1 — FICHA TÉCNICA (WIZARD 3 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade users-modal" id="modal-user-details" tabindex="-1" aria-labelledby="modalUserDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalUserDetailsLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            Ficha técnica da conta
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="users-timeline" id="details-timeline">
+          <span class="users-step active" data-step="1"><span class="dot"><span>1</span></span>Identificação</span>
+          <span class="users-step-sep" data-sep="1"></span>
+          <span class="users-step" data-step="2"><span class="dot"><span>2</span></span>Contacto</span>
+          <span class="users-step-sep" data-sep="2"></span>
+          <span class="users-step" data-step="3"><span class="dot"><span>3</span></span>Operação</span>
+        </div>
+
+        <div class="modal-body" id="modal-user-details-body">
+          <div class="users-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span></div>
+        </div>
+
+        <div class="users-wizard-footer" id="details-wizard-footer">
+          <span class="users-wizard-progress">Etapa <strong id="details-step-current">1</strong> de 3</span>
+          <div class="users-wizard-actions">
+            <button type="button" class="ok-btn-apple secondary" id="details-prev-btn" disabled>
+              <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+            </button>
+            <button type="button" class="ok-btn-apple primary" id="details-next-btn">
+              Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2 — ALTERAR PAPEL (WIZARD 3 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade users-modal" id="modal-change-role" tabindex="-1" aria-labelledby="modalChangeRoleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalChangeRoleLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <circle cx="12" cy="8" r="7"></circle>
+              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+            Alterar papel global
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="users-timeline" id="role-timeline">
+          <span class="users-step active" data-step="1"><span class="dot"><span>1</span></span>Papel</span>
+          <span class="users-step-sep" data-sep="1"></span>
+          <span class="users-step" data-step="2"><span class="dot"><span>2</span></span>Contexto</span>
+          <span class="users-step-sep" data-sep="2"></span>
+          <span class="users-step" data-step="3"><span class="dot"><span>3</span></span>Confirmar</span>
+        </div>
+
+        <form id="form-change-role">
+          <input type="hidden" id="role-target-user-id">
+          <div class="modal-body">
+            <div class="users-pane active" data-pane="1">
+              <label for="role-select" class="form-label">Novo papel</label>
+              <select class="form-select" id="role-select" required>
+                <option value="USER">USER — Utilizador</option>
+                <option value="MEMBER">MEMBER — Membro</option>
+                <option value="GROUP_LEADER">GROUP_LEADER — Líder de grupo</option>
+                <option value="MODERATOR">MODERATOR — Moderador</option>
+                <option value="SUPPORT_AGENT">SUPPORT_AGENT — Suporte</option>
+                <option value="FINANCIAL_OPERATOR">FINANCIAL_OPERATOR — Operador financeiro</option>
+                <option value="AUDITOR">AUDITOR — Auditor</option>
+                <option value="ADMIN">ADMIN — Administrador</option>
+              </select>
+              <div class="users-field-grid mt-3" id="role-context-grid"></div>
+            </div>
+
+            <div class="users-pane" data-pane="2">
+              <p class="users-pane-title">Contexto da alteração</p>
+              <div class="users-confirm-card">
+                <div class="users-confirm-row">
+                  <span class="label">Utilizador</span>
+                  <span class="value" id="role-context-name">—</span>
+                </div>
+                <div class="users-confirm-row">
+                  <span class="label">Papel atual</span>
+                  <span class="value" id="role-context-current">—</span>
+                </div>
+                <div class="users-confirm-row">
+                  <span class="label">Novo papel</span>
+                  <span class="value" id="role-context-new">—</span>
+                </div>
+              </div>
+              <div class="alert alert-warning py-2 small mt-3">
+                <i class="bi bi-exclamation-triangle me-1" aria-hidden="true"></i>A promoção a ADMIN concede privilégios administrativos elevados. A ação é auditada.
+              </div>
+            </div>
+
+            <div class="users-pane" data-pane="3">
+              <p class="users-pane-title">Confirmação final</p>
+              <div class="users-confirm-card">
+                <div class="users-confirm-row">
+                  <span class="label">Utilizador</span>
+                  <span class="value" id="role-confirm-name">—</span>
+                </div>
+                <div class="users-confirm-row">
+                  <span class="label">Novo papel</span>
+                  <span class="value" id="role-confirm-role">—</span>
+                </div>
+              </div>
+              <div class="admin-note" style="margin-top:0.85rem;background:var(--ok-color-token-028);border-color:var(--ok-color-token-029);color:var(--ok-color-token-030);">
+                <i class="bi bi-shield-check" aria-hidden="true"></i>
+                <span>A alteração será submetida ao servidor, que valida as permissões e registará o evento na auditoria.</span>
+              </div>
+            </div>
+          </div>
+          <div class="users-wizard-footer">
+            <span class="users-wizard-progress">Etapa <strong id="role-step-current">1</strong> de 3</span>
+            <div class="users-wizard-actions">
+              <button type="button" class="ok-btn-apple secondary" id="role-prev-btn" disabled>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+              </button>
+              <button type="button" class="ok-btn-apple primary" id="role-next-btn">
+                Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="ok-btn-apple primary d-none" id="role-submit-btn">
+                <i class="bi bi-check2" aria-hidden="true"></i> Guardar alteração
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 3 — ESTADO OPERACIONAL (WIZARD 3 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade users-modal" id="modal-change-status" tabindex="-1" aria-labelledby="modalChangeStatusLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalChangeStatusLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-accent-amber)" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Estado operacional da conta
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="users-timeline" id="status-timeline">
+          <span class="users-step active" data-step="1"><span class="dot"><span>1</span></span>Estado</span>
+          <span class="users-step-sep" data-sep="1"></span>
+          <span class="users-step" data-step="2"><span class="dot"><span>2</span></span>Fundamentação</span>
+          <span class="users-step-sep" data-sep="2"></span>
+          <span class="users-step" data-step="3"><span class="dot"><span>3</span></span>Confirmar</span>
+        </div>
+
+        <form id="form-change-status">
+          <input type="hidden" id="status-target-user-id">
+          <div class="modal-body">
+            <div class="users-pane active" data-pane="1">
+              <label for="status-select" class="form-label">Novo estado</label>
+              <select class="form-select" id="status-select" required>
+                <option value="ACTIVE">ACTIVE — Ativa</option>
+                <option value="PENDING_VERIFICATION">PENDING_VERIFICATION — Pendente</option>
+                <option value="SUSPENDED">SUSPENDED — Suspensa</option>
+                <option value="BLOCKED">BLOCKED — Bloqueada</option>
+                <option value="DEACTIVATED">DEACTIVATED — Desativada</option>
+              </select>
+              <div class="users-field-grid mt-3" id="status-current-grid"></div>
+              <div id="status-approval-note" class="alert alert-warning py-2 small mt-3 d-none">
+                <i class="bi bi-info-circle me-1" aria-hidden="true"></i>A ativação altera apenas o estado operacional; não equivale à aprovação KYC.
+              </div>
+            </div>
+
+            <div class="users-pane" data-pane="2">
+              <p class="users-pane-title">Fundamentação obrigatória</p>
+              <label for="status-reason-text" class="form-label">Justificação formal <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="status-reason-text" rows="4" minlength="5" maxlength="255" required placeholder="Registe o motivo da alteração (5–255 caracteres)."></textarea>
+              <div class="form-text mt-2">A justificação será submetida à API e registada na trilha de auditoria.</div>
+            </div>
+
+            <div class="users-pane" data-pane="3">
+              <p class="users-pane-title">Confirmação final</p>
+              <div class="users-confirm-card">
+                <div class="users-confirm-row">
+                  <span class="label">Utilizador</span>
+                  <span class="value" id="status-confirm-name">—</span>
+                </div>
+                <div class="users-confirm-row">
+                  <span class="label">Estado atual</span>
+                  <span class="value" id="status-confirm-from">—</span>
+                </div>
+                <div class="users-confirm-row">
+                  <span class="label">Novo estado</span>
+                  <span class="value" id="status-confirm-to">—</span>
+                </div>
+                <div class="users-confirm-row">
+                  <span class="label">Fundamentação</span>
+                  <span class="value" id="status-confirm-reason">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="users-wizard-footer">
+            <span class="users-wizard-progress">Etapa <strong id="status-step-current">1</strong> de 3</span>
+            <div class="users-wizard-actions">
+              <button type="button" class="ok-btn-apple secondary" id="status-prev-btn" disabled>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+              </button>
+              <button type="button" class="ok-btn-apple primary" id="status-next-btn">
+                Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="ok-btn-apple primary d-none" id="status-submit-btn">
+                <i class="bi bi-check2" aria-hidden="true"></i> Confirmar alteração
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/sweet-alert') %>
+  <!-- Bootstrap bundle precisa ser carregado ANTES do api-client para que
+       window.bootstrap.Modal exista quando os handlers forem chamados. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      /* ====================================================================
+         AÇÕES GLOBAIS
+         ==================================================================== */
+      function setupGlobalActions() {
+        const sidebarToggle = document.getElementById('sidebar-toggle-btn');
+        sidebarToggle?.addEventListener('click', () => {
+          const active = document.body.classList.toggle('mobile-nav-active');
+          sidebarToggle.setAttribute('aria-expanded', String(active));
+        });
+        document.querySelectorAll('.ok-rail-link[href]').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.matchMedia('(max-width: 991px)').matches) {
+              document.body.classList.remove('mobile-nav-active');
+            }
+          });
+        });
+        const search = document.getElementById('global-dashboard-search');
+        document.addEventListener('keydown', (event) => {
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (search) { event.preventDefault(); search.focus(); }
+          }
+        });
+        document.querySelectorAll('[data-action="logout"]').forEach((button) => {
+          button.addEventListener('click', async (event) => {
+            event.preventDefault();
+            button.disabled = true;
+            try {
+              if (window.apiClient && typeof window.apiClient.post === 'function') await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient && typeof window.apiClient.clearSession === 'function') window.apiClient.clearSession();
+            } catch (_) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         ESTADO E HELPERS
+         ==================================================================== */
+      const page = document.body;
+      const actorRole = String(page.dataset.adminRole || '').toUpperCase();
+      const actorId = String(page.dataset.adminUserId || '');
+      const canManageRoles = actorRole === 'ADMIN';
+      const canManageStatuses = actorRole === 'ADMIN' || actorRole === 'AUDITOR';
+
+      const els = {
+        loading: document.getElementById('users-loading'),
+        error: document.getElementById('users-error'),
+        card: document.getElementById('users-table-card'),
+        body: document.getElementById('users-table-body'),
+        form: document.getElementById('users-filter-form'),
+        search: document.getElementById('filter-search'),
+        role: document.getElementById('filter-role'),
+        status: document.getElementById('filter-status'),
+        limit: document.getElementById('filter-limit'),
+        pagination: document.getElementById('users-pagination'),
+        paginationInfo: document.getElementById('users-pagination-info'),
+        totalPill: document.getElementById('users-total-pill'),
+        alert: document.getElementById('users-page-alert')
+      };
+      let currentPage = 1;
+      let totalPages = 1;
+      let requestSequence = 0;
+      let activeUsers = [];
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+      }
+      function showPageAlert(message, type) {
+        els.alert.className = 'alert alert-' + (type || 'danger') + ' mb-4';
+        els.alert.textContent = String(message || 'Ocorreu um erro inesperado.');
+        els.alert.classList.remove('d-none');
+        els.alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      function hidePageAlert() { els.alert.classList.add('d-none'); els.alert.textContent = ''; }
+      function getErrorMessage(error, fallback) {
+        return error && typeof error.message === 'string' && error.message.trim() ? error.message : fallback;
+      }
+      function setBusy(isBusy) {
+        document.querySelectorAll('#form-change-role button[type="submit"], #form-change-status button[type="submit"], #users-refresh-btn, #users-filter-form button[type="submit"]').forEach(button => {
+          button.disabled = Boolean(isBusy);
+        });
+      }
+      function formatDate(value) {
+        if (!value) return '—';
+        if (window.App && typeof window.App.formatDate === 'function') {
+          try { return window.App.formatDate(value, false); } catch (_) {}
+        }
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? '—' : new Intl.DateTimeFormat('pt-PT', { dateStyle: 'medium' }).format(date);
+      }
+      function formatMoney(value) {
+        const number = Number(value || 0);
+        if (!Number.isFinite(number)) return '—';
+        if (window.App && typeof window.App.formatMoney === 'function') {
+          try { return window.App.formatMoney(number); } catch (_) {}
+        }
+        return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'AOA', maximumFractionDigits: 2 }).format(number);
+      }
+
+      const roleNames = {
+        ADMIN: 'Administrador', AUDITOR: 'Auditor', SUPPORT_AGENT: 'Suporte',
+        FINANCIAL_OPERATOR: 'Operador financeiro', GROUP_LEADER: 'Líder de grupo',
+        MODERATOR: 'Moderador', MEMBER: 'Membro', USER: 'Utilizador'
+      };
+      function roleBadge(role) {
+        const value = String(role || 'USER').toUpperCase();
+        let kind = 'role-neutral';
+        if (value === 'ADMIN') kind = 'role-admin';
+        else if (value === 'AUDITOR') kind = 'role-auditor';
+        else if (value === 'SUPPORT_AGENT') kind = 'role-support';
+        else if (value === 'FINANCIAL_OPERATOR') kind = 'role-finance';
+        else if (value === 'GROUP_LEADER') kind = 'role-leader';
+        else if (value === 'MEMBER') kind = 'role-member';
+        return '<span class="user-badge ' + kind + '" title="' + escapeHtml(value) + '">' + escapeHtml(roleNames[value] || value) + '</span>';
+      }
+      function statusBadge(status) {
+        const value = String(status || 'UNKNOWN').toUpperCase();
+        const labels = { ACTIVE: 'Ativa', PENDING_VERIFICATION: 'Pendente', SUSPENDED: 'Suspensa', BLOCKED: 'Bloqueada', DEACTIVATED: 'Desativada' };
+        const kinds = { ACTIVE: 'state-active', PENDING_VERIFICATION: 'state-pending', SUSPENDED: 'state-suspended', BLOCKED: 'state-blocked', DEACTIVATED: 'state-other' };
+        return '<span class="user-badge ' + (kinds[value] || 'state-other') + '" title="' + escapeHtml(value) + '">' + escapeHtml(labels[value] || value) + '</span>';
+      }
+      function kycBadge(tier) {
+        const value = String(tier || 'TIER_1_UNVERIFIED').toUpperCase();
+        let label = 'Nível básico';
+        let kind = 'kyc-neutral';
+        if (value === 'TIER_2_VERIFIED') { label = 'Nível 2 · Verificado'; kind = 'kyc-verified'; }
+        else if (value === 'TIER_3_ENHANCED') { label = 'Nível 3 · Avançado'; kind = 'kyc-verified'; }
+        else if (value !== 'TIER_1_UNVERIFIED') label = value;
+        return '<span class="user-badge ' + kind + '" title="' + escapeHtml(value) + '">' + escapeHtml(label) + '</span>';
+      }
+
+      function updateSummary(users, pagination) {
+        const total = Number(pagination && (pagination.totalItems ?? pagination.totalCount));
+        document.getElementById('stat-total').textContent = Number.isFinite(total) ? String(total) : String(users.length);
+        document.getElementById('stat-pending').textContent = String(users.filter(u => u.status === 'PENDING_VERIFICATION').length);
+        document.getElementById('stat-active').textContent = String(users.filter(u => u.status === 'ACTIVE').length);
+        document.getElementById('stat-restricted').textContent = String(users.filter(u => ['SUSPENDED', 'BLOCKED', 'DEACTIVATED'].includes(u.status)).length);
+        els.totalPill.textContent = (Number.isFinite(total) ? total : users.length) + ' resultado(s)';
+      }
+
+      function renderUsers(users) {
+        if (!Array.isArray(users) || users.length === 0) {
+          els.body.innerHTML = '<tr><td colspan="7"><div class="users-state-box m-3"><i class="bi bi-person-x" aria-hidden="true"></i><strong class="d-block mb-1" style="color:var(--ok-text-primary);">Nenhuma conta encontrada</strong><span>Altere os filtros ou limpe a pesquisa para tentar novamente.</span></div></td></tr>';
+          return;
+        }
+        els.body.innerHTML = users.map(u => {
+          const id = String(u.id || '');
+          const name = String(u.full_name || u.preferred_name || 'Utilizador sem nome');
+          const email = String(u.email || '—');
+          const phone = String(u.phone_number || '—');
+          const isSelf = Boolean(actorId && id === actorId);
+          let actions = '<button type="button" class="btn btn-sm btn-outline-info" data-action="details" data-user-id="' + escapeHtml(id) + '" aria-label="Ver ficha de ' + escapeHtml(name) + '" title="Ver ficha técnica"><i class="bi bi-person-lines-fill" aria-hidden="true"></i></button>';
+          if (canManageRoles && !isSelf) actions += '<button type="button" class="btn btn-sm btn-outline-primary" data-action="role" data-user-id="' + escapeHtml(id) + '" data-user-role="' + escapeHtml(u.role || 'USER') + '" aria-label="Alterar papel de ' + escapeHtml(name) + '" title="Alterar papel"><i class="bi bi-award" aria-hidden="true"></i></button>';
+          if (canManageStatuses && !isSelf && u.status === 'PENDING_VERIFICATION') actions += '<button type="button" class="btn btn-sm btn-outline-success" data-action="approve" data-user-id="' + escapeHtml(id) + '" aria-label="Ativar conta pendente de ' + escapeHtml(name) + '" title="Ativar conta pendente"><i class="bi bi-check-lg" aria-hidden="true"></i></button>';
+          if (canManageStatuses && !isSelf) actions += '<button type="button" class="btn btn-sm btn-outline-warning" data-action="status" data-user-id="' + escapeHtml(id) + '" data-user-status="' + escapeHtml(u.status || 'ACTIVE') + '" aria-label="Alterar estado de ' + escapeHtml(name) + '" title="Alterar estado operacional"><i class="bi bi-shield-exclamation" aria-hidden="true"></i></button>';
+          return '<tr>' +
+            '<td class="ps-4"><div class="d-flex align-items-center gap-3"><span class="user-avatar" aria-hidden="true">' + escapeHtml(name.trim().charAt(0).toUpperCase() || 'U') + '</span><div><div class="user-name">' + escapeHtml(name) + (isSelf ? ' <span class="text-muted small">(a sua conta)</span>' : '') + '</div><div class="user-subtext">' + escapeHtml(email) + '</div></div></div></td>' +
+            '<td><span class="small font-monospace">' + escapeHtml(phone) + '</span><div class="user-subtext">' + (u.is_email_verified ? '<span style="color:var(--ok-accent-emerald);">E-mail verificado</span>' : '<span>E-mail não verificado</span>') + '</div></td>' +
+            '<td>' + kycBadge(u.identity_tier) + '</td><td>' + roleBadge(u.role) + '</td><td>' + statusBadge(u.status) + '</td>' +
+            '<td><span class="small" style="color:var(--ok-text-muted);">' + escapeHtml(formatDate(u.created_at)) + '</span></td>' +
+            '<td class="text-end pe-4"><div class="users-actions">' + actions + '</div></td></tr>';
+        }).join('');
+      }
+
+      function renderPagination(pagination) {
+        const pageValue = Number(pagination && pagination.page);
+        const pagesValue = Number(pagination && (pagination.totalPages ?? pagination.total_pages));
+        currentPage = Number.isFinite(pageValue) && pageValue > 0 ? pageValue : currentPage;
+        totalPages = Number.isFinite(pagesValue) && pagesValue > 0 ? pagesValue : 1;
+        const total = Number(pagination && (pagination.totalItems ?? pagination.totalCount));
+        const limit = Number(els.limit.value) || 15;
+        const first = total > 0 ? (currentPage - 1) * limit + 1 : 0;
+        const last = total > 0 ? Math.min(currentPage * limit, total) : 0;
+        els.paginationInfo.textContent = totalPages > 1 ? ('A mostrar ' + first + '–' + last + ' de ' + total + ' · Página ' + currentPage + ' de ' + totalPages) : (total > 0 ? ('A mostrar ' + first + '–' + last + ' de ' + total + ' conta(s)') : 'Sem resultados');
+        const pages = new Set([1, totalPages, currentPage - 1, currentPage, currentPage + 1].filter(n => n >= 1 && n <= totalPages));
+        const sorted = Array.from(pages).sort((a, b) => a - b);
+        let html = '<li><button type="button" data-page="' + (currentPage - 1) + '" ' + (currentPage <= 1 ? 'disabled' : '') + ' aria-label="Página anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></button></li>';
+        let previous = 0;
+        sorted.forEach(p => {
+          if (previous && p - previous > 1) html += '<li class="text-muted px-1 align-self-center" aria-hidden="true" style="color:var(--ok-text-muted);">…</li>';
+          html += '<li><button type="button" data-page="' + p + '" class="' + (p === currentPage ? 'is-current' : '') + '" ' + (p === currentPage ? 'aria-current="page"' : '') + '>' + p + '</button></li>';
+          previous = p;
+        });
+        html += '<li><button type="button" data-page="' + (currentPage + 1) + '" ' + (currentPage >= totalPages ? 'disabled' : '') + ' aria-label="Página seguinte"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></li>';
+        els.pagination.innerHTML = html;
+      }
+
+      async function loadUsers(pageNumber) {
+        if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+          els.loading.classList.add('d-none');
+          els.card.classList.add('d-none');
+          els.error.innerHTML = '<i class="bi bi-plug" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Cliente da API indisponível</strong><span>Não é seguro carregar ou alterar contas sem o cliente da API. Recarregue a página; se o problema persistir, contacte o suporte técnico.</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="users-retry-btn"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          els.error.classList.remove('d-none');
+          return;
+        }
+        const sequence = ++requestSequence;
+        currentPage = pageNumber || 1;
+        hidePageAlert();
+        els.error.classList.add('d-none');
+        els.card.classList.add('d-none');
+        els.loading.classList.remove('d-none');
+        els.loading.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>A carregar diretório de utilizadores…';
+        const params = new URLSearchParams({ page: String(currentPage), limit: String(Number(els.limit.value) || 15) });
+        const search = els.search.value.trim();
+        if (search) params.set('search', search);
+        if (els.role.value) params.set('role', els.role.value);
+        if (els.status.value) params.set('status', els.status.value);
+        try {
+          const response = await window.apiClient.get('/users?' + params.toString());
+          if (sequence !== requestSequence) return;
+          if (!response || response.success === false || !Array.isArray(response.data)) throw new Error('A resposta da API não contém uma lista válida de utilizadores.');
+          const users = response.data;
+          const pagination = response.pagination || {};
+          activeUsers = users;
+          renderUsers(users);
+          renderPagination(pagination);
+          updateSummary(users, pagination);
+          els.loading.classList.add('d-none');
+          els.error.classList.add('d-none');
+          els.card.classList.remove('d-none');
+        } catch (error) {
+          if (sequence !== requestSequence) return;
+          els.loading.classList.add('d-none');
+          els.card.classList.add('d-none');
+          els.error.innerHTML = '<i class="bi bi-exclamation-triangle" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Não foi possível carregar as contas</strong><span>' + escapeHtml(getErrorMessage(error, 'Falha de comunicação com o servidor.')) + '</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="users-retry-btn"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          els.error.classList.remove('d-none');
+        }
+      }
+
+      function getModal(id) {
+        if (!window.bootstrap || !window.bootstrap.Modal) {
+          showPageAlert('Os componentes de interface não foram inicializados. Recarregue a página antes de continuar.', 'warning');
+          return null;
+        }
+        const node = document.getElementById(id);
+        return node ? window.bootstrap.Modal.getOrCreateInstance(node) : null;
+      }
+      function fieldItem(label, value, opts) {
+        const o = opts || {};
+        return '<div class="user-detail-box"><span class="user-detail-label">' + escapeHtml(label) + '</span><span class="user-detail-value' + (o.mono ? ' mono' : '') + '">' + escapeHtml(value == null || value === '' ? '—' : value) + '</span></div>';
+      }
+      function detailItem(label, value) { return '<div class="col-12 col-md-6">' + fieldItem(label, value) + '</div>'; }
+
+      /* ====================================================================
+         WIZARDS — CONTROLE DE ETAPAS
+         ==================================================================== */
+      let detailStep = 1; const detailStepCount = 3;
+      function setDetailStep(step) {
+        detailStep = Math.max(1, Math.min(detailStepCount, step));
+        document.querySelectorAll('#modal-user-details .users-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === detailStep);
+        });
+        const timeline = document.getElementById('details-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.users-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === detailStep);
+            el.classList.toggle('done', n < detailStep);
+          });
+          timeline.querySelectorAll('.users-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < detailStep);
+          });
+        }
+        const cur = document.getElementById('details-step-current');
+        if (cur) cur.textContent = String(detailStep);
+        const prev = document.getElementById('details-prev-btn');
+        const next = document.getElementById('details-next-btn');
+        if (prev) prev.disabled = detailStep <= 1;
+        if (next) next.classList.toggle('d-none', detailStep >= detailStepCount);
+      }
+
+      let roleStep = 1; const roleStepCount = 3;
+      function setRoleStep(step) {
+        roleStep = Math.max(1, Math.min(roleStepCount, step));
+        document.querySelectorAll('#modal-change-role .users-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === roleStep);
+        });
+        const timeline = document.getElementById('role-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.users-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === roleStep);
+            el.classList.toggle('done', n < roleStep);
+          });
+          timeline.querySelectorAll('.users-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < roleStep);
+          });
+        }
+        const cur = document.getElementById('role-step-current');
+        if (cur) cur.textContent = String(roleStep);
+        const prev = document.getElementById('role-prev-btn');
+        const next = document.getElementById('role-next-btn');
+        const submit = document.getElementById('role-submit-btn');
+        if (prev) prev.disabled = roleStep <= 1;
+        if (next) next.classList.toggle('d-none', roleStep >= roleStepCount);
+        if (submit) submit.classList.toggle('d-none', roleStep < roleStepCount);
+        if (roleStep === 2) buildRoleContext();
+        if (roleStep === 3) buildRoleConfirm();
+      }
+      function buildRoleContext() {
+        const id = document.getElementById('role-target-user-id').value;
+        const u = activeUsers.find(x => String(x.id) === String(id));
+        const newRole = document.getElementById('role-select').value;
+        document.getElementById('role-context-name').textContent = u ? (u.full_name || u.preferred_name || u.email || id) : id;
+        document.getElementById('role-context-current').textContent = u ? (roleNames[u.role] || u.role || '—') : '—';
+        document.getElementById('role-context-new').textContent = roleNames[newRole] || newRole;
+      }
+      function buildRoleConfirm() {
+        const id = document.getElementById('role-target-user-id').value;
+        const u = activeUsers.find(x => String(x.id) === String(id));
+        const newRole = document.getElementById('role-select').value;
+        document.getElementById('role-confirm-name').textContent = u ? (u.full_name || u.preferred_name || u.email || id) : id;
+        document.getElementById('role-confirm-role').textContent = roleNames[newRole] || newRole;
+      }
+
+      let statusStep = 1; const statusStepCount = 3;
+      function setStatusStep(step) {
+        statusStep = Math.max(1, Math.min(statusStepCount, step));
+        document.querySelectorAll('#modal-change-status .users-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === statusStep);
+        });
+        const timeline = document.getElementById('status-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.users-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === statusStep);
+            el.classList.toggle('done', n < statusStep);
+          });
+          timeline.querySelectorAll('.users-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < statusStep);
+          });
+        }
+        const cur = document.getElementById('status-step-current');
+        if (cur) cur.textContent = String(statusStep);
+        const prev = document.getElementById('status-prev-btn');
+        const next = document.getElementById('status-next-btn');
+        const submit = document.getElementById('status-submit-btn');
+        if (prev) prev.disabled = statusStep <= 1;
+        if (next) next.classList.toggle('d-none', statusStep >= statusStepCount);
+        if (submit) submit.classList.toggle('d-none', statusStep < statusStepCount);
+        if (statusStep === statusStepCount) buildStatusConfirm();
+      }
+      function buildStatusConfirm() {
+        const id = document.getElementById('status-target-user-id').value;
+        const u = activeUsers.find(x => String(x.id) === String(id));
+        const newStatus = document.getElementById('status-select').value;
+        const labels = { ACTIVE: 'Ativa', PENDING_VERIFICATION: 'Pendente', SUSPENDED: 'Suspensa', BLOCKED: 'Bloqueada', DEACTIVATED: 'Desativada' };
+        document.getElementById('status-confirm-name').textContent = u ? (u.full_name || u.preferred_name || u.email || id) : id;
+        document.getElementById('status-confirm-from').textContent = u ? (labels[u.status] || u.status || '—') : '—';
+        document.getElementById('status-confirm-to').textContent = labels[newStatus] || newStatus;
+        document.getElementById('status-confirm-reason').textContent = document.getElementById('status-reason-text').value.trim() || '—';
+      }
+
+      /* ====================================================================
+         ABRIR DETALHES
+         ==================================================================== */
+      async function showUserDetails(userId) {
+        const modal = getModal('modal-user-details');
+        const body = document.getElementById('modal-user-details-body');
+        if (!modal || !window.apiClient || typeof window.apiClient.get !== 'function') return;
+        setDetailStep(1);
+        body.innerHTML = '<div class="users-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span><span class="ms-2">A consultar ficha técnica…</span></div>';
+        modal.show();
+        try {
+          const response = await window.apiClient.get('/admin/users/' + encodeURIComponent(userId));
+          const u = response && response.data ? (response.data.user || response.data) : null;
+          if (!u || typeof u !== 'object') throw new Error('A API não devolveu uma ficha de utilizador válida.');
+          const name = u.full_name || u.fullName || u.preferred_name || 'Utilizador';
+
+          const pane1 = '<div class="users-header-summary"><div class="avatar">' + escapeHtml(String(name).trim().charAt(0).toUpperCase() || 'U') + '</div><div class="info"><p class="name">' + escapeHtml(name) + '</p><p class="sub">' + escapeHtml(u.email || '—') + '</p><div class="badges">' + roleBadge(u.role) + statusBadge(u.status) + kycBadge(u.identity_tier) + '</div></div></div>' +
+            '<p class="users-pane-title">Identificação</p>' +
+            '<div class="users-field-grid">' +
+              fieldItem('Nome completo', u.full_name) +
+              fieldItem('Nome preferido', u.preferred_name) +
+              fieldItem('E-mail', u.email) +
+              fieldItem('E-mail verificado', u.is_email_verified ? 'Sim' : 'Não') +
+              fieldItem('Telefone', u.phone_number || u.phoneNumber) +
+              fieldItem('Telefone verificado', u.is_phone_verified ? 'Sim' : 'Não') +
+              fieldItem('Género', u.gender) +
+              fieldItem('Data de nascimento', formatDate(u.date_of_birth)) +
+            '</div>';
+
+          const pane2 = '<p class="users-pane-title">Contacto e localização</p>' +
+            '<div class="users-field-grid">' +
+              fieldItem('Província', u.province) +
+              fieldItem('Município', u.municipality) +
+              fieldItem('Bairro', u.neighborhood) +
+              fieldItem('Endereço', u.address_line) +
+              fieldItem('Código postal', u.postal_code) +
+              fieldItem('Idioma preferido', u.preferred_language) +
+            '</div>' +
+            '<p class="users-pane-title" style="margin-top:1rem;">Segurança e sessões</p>' +
+            '<div class="users-field-grid">' +
+              fieldItem('Tentativas falhadas', u.failed_login_attempts ?? 0) +
+              fieldItem('Bloqueio até', formatDate(u.locked_until)) +
+              fieldItem('Último acesso', formatDate(u.last_login_at)) +
+              fieldItem('Último IP', u.last_login_ip) +
+              fieldItem('Sessões ativas', u.active_sessions_count ?? 0) +
+              fieldItem('Dispositivos registados', u.registered_devices_count ?? 0) +
+            '</div>';
+
+          const pane3 = '<p class="users-pane-title">Estado operacional e financeiro</p>' +
+            '<div class="users-field-grid">' +
+              fieldItem('Estado da conta', u.status) +
+              fieldItem('Papel global', u.role) +
+              fieldItem('Identidade (KYC)', u.identity_status || u.identity_tier) +
+              fieldItem('Grupos ativos', u.active_groups_count ?? 0) +
+              fieldItem('Estado da carteira', u.wallet_status) +
+              fieldItem('Saldo contabilístico', formatMoney(u.ledger_balance)) +
+              fieldItem('Saldo disponível', formatMoney(u.available_balance)) +
+              fieldItem('Saldo retido', formatMoney(u.locked_balance)) +
+              fieldItem('Criada em', formatDate(u.created_at)) +
+              fieldItem('Atualizada em', formatDate(u.updated_at)) +
+              fieldItem('Termos aceites em', formatDate(u.terms_accepted_at)) +
+              fieldItem('ID do utilizador', u.id, { mono: true }) +
+            '</div>';
+
+          body.innerHTML =
+            '<div class="users-pane active" data-pane="1">' + pane1 + '</div>' +
+            '<div class="users-pane" data-pane="2">' + pane2 + '</div>' +
+            '<div class="users-pane" data-pane="3">' + pane3 + '</div>';
+          setDetailStep(1);
+        } catch (error) {
+          body.innerHTML = '<div class="alert alert-danger mb-0" role="alert">' + escapeHtml(getErrorMessage(error, 'Falha ao consultar a ficha técnica.')) + '</div>';
+        }
+      }
+
+      /* ====================================================================
+         ABRIR PAPEL / ESTADO
+         ==================================================================== */
+      function openRoleModal(userId, currentRole) {
+        if (!canManageRoles) return showPageAlert('A alteração de papéis globais está reservada a ADMIN.', 'warning');
+        document.getElementById('role-target-user-id').value = userId;
+        document.getElementById('role-select').value = currentRole || 'USER';
+        const u = activeUsers.find(x => String(x.id) === String(userId));
+        const grid = document.getElementById('role-context-grid');
+        if (grid) {
+          grid.innerHTML = u ? [
+            fieldItem('Utilizador', u.full_name || u.preferred_name || u.email),
+            fieldItem('Papel atual', roleNames[u.role] || u.role || '—'),
+            fieldItem('Estado da conta', u.status),
+            fieldItem('Identidade', u.identity_tier)
+          ].join('') : fieldItem('Utilizador', userId);
+        }
+        setRoleStep(1);
+        const modal = getModal('modal-change-role');
+        if (modal) modal.show();
+      }
+      function openStatusModal(userId, currentStatus, approve) {
+        if (!canManageStatuses) return showPageAlert('A alteração do estado exige privilégios de ADMIN ou AUDITOR.', 'warning');
+        document.getElementById('status-target-user-id').value = userId;
+        document.getElementById('status-select').value = approve ? 'ACTIVE' : (currentStatus || 'ACTIVE');
+        document.getElementById('status-reason-text').value = '';
+        document.getElementById('status-approval-note').classList.toggle('d-none', !approve);
+        const u = activeUsers.find(x => String(x.id) === String(userId));
+        const grid = document.getElementById('status-current-grid');
+        if (grid) {
+          const labels = { ACTIVE: 'Ativa', PENDING_VERIFICATION: 'Pendente', SUSPENDED: 'Suspensa', BLOCKED: 'Bloqueada', DEACTIVATED: 'Desativada' };
+          grid.innerHTML = u ? [
+            fieldItem('Utilizador', u.full_name || u.preferred_name || u.email),
+            fieldItem('Estado atual', labels[u.status] || u.status || '—'),
+            fieldItem('Papel', roleNames[u.role] || u.role || '—'),
+            fieldItem('Identidade', u.identity_tier)
+          ].join('') : fieldItem('Utilizador', userId);
+        }
+        setStatusStep(1);
+        const modal = getModal('modal-change-status');
+        if (modal) modal.show();
+      }
+
+      function notifySuccess(message) {
+        if (window.Alerts && typeof window.Alerts.toast === 'function') window.Alerts.toast(message, 'success');
+        else if (window.Swal && typeof window.Swal.fire === 'function') window.Swal.fire({ icon: 'success', title: 'Concluído', text: message, timer: 2200, showConfirmButton: false });
+        else showPageAlert(message, 'success');
+      }
+      function notifyError(message) {
+        if (window.Alerts && typeof window.Alerts.error === 'function') window.Alerts.error(message);
+        else if (window.Swal && typeof window.Swal.fire === 'function') window.Swal.fire({ icon: 'error', title: 'Não foi possível concluir', text: message });
+        else showPageAlert(message, 'danger');
+      }
+
+      /* ====================================================================
+         EVENTOS
+         ==================================================================== */
+      document.getElementById('users-filter-form').addEventListener('submit', ev => { ev.preventDefault(); loadUsers(1); });
+      document.getElementById('users-filter-form').addEventListener('reset', () => window.setTimeout(() => loadUsers(1), 0));
+      document.getElementById('users-refresh-btn').addEventListener('click', () => loadUsers(currentPage));
+      document.getElementById('users-pagination').addEventListener('click', ev => {
+        const button = ev.target.closest('button[data-page]');
+        if (!button || button.disabled) return;
+        const requestedPage = Number(button.dataset.page);
+        if (Number.isInteger(requestedPage) && requestedPage >= 1 && requestedPage <= totalPages) loadUsers(requestedPage);
+      });
+      document.getElementById('users-table-body').addEventListener('click', ev => {
+        const button = ev.target.closest('button[data-action]');
+        if (!button) return;
+        const id = button.dataset.userId;
+        const user = activeUsers.find(entry => String(entry.id) === String(id));
+        if (!id || !user) return;
+        if (button.dataset.action === 'details') showUserDetails(id);
+        else if (button.dataset.action === 'role') openRoleModal(id, button.dataset.userRole);
+        else if (button.dataset.action === 'status') openStatusModal(id, button.dataset.userStatus, false);
+        else if (button.dataset.action === 'approve') openStatusModal(id, 'ACTIVE', true);
+      });
+      document.getElementById('users-error').addEventListener('click', ev => { if (ev.target.closest('#users-retry-btn')) loadUsers(currentPage); });
+
+      document.getElementById('details-prev-btn').addEventListener('click', () => setDetailStep(detailStep - 1));
+      document.getElementById('details-next-btn').addEventListener('click', () => setDetailStep(detailStep + 1));
+
+      document.getElementById('role-prev-btn').addEventListener('click', () => setRoleStep(roleStep - 1));
+      document.getElementById('role-next-btn').addEventListener('click', () => {
+        if (roleStep === 1) {
+          const r = document.getElementById('role-select').value;
+          if (!r) { showPageAlert('Selecione um novo papel antes de avançar.', 'warning'); return; }
+        }
+        setRoleStep(roleStep + 1);
+      });
+      document.getElementById('role-select').addEventListener('change', () => {
+        if (roleStep === 2) buildRoleContext();
+        if (roleStep === 3) buildRoleConfirm();
+      });
+
+      document.getElementById('status-prev-btn').addEventListener('click', () => setStatusStep(statusStep - 1));
+      document.getElementById('status-next-btn').addEventListener('click', () => {
+        if (statusStep === 1) {
+          const s = document.getElementById('status-select').value;
+          if (!s) { showPageAlert('Selecione um novo estado antes de avançar.', 'warning'); return; }
+        }
+        if (statusStep === 2) {
+          const r = document.getElementById('status-reason-text').value.trim();
+          if (r.length < 5 || r.length > 255) { showPageAlert('Indique uma justificação entre 5 e 255 caracteres.', 'warning'); return; }
+        }
+        setStatusStep(statusStep + 1);
+      });
+      document.getElementById('status-reason-text').addEventListener('input', () => {
+        if (statusStep === 3) buildStatusConfirm();
+      });
+      document.getElementById('status-select').addEventListener('change', () => {
+        if (statusStep === 3) buildStatusConfirm();
+      });
+
+      document.getElementById('modal-change-role').addEventListener('hidden.bs.modal', () => { document.getElementById('form-change-role').reset(); setRoleStep(1); });
+      document.getElementById('modal-change-status').addEventListener('hidden.bs.modal', () => { document.getElementById('form-change-status').reset(); document.getElementById('status-approval-note').classList.add('d-none'); setStatusStep(1); });
+      document.getElementById('modal-user-details').addEventListener('hidden.bs.modal', () => setDetailStep(1));
+
+      document.getElementById('form-change-role').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        if (!canManageRoles || !window.apiClient || typeof window.apiClient.patch !== 'function') return showPageAlert('A API ou a permissão necessária não está disponível. Ação cancelada.', 'danger');
+        const userId = document.getElementById('role-target-user-id').value;
+        const role = document.getElementById('role-select').value;
+        if (!userId || !role) return;
+        setBusy(true);
+        try {
+          const result = await window.apiClient.patch('/admin/users/' + encodeURIComponent(userId) + '/role', { role });
+          if (result && result.success === false) throw new Error(result.message || 'A API recusou a alteração do papel.');
+          const modal = window.bootstrap.Modal.getInstance(document.getElementById('modal-change-role'));
+          if (modal) modal.hide();
+          notifySuccess('Papel global atualizado com sucesso.');
+          await loadUsers(currentPage);
+        } catch (error) { notifyError(getErrorMessage(error, 'Falha ao alterar o papel.')); }
+        finally { setBusy(false); }
+      });
+
+      document.getElementById('form-change-status').addEventListener('submit', async ev => {
+        ev.preventDefault();
+        if (!canManageStatuses || !window.apiClient || typeof window.apiClient.patch !== 'function') return showPageAlert('A API ou a permissão necessária não está disponível. Ação cancelada.', 'danger');
+        const userId = document.getElementById('status-target-user-id').value;
+        const status = document.getElementById('status-select').value;
+        const reason = document.getElementById('status-reason-text').value.trim();
+        if (!userId || !status || reason.length < 5 || reason.length > 255) return showPageAlert('Indique uma justificação entre 5 e 255 caracteres.', 'warning');
+        const pendingApproval = activeUsers.some(u => String(u.id) === String(userId) && u.status === 'PENDING_VERIFICATION');
+        if (pendingApproval && status === 'ACTIVE' && window.Swal && typeof window.Swal.fire === 'function') {
+          const confirmation = await window.Swal.fire({ icon: 'question', title: 'Ativar esta conta?', text: 'Apenas o estado operacional será alterado. Esta ação não aprova a verificação KYC.', showCancelButton: true, confirmButtonText: 'Sim, ativar', cancelButtonText: 'Cancelar', confirmButtonColor: '#7c3aed' });
+          if (!confirmation.isConfirmed) return;
+        }
+        setBusy(true);
+        try {
+          const result = await window.apiClient.patch('/admin/users/' + encodeURIComponent(userId) + '/status', { status, reason });
+          if (result && result.success === false) throw new Error(result.message || 'A API recusou a alteração do estado.');
+          const modal = window.bootstrap.Modal.getInstance(document.getElementById('modal-change-status'));
+          if (modal) modal.hide();
+          notifySuccess(status === 'ACTIVE' && pendingApproval ? 'Conta ativada. A revisão de identidade KYC permanece independente.' : 'Estado operacional atualizado com sucesso.');
+          await loadUsers(currentPage);
+        } catch (error) { notifyError(getErrorMessage(error, 'Falha ao alterar o estado operacional.')); }
+        finally { setBusy(false); }
+      });
+
+      /* ====================================================================
+         RELÓGIO UTC + INICIALIZAÇÃO
+         ==================================================================== */
+      function updateUtcClock() {
+        const clock = document.getElementById('admin-utc-clock');
+        if (clock) clock.textContent = new Intl.DateTimeFormat('pt-PT', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()) + ' UTC';
+      }
+      updateUtcClock();
+      window.setInterval(updateUtcClock, 1000);
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        setupGlobalActions();
+        loadUsers(1);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2675 @@
+<%- include('../partials/head') %>
+<% const adminUser = (typeof user !== 'undefined' && user) ? user : {}; const adminUserName = adminUser.fullName || adminUser.full_name || 'Administrador'; const adminRoleForPage = String(adminUser.role || '').toUpperCase(); %>
+<% const canSuperviseEjs = ['ADMIN','AUDITOR'].includes(adminRoleForPage); %>
+<% const canChangeLeaderEjs = adminRoleForPage === 'ADMIN'; %>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* =========================================================================
+     ONEKIXIKILA ADMIN — SUPERVISÃO DE GRUPOS · ULTRA APPLE LIGHT EDITION
+     Paleta dupla (dark/light), superfícies em camadas, sombras difusas,
+     cantos suaves, timeline multi-etapa nos modais, conteúdo centralizado.
+     Fontes: Plus Jakarta Sans (corpo) + Space Grotesk (títulos) — identidade
+     visual única em todo o sistema administrativo.
+     ========================================================================= */
+  :root,
+  html[data-theme="dark"] {
+    --ok-color-token-001: rgba(124, 58, 237, 0.14);
+    --ok-color-token-002: rgba(5, 5, 8, 0);
+    --ok-color-token-003: rgba(124, 58, 237, 0.10);
+    --ok-color-token-004: rgba(244, 245, 249, 0);
+    --ok-color-token-005: #7c3aed;
+    --ok-color-token-006: #4c1d95;
+    --ok-color-token-007: rgba(124, 58, 237, 0.4);
+    --ok-color-token-008: #8b5cf6;
+    --ok-color-token-009: #6d28d9;
+    --ok-color-token-010: #ffffff;
+    --ok-color-token-011: rgba(139, 92, 246, 0.5);
+    --ok-color-token-012: #ef4444;
+    --ok-color-token-013: #fff;
+    --ok-color-token-014: #c084fc;
+    --ok-color-token-015: rgba(16, 185, 129, 0.15);
+    --ok-color-token-016: rgba(16, 185, 129, 0.3);
+    --ok-color-token-017: #10b981;
+    --ok-color-token-018: #0f172a;
+    --ok-color-token-019: #bef264;
+    --ok-color-token-020: rgba(0,0,0,0.08);
+    --ok-color-token-021: rgba(255,255,255,0.15);
+    --ok-color-token-022: rgba(245, 158, 11, 0.15);
+    --ok-color-token-023: #f59e0b;
+    --ok-color-token-024: rgba(244, 63, 94, 0.15);
+    --ok-color-token-025: #f43f5e;
+    --ok-color-token-026: rgba(6, 182, 212, 0.15);
+    --ok-color-token-027: #06b6d4;
+    --ok-color-token-028: rgba(6, 182, 212, 0.08);
+    --ok-color-token-029: rgba(6, 182, 212, 0.22);
+    --ok-color-token-030: #b6e7ee;
+    --ok-color-token-031: #67e8f9;
+    --ok-color-token-032: rgba(139, 92, 246, 0.35);
+    --ok-color-token-033: rgba(255, 255, 255, 0.02);
+    --ok-color-token-034: rgba(139, 92, 246, 0.28);
+    --ok-color-token-035: rgba(6, 182, 212, 0.14);
+    --ok-color-token-036: #ddd6fe;
+    --ok-color-token-037: rgba(6, 182, 212, 0.12);
+    --ok-color-token-038: rgba(6, 182, 212, 0.25);
+    --ok-color-token-039: rgba(245, 158, 11, 0.12);
+    --ok-color-token-040: rgba(245, 158, 11, 0.25);
+    --ok-color-token-041: #fcd34d;
+    --ok-color-token-042: rgba(16, 185, 129, 0.12);
+    --ok-color-token-043: rgba(16, 185, 129, 0.25);
+    --ok-color-token-044: #6ee7b7;
+    --ok-color-token-045: rgba(244, 63, 94, 0.12);
+    --ok-color-token-046: rgba(244, 63, 94, 0.25);
+    --ok-color-token-047: #fda4af;
+    --ok-color-token-048: #08080e;
+    --ok-color-token-049: #101018;
+    --ok-color-token-050: rgba(255, 255, 255, 0.06);
+    --ok-color-token-051: rgba(255, 255, 255, 0.03);
+    --ok-color-token-052: rgba(255, 255, 255, 0.09);
+    --ok-color-token-053: #e2e8f0;
+    --ok-color-token-054: #f1f5f9;
+    --ok-color-token-055: rgba(0, 0, 0, 0.55);
+    --ok-color-token-056: rgba(0, 0, 0, 0.35);
+    --ok-color-token-057: rgba(124, 58, 237, 0.18);
+    --ok-color-token-058: rgba(124, 58, 237, 0.06);
+    --ok-color-token-059: rgba(255, 255, 255, 0.02);
+    --ok-color-token-060: rgba(255, 255, 255, 0.005);
+    --ok-color-transparent: transparent;
+    --ok-color-white: #ffffff;
+    --ok-color-black: #000000;
+
+    --ok-bg-canvas: #050508;
+    --ok-bg-surface: #0a0a10;
+    --ok-bg-elevated: #111118;
+    --ok-bg-window: #0f0f16;
+    --ok-bg-window-inner: #14141c;
+
+    --ok-purple-primary: #7c3aed;
+    --ok-purple-vibrant: #8b5cf6;
+    --ok-purple-soft: rgba(139, 92, 246, 0.12);
+    --ok-purple-border: rgba(139, 92, 246, 0.3);
+    --ok-purple-glow: rgba(139, 92, 246, 0.45);
+
+    --ok-accent-cyan: #06b6d4;
+    --ok-accent-emerald: #10b981;
+    --ok-accent-amber: #f59e0b;
+    --ok-accent-rose: #f43f5e;
+
+    --ok-text-primary: #ffffff;
+    --ok-text-secondary: #cbd5e1;
+    --ok-text-muted: #94a3b8;
+
+    --ok-border-subtle: rgba(255, 255, 255, 0.08);
+    --ok-border-strong: rgba(255, 255, 255, 0.14);
+    --ok-input-bg: rgba(255, 255, 255, 0.04);
+    --ok-pill-bg: rgba(255, 255, 255, 0.05);
+    --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+    --ok-chip-bg: rgba(255, 255, 255, 0.04);
+    --ok-meter-bg: rgba(255, 255, 255, 0.05);
+    --ok-stream-hover: var(--ok-purple-soft);
+    --ok-shadow-card: rgba(0, 0, 0, 0.75);
+    --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+    --ok-shadow-window: 0 40px 120px rgba(0, 0, 0, 0.75), 0 12px 36px rgba(0, 0, 0, 0.55);
+    --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --ok-glass-tint: rgba(15, 15, 22, 0.72);
+    --ok-glass-tint-strong: rgba(15, 15, 22, 0.92);
+    --ok-divider: rgba(255, 255, 255, 0.06);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: rgba(163, 230, 53, 0.12);
+
+    --ok-radius-pill: 9999px;
+    --ok-radius-card: 12px;
+    --ok-radius-md: 12px;
+    --ok-radius-window: 18px;
+    --ok-radius-inner: 12px;
+    --ok-radius-circle: 50%;
+    --ok-sidebar-width: 86px;
+    --ok-navbar-height: 80px;
+    --ok-content-max: 1180px;
+  }
+
+  html[data-theme="light"] {
+    --ok-bg-canvas: #f4f5f9;
+    --ok-bg-surface: #ffffff;
+    --ok-bg-elevated: #ffffff;
+    --ok-bg-window: #ffffff;
+    --ok-bg-window-inner: #fafafa;
+
+    --ok-purple-primary: #6d28d9;
+    --ok-purple-vibrant: #7c3aed;
+    --ok-purple-soft: rgba(124, 58, 237, 0.08);
+    --ok-purple-border: rgba(124, 58, 237, 0.22);
+    --ok-purple-glow: rgba(124, 58, 237, 0.22);
+
+    --ok-text-primary: #0f172a;
+    --ok-text-secondary: #334155;
+    --ok-text-muted: #64748b;
+
+    --ok-border-subtle: rgba(15, 23, 42, 0.08);
+    --ok-border-strong: rgba(15, 23, 42, 0.14);
+    --ok-input-bg: #ffffff;
+    --ok-pill-bg: rgba(15, 23, 42, 0.04);
+    --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+    --ok-chip-bg: #ffffff;
+    --ok-meter-bg: rgba(15, 23, 42, 0.06);
+    --ok-stream-hover: rgba(124, 58, 237, 0.06);
+    --ok-shadow-card: rgba(15, 23, 42, 0.08);
+    --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    --ok-shadow-window: 0 24px 70px rgba(15, 23, 42, 0.16), 0 4px 14px rgba(15, 23, 42, 0.06);
+    --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --ok-glass-tint: rgba(255, 255, 255, 0.72);
+    --ok-glass-tint-strong: rgba(255, 255, 255, 0.94);
+    --ok-divider: rgba(15, 23, 42, 0.06);
+
+    --ok-bg-balance: #0d3b38;
+    --ok-accent-green: #a3e635;
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #eff6e0;
+  }
+
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+      --ok-bg-window: #ffffff;
+      --ok-bg-window-inner: #fafafa;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.22);
+      --ok-purple-glow: rgba(124, 58, 237, 0.22);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.08);
+      --ok-border-strong: rgba(15, 23, 42, 0.14);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-chip-bg: #ffffff;
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.06);
+      --ok-shadow-card: rgba(15, 23, 42, 0.08);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      --ok-shadow-window: 0 24px 70px rgba(15, 23, 42, 0.16), 0 4px 14px rgba(15, 23, 42, 0.06);
+      --ok-shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      --ok-glass-tint: rgba(255, 255, 255, 0.72);
+      --ok-glass-tint-strong: rgba(255, 255, 255, 0.94);
+      --ok-divider: rgba(15, 23, 42, 0.06);
+
+      --ok-bg-balance: #0d3b38;
+      --ok-accent-green: #a3e635;
+      --ok-accent-green-hover: #84cc16;
+      --ok-accent-green-light: #eff6e0;
+    }
+  }
+
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+  body.admin-body {
+    background-color: var(--ok-bg-canvas) !important;
+    color: var(--ok-text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  .ok-ambient-glow-core {
+    position: fixed;
+    top: -120px; left: 20%;
+    width: 550px; height: 550px;
+    background: radial-gradient(circle, var(--ok-color-token-001) 0%, var(--ok-color-token-002) 70%);
+    pointer-events: none; z-index: 0; filter: blur(90px);
+  }
+  html[data-theme="light"] .ok-ambient-glow-core {
+    background: radial-gradient(circle, var(--ok-color-token-003) 0%, var(--ok-color-token-004) 70%);
+  }
+
+  /* =========================================================================
+     RAIL SIDEBAR SLIM TECH
+     ========================================================================= */
+  .ok-rail-sidebar {
+    position: fixed;
+    top: 20px; left: 20px; bottom: 20px;
+    width: var(--ok-sidebar-width);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-md);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 0;
+    z-index: 1040;
+    box-shadow: 0 10px 30px var(--ok-shadow-sidebar);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+    overflow-y: auto; overflow-x: hidden;
+  }
+  .ok-rail-sidebar::-webkit-scrollbar { width: 0; }
+
+  .ok-brand-emblem {
+    width: 48px; height: 48px; border-radius: var(--ok-radius-md);
+    background: linear-gradient(135deg, var(--ok-color-token-005) 0%, var(--ok-color-token-006) 100%);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px var(--ok-color-token-007);
+    flex-shrink: 0;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+  .ok-brand-emblem:hover { transform: translateY(-2px); }
+  .ok-brand-emblem svg { width: 24px; height: 24px; stroke: var(--ok-color-token-010); }
+
+  .ok-rail-nav {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+  }
+
+  .ok-rail-group-label {
+    font-size: 0.58rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ok-text-muted);
+    margin: 10px 0 2px 0;
+    text-align: center;
+    width: 100%;
+    opacity: 0.7;
+  }
+
+  .ok-rail-link {
+    width: 46px; height: 46px; border-radius: var(--ok-radius-md);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-muted); text-decoration: none;
+    transition: all 0.2s ease; background: var(--ok-color-transparent);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .ok-rail-link:hover {
+    color: var(--ok-purple-vibrant);
+    background-color: var(--ok-purple-soft);
+    transform: translateY(-2px);
+  }
+  .ok-rail-link.active {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    box-shadow: 0 8px 20px var(--ok-color-token-011);
+  }
+  .ok-rail-link.active svg { stroke: var(--ok-color-token-010); }
+  .ok-rail-link .ok-badge-dot {
+    position: absolute; top: 8px; right: 8px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background-color: var(--ok-color-token-012);
+    border: 2px solid var(--ok-bg-surface);
+  }
+  .ok-rail-link .ok-badge-count {
+    position: absolute;
+    top: 4px; right: 4px;
+    min-width: 16px; height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--ok-color-token-012);
+    color: var(--ok-color-token-013);
+    font-size: 0.58rem;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--ok-bg-surface);
+    line-height: 1;
+  }
+  .ok-rail-link .ok-badge-count.badge-warn { background: var(--ok-color-token-023); color: var(--ok-color-token-018); }
+  .ok-rail-link .ok-badge-count.badge-info { background: var(--ok-color-token-027); color: var(--ok-color-token-048); }
+
+  .ok-rail-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; width: 100%;
+    padding-top: 14px;
+    margin-top: 8px;
+    border-top: 1px solid var(--ok-border-subtle);
+  }
+
+  /* =========================================================================
+     VIEWPORT SHELL — CENTRALIZADO
+     ========================================================================= */
+  .ok-viewport-shell {
+    margin-left: calc(var(--ok-sidebar-width) + 20px);
+    padding: 20px 20px 48px 0;
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ok-viewport-shell > * {
+    width: 100%;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+
+  .ok-top-nav {
+    height: var(--ok-navbar-height);
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .ok-search-capsule {
+    position: relative;
+    width: 420px; max-width: 100%;
+    flex-shrink: 0;
+  }
+  .ok-search-capsule input {
+    width: 100%; height: 46px;
+    border-radius: var(--ok-radius-pill);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    padding: 0 75px 0 46px;
+    font-size: 0.88rem;
+    color: var(--ok-text-primary);
+    outline: none;
+    transition: all 0.25s ease;
+  }
+  .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+  .ok-search-capsule input:focus {
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 0 0 4px var(--ok-purple-soft);
+  }
+  .ok-search-capsule .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--ok-text-muted);
+    display: flex;
+  }
+  .ok-search-capsule .shortcut-hint {
+    position: absolute; right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    color: var(--ok-text-muted);
+    font-weight: 600;
+  }
+
+  .ok-nav-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  .ok-action-circle {
+    width: 44px; height: 44px; border-radius: var(--ok-radius-md);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+  }
+  .ok-action-circle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-profile-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 16px 5px 5px;
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-pill);
+    text-decoration: none; cursor: pointer;
+    transition: all 0.2s ease;
+    color: inherit;
+  }
+  .ok-profile-pill:hover { border-color: var(--ok-purple-border); }
+
+  .ok-profile-avatar-nav {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    font-weight: 800;
+    font-size: 0.85rem;
+    border: 2px solid var(--ok-purple-border);
+    flex-shrink: 0;
+  }
+
+  .ok-theme-toggle {
+    width: 44px; height: 44px; border-radius: var(--ok-radius-md);
+    background-color: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ok-text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ok-theme-toggle:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-2px);
+  }
+
+  .ok-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-color-token-042);
+    border: 1px solid var(--ok-color-token-043);
+    color: var(--ok-color-token-017);
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .ok-status-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .ok-clock {
+    font-family: 'Space Grotesk', monospace;
+    font-size: 0.78rem;
+    color: var(--ok-text-muted);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* =========================================================================
+     HERO
+     ========================================================================= */
+  .ok-canvas-hero-title {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 22px auto;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 16px;
+    width: 100%;
+  }
+  .ok-page-title-main {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.85rem; font-weight: 800;
+    letter-spacing: -0.03em; line-height: 1.15;
+    color: var(--ok-text-primary);
+    margin: 0;
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ok-page-title-main .user-highlight {
+    background: linear-gradient(135deg, var(--ok-purple-vibrant) 0%, var(--ok-color-token-014) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .ok-eyebrow {
+    color: var(--ok-purple-vibrant);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .ok-live-beacon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 4px 11px;
+    border-radius: var(--ok-radius-pill);
+    background: var(--ok-purple-soft);
+    border: 1px solid var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ok-pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background-color: currentColor;
+    box-shadow: 0 0 8px currentColor;
+    animation: okPulseDot 1.6s infinite;
+  }
+  @keyframes okPulseDot {
+    0%   { box-shadow: 0 0 0 0 var(--ok-color-token-011); }
+    70%  { box-shadow: 0 0 0 8px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+  .ok-canvas-sub {
+    color: var(--ok-text-muted);
+    font-size: 0.88rem; margin-top: 5px; line-height: 1.45;
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* =========================================================================
+     SESSÃO 1: 4 CARDS CHAPADOS (KPIs de grupos)
+     ========================================================================= */
+  .ok-flat-quad-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: var(--ok-content-max);
+    margin: 0 auto 24px auto;
+    border-radius: 0px !important;
+    overflow: hidden;
+    box-shadow: 0 16px 36px var(--ok-shadow-card);
+    border: 1px solid var(--ok-border-subtle);
+    width: 100%;
+  }
+  .ok-flat-card-box {
+    padding: 22px 18px 20px 18px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 165px;
+    border-radius: 0px !important;
+    position: relative;
+    transition: transform 0.2s ease, filter 0.2s ease;
+  }
+  .ok-flat-card-box:hover {
+    z-index: 2; filter: brightness(1.04);
+    transform: translateY(-2px);
+  }
+  .ok-flat-card-box.theme-white { background-color: var(--ok-color-token-010); color: var(--ok-color-token-018); }
+  .ok-flat-card-box.theme-lime { background-color: var(--ok-color-token-019); color: var(--ok-color-token-018); }
+  .ok-flat-card-box.theme-white-alt {
+    background-color: var(--ok-color-token-010); color: var(--ok-color-token-018);
+    border-left: 1px solid var(--ok-color-token-020);
+  }
+  .ok-flat-card-box.theme-purple { background-color: var(--ok-color-token-005); color: var(--ok-color-token-010); }
+
+  .ok-flat-icon-container { width: 36px; height: 36px; margin-bottom: 14px; }
+  .ok-flat-icon-container svg { width: 100%; height: 100%; stroke-width: 1.9; }
+  .theme-white .ok-flat-icon-container svg,
+  .theme-lime .ok-flat-icon-container svg,
+  .theme-white-alt .ok-flat-icon-container svg { stroke: var(--ok-color-token-018); }
+  .theme-purple .ok-flat-icon-container svg { stroke: var(--ok-color-token-010); }
+
+  .ok-flat-title {
+    font-size: 1.02rem; font-weight: 800;
+    letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 5px;
+  }
+  .ok-flat-desc {
+    font-size: 0.74rem; line-height: 1.4;
+    opacity: 0.85; margin-bottom: 8px;
+  }
+  .ok-flat-metric-data {
+    font-size: 1.15rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .ok-flat-trend {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; font-weight: 800;
+    padding: 3px 9px;
+    border-radius: var(--ok-radius-pill);
+    margin-top: 6px;
+  }
+  .theme-white .ok-flat-trend,
+  .theme-lime .ok-flat-trend,
+  .theme-white-alt .ok-flat-trend { background: var(--ok-color-token-015); color: var(--ok-color-token-017); }
+  .theme-purple .ok-flat-trend { background: var(--ok-color-token-021); color: var(--ok-color-token-010); }
+
+  .ok-flat-trend.warning { background: var(--ok-color-token-022); color: var(--ok-color-token-023); }
+  .ok-flat-trend.danger { background: var(--ok-color-token-024); color: var(--ok-color-token-025); }
+  .ok-flat-trend.info { background: var(--ok-color-token-026); color: var(--ok-color-token-027); }
+
+  /* =========================================================================
+     SESSÃO 2: VAULT (resumo) + MÓDULO FILTROS
+     ========================================================================= */
+  .ok-canvas-asides-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    max-width: var(--ok-content-max);
+    margin: 0 auto 24px auto;
+    align-items: start;
+    width: 100%;
+  }
+
+  .ok-balance-vault-card {
+    background: linear-gradient(160deg, var(--ok-bg-surface) 0%, var(--ok-bg-canvas) 100%);
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-window);
+    padding: 1.35rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    color: var(--ok-text-primary);
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .ok-vault-wave-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 10% 20%, var(--ok-color-token-057) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .ok-vault-badge-cluster {
+    display: flex; align-items: center; gap: 8px;
+    position: relative; z-index: 1;
+    flex-wrap: wrap;
+  }
+  .ok-token-emblem {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok-vault-balance-display {
+    margin: 18px 0 14px 0;
+    position: relative; z-index: 1;
+  }
+  .ok-vault-caption {
+    font-size: 0.7rem; font-weight: 700;
+    color: var(--ok-text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+  }
+  .ok-vault-sum {
+    font-size: 1.35rem; font-weight: 800;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
+    margin-top: 6px;
+    color: var(--ok-purple-vibrant);
+  }
+  .ok-vault-action-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: relative; z-index: 1;
+    margin-top: 14px;
+  }
+  .ok-vault-btn {
+    height: 40px; border-radius: var(--ok-radius-pill);
+    font-size: 0.78rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0 14px;
+    font-family: inherit;
+  }
+  .ok-vault-btn.primary {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    box-shadow: 0 8px 20px var(--ok-color-token-032);
+  }
+  .ok-vault-btn.primary:hover { transform: translateY(-2px); color: var(--ok-color-token-010); }
+  .ok-vault-btn.ghost {
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border: 1px solid var(--ok-border-subtle);
+  }
+  .ok-vault-btn.ghost:hover { background: var(--ok-pill-bg-hover); color: var(--ok-purple-vibrant); }
+  .ok-vault-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .ok-config-module-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-window);
+    padding: 1.35rem;
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    display: flex; flex-direction: column; justify-content: flex-start;
+    gap: 14px;
+  }
+  .ok-chart-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 2px; flex-wrap: wrap; gap: 12px;
+  }
+  .ok-chart-tagline { display: flex; align-items: center; gap: 12px; }
+  .ok-chart-tag-emblem {
+    width: 40px; height: 40px; border-radius: var(--ok-radius-md);
+    background: var(--ok-purple-soft); color: var(--ok-purple-vibrant);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ok-chart-title { font-size: 1rem; font-weight: 800; color: var(--ok-text-primary); margin: 0; font-family: 'Space Grotesk', sans-serif; }
+  .ok-chart-sub { font-size: 0.72rem; color: var(--ok-text-muted); }
+
+  /* =========================================================================
+     BOTÕES E PILLS
+     ========================================================================= */
+  .admin-btn-pill-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: var(--ok-radius-pill);
+    border: 1px solid var(--ok-border-subtle);
+    background: transparent;
+    color: var(--ok-text-primary);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .admin-btn-pill-outline:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    transform: translateY(-1px);
+  }
+
+  .ok-btn-apple {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .ok-btn-apple.primary {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+    box-shadow: 0 6px 18px var(--ok-color-token-032);
+  }
+  .ok-btn-apple.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px var(--ok-color-token-032); color: var(--ok-color-token-010); }
+  .ok-btn-apple.secondary {
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border: 1px solid var(--ok-border-subtle);
+  }
+  .ok-btn-apple.secondary:hover {
+    background: var(--ok-pill-bg-hover);
+    color: var(--ok-purple-vibrant);
+    border-color: var(--ok-purple-border);
+  }
+  .ok-btn-apple[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+  /* =========================================================================
+     FILTROS
+     ========================================================================= */
+  .groups-filter-card { padding: 0; background: transparent; border: none; box-shadow: none; margin-bottom: 0; }
+  .groups-filter-card .form-control,
+  .groups-filter-card .form-select,
+  .groups-modal .form-control,
+  .groups-modal .form-select {
+    background: var(--ok-input-bg) !important;
+    border: 1px solid var(--ok-border-subtle) !important;
+    color: var(--ok-text-primary) !important;
+    min-height: 43px;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.84rem;
+    padding: 0.5rem 0.85rem;
+    transition: all 0.2s ease;
+  }
+  .groups-filter-card .form-control::placeholder,
+  .groups-modal textarea::placeholder { color: var(--ok-text-muted); }
+  .groups-filter-card .form-control:focus,
+  .groups-filter-card .form-select:focus,
+  .groups-modal .form-control:focus,
+  .groups-modal .form-select:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+  }
+  .groups-filter-card .form-label,
+  .groups-modal .form-label {
+    color: var(--ok-text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+  }
+  .groups-filter-card option,
+  .groups-modal option { background: var(--ok-bg-elevated); color: var(--ok-text-primary); }
+  .groups-filter-card .input-group-text {
+    background: var(--ok-input-bg) !important;
+    border: 1px solid var(--ok-border-subtle) !important;
+    border-right: none;
+    border-radius: var(--ok-radius-md) 0 0 var(--ok-radius-md) !important;
+    color: var(--ok-text-muted);
+  }
+  .groups-filter-card .input-group .form-control {
+    border-radius: 0 var(--ok-radius-md) var(--ok-radius-md) 0 !important;
+    border-left: none !important;
+  }
+  .groups-filter-card .input-group:focus-within .input-group-text { border-color: var(--ok-purple-vibrant) !important; }
+
+  .groups-filter-card .btn-primary {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    border: none;
+    border-radius: var(--ok-radius-md);
+    font-weight: 800;
+    box-shadow: 0 6px 16px var(--ok-color-token-032);
+    transition: all 0.2s ease;
+    min-height: 43px;
+  }
+  .groups-filter-card .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 20px var(--ok-color-token-032); }
+  .groups-filter-card .btn-outline-light {
+    border: 1px solid var(--ok-border-subtle);
+    background: var(--ok-pill-bg);
+    color: var(--ok-text-primary);
+    border-radius: var(--ok-radius-md);
+    transition: all 0.2s ease;
+    min-height: 43px;
+  }
+  .groups-filter-card .btn-outline-light:hover {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    background: var(--ok-pill-bg-hover);
+  }
+
+  /* =========================================================================
+     TABELA DE GRUPOS
+     ========================================================================= */
+  .admin-card {
+    background: var(--ok-bg-surface);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-window);
+    box-shadow: 0 8px 32px var(--ok-shadow-card);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+  .admin-card:hover { border-color: var(--ok-border-strong); }
+
+  .admin-table-header {
+    padding: 1.1rem 1.35rem;
+    border-bottom: 1px solid var(--ok-border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .admin-table-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.01em;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .admin-table-sub { font-size: 0.78rem; color: var(--ok-text-muted); margin: 0; }
+
+  .groups-table-wrap { overflow: auto; }
+  .groups-table { min-width: 990px; margin: 0; }
+  .groups-table thead th {
+    color: var(--ok-text-muted);
+    background: var(--ok-color-token-033);
+    border-bottom: 1px solid var(--ok-border-subtle);
+    font-size: .66rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    padding: 1rem .85rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .groups-table tbody td {
+    border-bottom: 1px solid var(--ok-border-subtle);
+    color: var(--ok-text-secondary);
+    padding: .95rem .85rem;
+    vertical-align: middle;
+    font-size: 0.84rem;
+  }
+  .groups-table tbody tr:last-child td { border-bottom: 0; }
+  .groups-table tbody tr { transition: background 0.15s ease; }
+  .groups-table tbody tr:hover { background: var(--ok-stream-hover); }
+
+  .group-avatar {
+    align-items: center;
+    background: linear-gradient(140deg, var(--ok-color-token-034), var(--ok-color-token-035));
+    border: 1px solid var(--ok-purple-border);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-color-token-036);
+    display: inline-flex;
+    flex: 0 0 40px;
+    font-size: .84rem;
+    font-weight: 800;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+  }
+  .group-name { color: var(--ok-text-primary); font-size: .85rem; font-weight: 700; }
+  .group-subtext { color: var(--ok-text-muted); font-size: .72rem; margin-top: .2rem; overflow-wrap: anywhere; }
+  .group-badge {
+    border: 1px solid transparent;
+    border-radius: var(--ok-radius-pill);
+    display: inline-flex;
+    font-size: .66rem;
+    font-weight: 800;
+    letter-spacing: .025em;
+    padding: .34rem .58rem;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  .group-status-active { background: var(--ok-color-token-042); border-color: var(--ok-color-token-043); color: var(--ok-color-token-044); }
+  .group-status-paused { background: var(--ok-color-token-039); border-color: var(--ok-color-token-040); color: var(--ok-color-token-041); }
+  .group-status-suspended { background: var(--ok-color-token-045); border-color: var(--ok-color-token-046); color: var(--ok-color-token-047); }
+  .group-status-formation { background: var(--ok-color-token-037); border-color: var(--ok-color-token-038); color: var(--ok-color-token-031); }
+  .group-status-terminal,
+  .group-status-other { background: var(--ok-pill-bg); border-color: var(--ok-border-subtle); color: var(--ok-text-secondary); }
+
+  .groups-actions { display: flex; justify-content: flex-end; gap: .4rem; }
+  .groups-actions .btn {
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    min-height: 34px;
+    min-width: 36px;
+    border-radius: var(--ok-radius-circle);
+    transition: all 0.15s ease;
+  }
+  .groups-actions .btn:hover { transform: translateY(-1px); }
+  .groups-actions .btn-outline-info {
+    border-color: var(--ok-color-token-038);
+    color: var(--ok-color-token-027);
+    background: var(--ok-color-token-028);
+  }
+  .groups-actions .btn-outline-info:hover {
+    background: var(--ok-color-token-026);
+    border-color: var(--ok-color-token-027);
+    color: var(--ok-color-token-027);
+  }
+  .groups-actions .btn-outline-warning {
+    border-color: var(--ok-color-token-040);
+    color: var(--ok-color-token-023);
+    background: var(--ok-color-token-039);
+  }
+  .groups-actions .btn-outline-warning:hover {
+    background: var(--ok-color-token-022);
+    border-color: var(--ok-color-token-023);
+    color: var(--ok-color-token-023);
+  }
+  .groups-actions .btn-outline-primary {
+    border-color: var(--ok-purple-border);
+    color: var(--ok-purple-vibrant);
+    background: var(--ok-purple-soft);
+  }
+  .groups-actions .btn-outline-primary:hover {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-vibrant);
+    color: var(--ok-purple-vibrant);
+  }
+
+  .groups-card-footer {
+    align-items: center;
+    border-top: 1px solid var(--ok-border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+  }
+  .groups-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .groups-pagination button {
+    background: var(--ok-bg-elevated);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: 9px;
+    color: var(--ok-text-secondary);
+    min-width: 36px;
+    padding: .4rem .65rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .groups-pagination button:hover:not(:disabled),
+  .groups-pagination button.is-current {
+    background: var(--ok-purple-soft);
+    border-color: var(--ok-purple-border);
+    color: var(--ok-text-primary);
+  }
+  .groups-pagination button.is-current {
+    background: linear-gradient(135deg, var(--ok-color-token-008) 0%, var(--ok-color-token-009) 100%);
+    color: var(--ok-color-token-010);
+  }
+  .groups-pagination button:disabled { cursor: not-allowed; opacity: .4; }
+
+  /* =========================================================================
+     ESTADOS
+     ========================================================================= */
+  .groups-state-box {
+    border: 1px dashed var(--ok-border-strong);
+    border-radius: var(--ok-radius-window);
+    color: var(--ok-text-muted);
+    padding: 2.75rem 1rem;
+    text-align: center;
+  }
+  .groups-state-box i { color: var(--ok-purple-vibrant); display: block; font-size: 1.7rem; margin-bottom: .7rem; }
+
+  .groups-note {
+    background: var(--ok-color-token-028);
+    border: 1px solid var(--ok-color-token-029);
+    border-radius: var(--ok-radius-md);
+    color: var(--ok-color-token-030);
+    font-size: .78rem;
+    line-height: 1.55;
+    padding: .85rem 1rem;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+  }
+  html[data-theme="light"] .groups-note { color: var(--ok-color-token-027); }
+
+  /* =========================================================================
+     ✦ MODAIS ULTRA APPLE LIGHT ✦
+     ========================================================================= */
+  .groups-modal .modal-dialog {
+    max-width: 640px;
+    width: calc(100% - 2rem);
+    margin: 1.75rem auto;
+  }
+  .groups-modal .modal-dialog.modal-lg { max-width: 720px; }
+
+  .groups-modal .modal-content {
+    background: var(--ok-bg-window);
+    border: 1px solid var(--ok-border-subtle);
+    border-radius: var(--ok-radius-window);
+    color: var(--ok-text-primary);
+    box-shadow: var(--ok-shadow-window);
+    overflow: hidden;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  .groups-modal .modal-header {
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint-strong);
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .groups-modal .modal-title {
+    font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    color: var(--ok-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .groups-modal .modal-title i,
+  .groups-modal .modal-title svg { color: var(--ok-purple-vibrant); }
+  .groups-modal .modal-footer {
+    padding: 0.85rem 1.15rem;
+    border-top: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint);
+    gap: 0.5rem;
+  }
+  .groups-modal .btn-close {
+    background: transparent;
+    opacity: 0.65;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    filter: none;
+    background-image: none;
+    position: relative;
+    transition: all 0.15s ease;
+    box-shadow: none;
+  }
+  .groups-modal .btn-close::before {
+    content: '×';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ok-text-muted);
+    line-height: 1;
+  }
+  .groups-modal .btn-close:hover { opacity: 1; background: var(--ok-pill-bg); }
+  .groups-modal .btn-close:hover::before { color: var(--ok-text-primary); }
+  html[data-theme="light"] .groups-modal .btn-close { filter: none; }
+  html[data-theme="light"] .groups-modal .btn-close::before { color: var(--ok-text-muted); }
+  html[data-theme="light"] .groups-modal .btn-close:hover::before { color: var(--ok-text-primary); }
+
+  .groups-modal .modal-body {
+    padding: 1.15rem 1.2rem;
+    background: var(--ok-bg-window);
+  }
+
+  /* Timeline multi-etapa */
+  .groups-timeline {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.85rem;
+    background: var(--ok-bg-window-inner);
+    border-bottom: 1px solid var(--ok-divider);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .groups-timeline::-webkit-scrollbar { display: none; }
+
+  .groups-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.65rem 0.35rem 0.35rem;
+    border-radius: var(--ok-radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ok-text-muted);
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    border: 1px solid transparent;
+    flex-shrink: 0;
+  }
+  .groups-step .dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--ok-pill-bg);
+    border: 1px solid var(--ok-border-subtle);
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--ok-text-muted);
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+  }
+  .groups-step.active {
+    background: var(--ok-purple-soft);
+    color: var(--ok-purple-vibrant);
+    border-color: var(--ok-purple-border);
+  }
+  .groups-step.active .dot {
+    background: var(--ok-purple-vibrant);
+    color: var(--ok-color-token-010);
+    border-color: var(--ok-purple-vibrant);
+    box-shadow: 0 4px 12px var(--ok-color-token-011);
+  }
+  .groups-step.done { color: var(--ok-color-token-017); }
+  .groups-step.done .dot {
+    background: var(--ok-color-token-015);
+    border-color: var(--ok-color-token-016);
+    color: var(--ok-color-token-017);
+  }
+  .groups-step.done .dot::before { content: '✓'; }
+  .groups-step.done .dot span { display: none; }
+
+  .groups-step-sep {
+    width: 14px; height: 1.5px;
+    background: var(--ok-border-subtle);
+    flex-shrink: 0;
+  }
+  .groups-step-sep.done { background: var(--ok-color-token-016); }
+
+  /* Painéis de etapa */
+  .groups-pane {
+    display: none;
+    animation: groupsFadeIn 0.3s ease;
+  }
+  .groups-pane.active { display: block; }
+  @keyframes groupsFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .groups-pane-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ok-purple-vibrant);
+    margin: 0 0 0.75rem;
+  }
+
+  .groups-field-grid {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .group-detail-box {
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    padding: 0.7rem 0.85rem;
+    transition: all 0.15s ease;
+  }
+  .group-detail-box:hover { border-color: var(--ok-border-strong); }
+  .group-detail-label {
+    color: var(--ok-text-muted);
+    display: block;
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    margin-bottom: .28rem;
+    text-transform: uppercase;
+  }
+  .group-detail-value {
+    color: var(--ok-text-primary);
+    font-size: .85rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+  .group-detail-value.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: 0.02em;
+  }
+
+  /* Header summary do grupo */
+  .groups-header-summary {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.85rem;
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+  }
+  .groups-header-summary .avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(140deg, var(--ok-color-token-034), var(--ok-color-token-035));
+    border: 1px solid var(--ok-purple-border);
+    color: var(--ok-color-token-036);
+    font-weight: 800;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .groups-header-summary .info { min-width: 0; flex: 1; }
+  .groups-header-summary .name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ok-text-primary);
+    margin: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .groups-header-summary .sub {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    margin: 0.15rem 0 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .groups-header-summary .badges {
+    display: flex; gap: 0.35rem; flex-wrap: wrap;
+    margin-top: 0.35rem;
+  }
+
+  /* Confirm card */
+  .groups-confirm-card {
+    background: var(--ok-bg-window-inner);
+    border: 1px solid var(--ok-divider);
+    border-radius: var(--ok-radius-inner);
+    padding: 1rem;
+    display: flex; flex-direction: column; gap: 0.65rem;
+  }
+  .groups-confirm-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.82rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--ok-divider);
+  }
+  .groups-confirm-row:last-child { border-bottom: 0; }
+  .groups-confirm-row .label {
+    color: var(--ok-text-muted);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .groups-confirm-row .value {
+    color: var(--ok-text-primary);
+    font-weight: 600;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  /* Wizard footer */
+  .groups-wizard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.85rem 1.15rem;
+    border-top: 1px solid var(--ok-divider);
+    background: var(--ok-glass-tint);
+    flex-wrap: wrap;
+  }
+  .groups-wizard-progress {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ok-text-muted);
+    letter-spacing: 0.02em;
+  }
+  .groups-wizard-progress strong { color: var(--ok-purple-vibrant); }
+  .groups-wizard-actions { display: flex; gap: 0.4rem; align-items: center; }
+
+  /* Alertas inline */
+  #groups-page-alert {
+    max-width: var(--ok-content-max);
+    margin: 0 auto 16px auto;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.85rem;
+  }
+
+  .groups-modal .alert-warning {
+    background: var(--ok-color-token-039);
+    border: 1px solid var(--ok-color-token-040);
+    color: var(--ok-color-token-041);
+  }
+  html[data-theme="light"] .groups-modal .alert-warning { color: var(--ok-color-token-023); }
+
+  .groups-modal textarea.form-control {
+    background: var(--ok-input-bg) !important;
+    border: 1px solid var(--ok-border-subtle) !important;
+    color: var(--ok-text-primary) !important;
+    border-radius: var(--ok-radius-md);
+    font-size: 0.84rem;
+    padding: 0.6rem 0.85rem;
+  }
+  .groups-modal textarea.form-control:focus {
+    border-color: var(--ok-purple-vibrant) !important;
+    box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+  }
+  .groups-modal .form-text { color: var(--ok-text-muted); font-size: 0.72rem; }
+
+  /* Animações de entrada dos modais */
+  .groups-modal.fade .modal-dialog {
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 0.1), opacity 0.28s ease;
+  }
+  .groups-modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+  }
+
+  /* Footer */
+  .admin-footer {
+    border-top: 1px solid var(--ok-border-subtle);
+    background: var(--ok-color-transparent);
+    padding: 1rem 1.25rem;
+    text-align: center;
+    color: var(--ok-text-muted);
+    font-size: 0.78rem;
+    position: relative;
+    z-index: 1;
+    margin-top: 2rem;
+    max-width: var(--ok-content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* =========================================================================
+     RESPONSIVIDADE
+     ========================================================================= */
+  @media (max-width: 1200px) {
+    .ok-flat-quad-strip { grid-template-columns: repeat(2, 1fr); }
+    .ok-canvas-asides-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 991px) {
+    .ok-rail-sidebar { transform: translateX(-120%); }
+    body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+    .ok-viewport-shell { margin-left: 0; padding: 16px; }
+    .ok-page-title-main { font-size: 1.55rem; }
+    .groups-card-footer { align-items: flex-start; flex-direction: column; }
+    .groups-pagination { width: 100%; }
+    .groups-modal .modal-dialog { max-width: calc(100% - 1.5rem); }
+  }
+  @media (max-width: 600px) {
+    .ok-flat-quad-strip { grid-template-columns: 1fr; }
+    .groups-field-grid { grid-template-columns: 1fr; }
+    .ok-profile-pill .admin-profile-text { display: none !important; }
+    .ok-search-capsule { width: min(100%, 500px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  .text-danger { color: var(--ok-accent-rose) !important; }
+  .text-muted { color: var(--ok-text-muted) !important; }
+  .btn-outline-info { --bs-btn-color: var(--ok-accent-cyan); --bs-btn-border-color: var(--ok-accent-cyan); --bs-btn-hover-color: var(--ok-text-primary); --bs-btn-hover-bg: var(--ok-accent-cyan); --bs-btn-hover-border-color: var(--ok-accent-cyan); }
+  .btn-outline-primary { --bs-btn-color: var(--ok-purple-vibrant); --bs-btn-border-color: var(--ok-purple-vibrant); --bs-btn-hover-color: var(--ok-text-primary); --bs-btn-hover-bg: var(--ok-purple-primary); --bs-btn-hover-border-color: var(--ok-purple-primary); }
+  .alert-danger { --bs-alert-color: var(--ok-accent-rose); --bs-alert-bg: var(--ok-color-token-045); --bs-alert-border-color: var(--ok-accent-rose); }
+  .alert-warning { --bs-alert-color: var(--ok-accent-amber); --bs-alert-bg: var(--ok-color-token-039); --bs-alert-border-color: var(--ok-accent-amber); }
+  .alert-success { --bs-alert-color: var(--ok-color-token-017); --bs-alert-bg: var(--ok-color-token-015); --bs-alert-border-color: var(--ok-accent-emerald); }
+  .alert-info { --bs-alert-color: var(--ok-accent-cyan); --bs-alert-bg: var(--ok-color-token-026); --bs-alert-border-color: var(--ok-accent-cyan); }
+</style>
+
+<body class="admin-body d-flex flex-column min-vh-100" data-admin-role="<%= adminRoleForPage %>">
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       RAIL SIDEBAR ADMINISTRATIVO
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="admin-rail-sidebar" aria-label="Navegação Administrativa">
+    <a href="/admin" class="ok-brand-emblem" title="OneKixikila Admin Engine">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        <polyline points="9 12 11 14 15 10"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <div class="ok-rail-group-label">Visão</div>
+      <a href="/admin" class="ok-rail-link" title="Dashboard Admin">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+      </a>
+
+      <div class="ok-rail-group-label">Risco</div>
+      <a href="/admin/users" class="ok-rail-link" title="Utilizadores">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+      <a href="/admin/groups" class="ok-rail-link active" title="Grupos de Kixikila" aria-current="page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="m9 12 2 2 4-4"></path></svg>
+      </a>
+      <a href="/admin/identity-review" class="ok-rail-link" title="Revisão KYC">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span class="ok-badge-count d-none" data-badge-mirror="sidebar-badge-kyc" id="rail-badge-kyc">0</span>
+      </a>
+      <a href="/admin/disputes" class="ok-rail-link" title="Disputas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span class="ok-badge-count badge-warn d-none" data-badge-mirror="sidebar-badge-disputes" id="rail-badge-disputes">0</span>
+      </a>
+
+      <div class="ok-rail-group-label">Tesouro</div>
+      <a href="/admin/payments" class="ok-rail-link" title="Pagamentos & Saídas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+        <span class="ok-badge-count badge-info d-none" data-badge-mirror="sidebar-badge-withdrawals" id="rail-badge-withdrawals">0</span>
+      </a>
+      <a href="/admin/reports" class="ok-rail-link" title="Relatórios Financeiros">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
+      </a>
+      <a href="/admin/audit" class="ok-rail-link" title="Auditoria Forense">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <div class="ok-rail-group-label">Config</div>
+      <a href="/admin/settings" class="ok-rail-link" title="Tarifas & Limites">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/dashboard" class="ok-rail-link" title="Painel do Membro">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+      <a href="/logout" class="ok-rail-link text-danger" title="Terminar Sessão">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Navbar Superior -->
+    <header class="ok-top-nav">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="ok-search-capsule">
+          <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </span>
+          <input type="search" id="global-admin-search" placeholder="Pesquisar grupos, líderes, membros..." autocomplete="off">
+          <kbd class="shortcut-hint">Ctrl K</kbd>
+        </div>
+        <div class="d-none d-md-flex align-items-center gap-2">
+          <span class="ok-status-pill">
+            <span class="dot"></span> Sistema Operacional
+          </span>
+          <span id="admin-utc-clock" class="ok-clock">--:--:-- UTC</span>
+        </div>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/admin/settings" class="ok-action-circle" title="Configurações">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </a>
+
+        <div class="dropdown">
+          <a href="#" class="ok-profile-pill dropdown-toggle" id="dropdownUserAdmin" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="ok-profile-avatar-nav"><%= String(adminUserName).trim().charAt(0).toUpperCase() || 'A' %></div>
+            <div class="d-flex flex-column text-start admin-profile-text">
+              <span class="fw-bold" style="font-size: 0.85rem; line-height: 1.1; color: var(--ok-text-primary);"><%= user ? user.fullName || 'Administrador' : 'Admin' %></span>
+              <span class="text-muted" style="font-size: 0.7rem; color: var(--ok-text-muted);">Acesso Restrito</span>
+            </div>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="dropdownUserAdmin" style="background: var(--ok-bg-elevated); border: 1px solid var(--ok-border-subtle) !important; border-radius: 14px; padding: 0.5rem;">
+            <li><h6 class="dropdown-header text-uppercase small text-muted" style="letter-spacing: 0.08em; font-size: 0.65rem;">Acesso Restrito</h6></li>
+            <li><a class="dropdown-item small rounded-3" href="/admin/settings"><i class="bi bi-sliders me-2"></i>Configurações</a></li>
+            <li><a class="dropdown-item small rounded-3" href="/admin/audit"><i class="bi bi-journal-text me-2"></i>Trilha de Auditoria</a></li>
+            <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+            <li><a class="dropdown-item small rounded-3 text-danger" href="/logout"><i class="bi bi-power me-2"></i>Terminar Sessão</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <div class="ok-eyebrow">Administração · Governança e risco</div>
+        <h1 class="ok-page-title-main">
+          Supervisão de grupos
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Auditado
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+          <%= new Date().toLocaleDateString('pt-AO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %> &bull; Consulte e intervenha em grupos de Kixikila com controlo de acesso e auditoria.
+        </p>
+      </div>
+
+      <button type="button" class="admin-btn-pill-outline" id="groups-refresh-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        Atualizar lista
+      </button>
+    </section>
+
+    <!-- Alerta dinâmico -->
+    <div id="groups-page-alert" class="alert d-none mb-4" role="alert" aria-live="polite"></div>
+
+    <!-- SESSÃO 1: 4 CARDS KPI -->
+    <div class="ok-flat-quad-strip" aria-label="Resumo dos resultados carregados">
+      <div class="ok-flat-card-box theme-white">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="8" y="10" width="32" height="28" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="8" y1="18" x2="40" y2="18" stroke="currentColor"/>
+              <line x1="14" y1="26" x2="34" y2="26" stroke="currentColor"/>
+              <line x1="14" y1="32" x2="28" y2="32" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Resultados filtrados</h5>
+          <p class="ok-flat-desc">No diretório, conforme os filtros.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-total">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Diretório
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-lime">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <path d="M16 24L22 30L32 18" stroke="currentColor" stroke-linecap="square"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Ativos nesta página</h5>
+          <p class="ok-flat-desc">Grupos com estado ACTIVE.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-active">—</span>
+          <div class="ok-flat-trend info">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Operacionais
+          </div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-white-alt">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-linecap="square"/>
+              <line x1="16" y1="24" x2="20" y2="24" stroke="currentColor"/>
+              <line x1="28" y1="24" x2="32" y2="24" stroke="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Pausados nesta página</h5>
+          <p class="ok-flat-desc">Grupos temporariamente em pausa.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-paused">—</span>
+          <div class="ok-flat-trend warning">Atenção</div>
+        </div>
+      </div>
+
+      <div class="ok-flat-card-box theme-purple">
+        <div>
+          <div class="ok-flat-icon-container">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M24 6L8 14V24C8 34 24 42 24 42C24 42 40 34 40 24V14L24 6Z" stroke="currentColor" stroke-linejoin="round"/>
+              <line x1="24" y1="18" x2="24" y2="26" stroke="currentColor"/>
+              <circle cx="24" cy="32" r="1.5" fill="currentColor"/>
+            </svg>
+          </div>
+          <h5 class="ok-flat-title">Suspensos nesta página</h5>
+          <p class="ok-flat-desc">Grupos sob intervenção preventiva.</p>
+        </div>
+        <div>
+          <span class="ok-flat-metric-data" id="stat-suspended">—</span>
+          <div class="ok-flat-trend danger">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            Crítico
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSÃO 2: VAULT + FILTROS -->
+    <div class="ok-canvas-asides-grid">
+      <div class="ok-balance-vault-card">
+        <div class="ok-vault-wave-bg"></div>
+        <div>
+          <div class="ok-vault-badge-cluster">
+            <div class="ok-token-emblem" style="background: linear-gradient(135deg, var(--ok-color-token-005), var(--ok-color-token-006));">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ok-color-token-010)" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <span class="fw-bold" style="font-size: 0.78rem; color: var(--ok-text-primary);">Sessão de Supervisão</span>
+            <span class="badge ms-auto" style="background: var(--ok-purple-soft); color: var(--ok-purple-vibrant); font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 999px;" id="admin-access-badge"><%= adminRoleForPage || 'ADMIN' %></span>
+          </div>
+
+          <div class="ok-vault-balance-display">
+            <span class="ok-vault-caption">
+              Operador
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <div class="ok-vault-sum" style="font-size: 1.15rem;"><%= adminUserName %></div>
+            <div class="d-flex justify-content-between align-items-center mt-2" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Pode intervir:</span>
+              <strong style="color: var(--ok-text-primary);"><%= canSuperviseEjs ? 'Estado · Liderança' : 'Somente leitura' %></strong>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 0.78rem; color: var(--ok-text-muted);">
+              <span>Página atual:</span>
+              <strong style="color: var(--ok-purple-vibrant);" id="vault-page-info">—</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="ok-vault-action-row">
+          <button type="button" class="ok-vault-btn primary" id="groups-refresh-vault">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Recarregar
+          </button>
+          <a href="/admin" class="ok-vault-btn ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+            Dashboard
+          </a>
+        </div>
+      </div>
+
+      <div class="ok-config-module-card">
+        <div class="ok-chart-header">
+          <div class="ok-chart-tagline">
+            <div class="ok-chart-tag-emblem">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            </div>
+            <div>
+              <h5 class="ok-chart-title">Pesquisa e filtros</h5>
+              <span class="ok-chart-sub">Combine pesquisa, estado, periodicidade e tamanho de página</span>
+            </div>
+          </div>
+          <span class="ok-eyebrow" id="groups-total-pill"></span>
+        </div>
+
+        <section class="groups-filter-card" aria-labelledby="groups-filter-title">
+          <form id="groups-filter-form" class="row g-2 align-items-end" role="search">
+            <div class="col-12 col-lg-5">
+              <label for="filter-search" class="form-label">Pesquisa por nome ou slug</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search" aria-hidden="true"></i></span>
+                <input type="search" class="form-control" id="filter-search" name="search" maxlength="100" autocomplete="off" placeholder="Nome do grupo ou identificador">
+              </div>
+            </div>
+            <div class="col-6 col-lg-3">
+              <label for="filter-status" class="form-label">Estado</label>
+              <select class="form-select" id="filter-status" name="status">
+                <option value="">Todos os estados</option>
+                <option value="DRAFT">Rascunho</option>
+                <option value="FORMATION">Em formação</option>
+                <option value="ACTIVE">Ativo</option>
+                <option value="PAUSED">Pausado</option>
+                <option value="SUSPENDED">Suspenso</option>
+                <option value="COMPLETED">Concluído</option>
+                <option value="CANCELLED">Cancelado</option>
+              </select>
+            </div>
+            <div class="col-6 col-lg-2">
+              <label for="filter-frequency" class="form-label">Periodicidade</label>
+              <select class="form-select" id="filter-frequency" name="frequency">
+                <option value="">Todas</option>
+                <option value="DAILY">Diária</option>
+                <option value="WEEKLY">Semanal</option>
+                <option value="BIWEEKLY">Quinzenal</option>
+                <option value="MONTHLY">Mensal</option>
+              </select>
+            </div>
+            <div class="col-6 col-lg-1">
+              <label for="filter-limit" class="form-label">Por pág.</label>
+              <select class="form-select" id="filter-limit" name="limit">
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="col-6 col-lg-1 d-flex gap-2">
+              <button type="submit" class="btn btn-primary flex-grow-1" aria-label="Pesquisar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </button>
+              <button type="reset" class="btn btn-outline-light" id="groups-reset-btn" aria-label="Limpar filtros" title="Limpar filtros">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <!-- Loading e erro -->
+    <div id="groups-loading" class="admin-card groups-state-box mb-4" role="status" aria-live="polite">
+      <span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>
+      A carregar esteira de grupos…
+    </div>
+    <div id="groups-error" class="admin-card groups-state-box d-none mb-4" role="alert"></div>
+
+    <!-- SESSÃO 3: TABELA -->
+    <section class="admin-card mb-4 d-none" id="groups-table-card" aria-labelledby="groups-table-title">
+      <div class="admin-table-header">
+        <div>
+          <h2 class="admin-table-title" id="groups-table-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+            Grupos de Kixikila
+          </h2>
+          <p class="admin-table-sub mb-0">Dados operacionais fornecidos pelo módulo administrativo.</p>
+        </div>
+      </div>
+      <div class="groups-table-wrap">
+        <table class="table groups-table mb-0">
+          <thead>
+            <tr>
+              <th class="ps-4">Grupo</th>
+              <th>Liderança</th>
+              <th>Membros</th>
+              <th>Contribuição</th>
+              <th>Periodicidade</th>
+              <th>Estado</th>
+              <th>Criado em</th>
+              <th class="text-end pe-4">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="groups-table-body"></tbody>
+        </table>
+      </div>
+      <div class="groups-card-footer">
+        <span class="small text-muted" id="groups-pagination-info">—</span>
+        <ul class="groups-pagination" id="groups-pagination" aria-label="Paginação"></ul>
+      </div>
+    </section>
+
+    <div class="groups-note mb-4">
+      <i class="bi bi-shield-check me-2" aria-hidden="true"></i>
+      Intervenções de estado exigem uma justificação formal (5–255 caracteres). Grupos concluídos ou cancelados não podem ser alterados. A substituição de liderança é reservada a ADMIN e só é aceite pelo servidor quando o novo líder tem uma filiação ativa no grupo.
+    </div>
+
+  </div>
+
+  <footer class="admin-footer">
+    <div class="container-fluid">
+      <span>&copy; <%= (typeof currentYear !== 'undefined' ? currentYear : new Date().getFullYear()) %> OneKixikila Admin Engine. Supervisão sujeita aos controlos de acesso e à trilha de auditoria.</span>
+    </div>
+  </footer>
+
+  <!-- ======================================================================
+       MODAL 1 — FICHA OPERACIONAL (WIZARD 4 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade groups-modal" id="modal-group-details" tabindex="-1" aria-labelledby="modalGroupDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalGroupDetailsLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+              <path d="m9 12 2 2 4-4"></path>
+            </svg>
+            Ficha operacional do grupo
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="groups-timeline" id="details-timeline">
+          <span class="groups-step active" data-step="1"><span class="dot"><span>1</span></span>Identificação</span>
+          <span class="groups-step-sep" data-sep="1"></span>
+          <span class="groups-step" data-step="2"><span class="dot"><span>2</span></span>Operação</span>
+          <span class="groups-step-sep" data-sep="2"></span>
+          <span class="groups-step" data-step="3"><span class="dot"><span>3</span></span>Regras</span>
+          <span class="groups-step-sep" data-sep="3"></span>
+          <span class="groups-step" data-step="4"><span class="dot"><span>4</span></span>Auditoria</span>
+        </div>
+
+        <div class="modal-body" id="modal-group-details-body">
+          <div class="groups-state-box">
+            <span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span>
+          </div>
+        </div>
+
+        <div class="groups-wizard-footer" id="details-wizard-footer">
+          <span class="groups-wizard-progress">Etapa <strong id="details-step-current">1</strong> de 4</span>
+          <div class="groups-wizard-actions">
+            <button type="button" class="ok-btn-apple secondary" id="details-prev-btn" disabled>
+              <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+            </button>
+            <button type="button" class="ok-btn-apple primary" id="details-next-btn">
+              Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2 — INTERVENÇÃO NO ESTADO (WIZARD 3 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade groups-modal" id="modal-change-group-status" tabindex="-1" aria-labelledby="modalChangeGroupStatusLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalChangeGroupStatusLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-accent-amber)" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            Intervenção no grupo
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="groups-timeline" id="status-timeline">
+          <span class="groups-step active" data-step="1"><span class="dot"><span>1</span></span>Estado</span>
+          <span class="groups-step-sep" data-sep="1"></span>
+          <span class="groups-step" data-step="2"><span class="dot"><span>2</span></span>Fundamentação</span>
+          <span class="groups-step-sep" data-sep="2"></span>
+          <span class="groups-step" data-step="3"><span class="dot"><span>3</span></span>Confirmar</span>
+        </div>
+
+        <form id="form-change-group-status">
+          <input type="hidden" id="status-target-group-id">
+          <div class="modal-body">
+            <div class="groups-pane active" data-pane="1">
+              <div class="admin-note" style="margin-bottom:0.85rem;background:var(--ok-color-token-039);border-color:var(--ok-color-token-040);color:var(--ok-color-token-041);">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                <span>A alteração de estado é auditada. Verifique o estado atual e escolha a nova situação operacional.</span>
+              </div>
+              <label for="group-status-select" class="form-label">Novo estado</label>
+              <select class="form-select" id="group-status-select" required>
+                <option value="ACTIVE">ACTIVE — Ativo / reativar</option>
+                <option value="PAUSED">PAUSED — Pausar temporariamente</option>
+                <option value="SUSPENDED">SUSPENDED — Suspensão preventiva</option>
+              </select>
+              <div class="groups-field-grid mt-3" id="status-current-fields"></div>
+            </div>
+
+            <div class="groups-pane" data-pane="2">
+              <p class="groups-pane-title">Fundamentação obrigatória</p>
+              <label for="group-status-reason" class="form-label">Justificação formal <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="group-status-reason" rows="4" minlength="5" maxlength="255" required placeholder="Descreva o motivo da intervenção (5–255 caracteres)."></textarea>
+              <div class="form-text">A justificação é enviada ao servidor e incluída na trilha de auditoria.</div>
+            </div>
+
+            <div class="groups-pane" data-pane="3">
+              <p class="groups-pane-title">Confirmação final</p>
+              <div class="groups-confirm-card">
+                <div class="groups-confirm-row">
+                  <span class="label">Grupo</span>
+                  <span class="value" id="confirm-status-group">—</span>
+                </div>
+                <div class="groups-confirm-row">
+                  <span class="label">Estado atual</span>
+                  <span class="value" id="confirm-status-from">—</span>
+                </div>
+                <div class="groups-confirm-row">
+                  <span class="label">Novo estado</span>
+                  <span class="value" id="confirm-status-to">—</span>
+                </div>
+                <div class="groups-confirm-row">
+                  <span class="label">Fundamentação</span>
+                  <span class="value" id="confirm-status-reason">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="groups-wizard-footer">
+            <span class="groups-wizard-progress">Etapa <strong id="status-step-current">1</strong> de 3</span>
+            <div class="groups-wizard-actions">
+              <button type="button" class="ok-btn-apple secondary" id="status-prev-btn" disabled>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+              </button>
+              <button type="button" class="ok-btn-apple primary" id="status-next-btn">
+                Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="ok-btn-apple primary d-none" id="group-status-submit">
+                <i class="bi bi-check2" aria-hidden="true"></i> Confirmar intervenção
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 3 — SUBSTITUIÇÃO DE LIDERANÇA (WIZARD 3 ETAPAS)
+       ====================================================================== -->
+  <div class="modal fade groups-modal" id="modal-force-leader" tabindex="-1" aria-labelledby="modalForceLeaderLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalForceLeaderLabel">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2" style="margin-right:8px;vertical-align:-3px;">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Substituir liderança
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+
+        <div class="groups-timeline" id="leader-timeline">
+          <span class="groups-step active" data-step="1"><span class="dot"><span>1</span></span>Novo líder</span>
+          <span class="groups-step-sep" data-sep="1"></span>
+          <span class="groups-step" data-step="2"><span class="dot"><span>2</span></span>Fundamentação</span>
+          <span class="groups-step-sep" data-sep="2"></span>
+          <span class="groups-step" data-step="3"><span class="dot"><span>3</span></span>Confirmar</span>
+        </div>
+
+        <form id="form-force-leader">
+          <input type="hidden" id="leader-target-group-id">
+          <div class="modal-body">
+            <div class="groups-pane active" data-pane="1">
+              <div class="alert alert-warning py-2 small">Intervenção restrita a ADMIN. O novo líder tem de ser membro ativo deste grupo; a API valida essa condição.</div>
+              <label for="new-leader-id" class="form-label">ID do novo líder (UUID)</label>
+              <input type="text" class="form-control font-monospace" id="new-leader-id" required maxlength="36" pattern="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off">
+            </div>
+
+            <div class="groups-pane" data-pane="2">
+              <p class="groups-pane-title">Fundamentação obrigatória</p>
+              <label for="force-leader-reason" class="form-label">Justificação formal <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="force-leader-reason" rows="4" minlength="5" maxlength="255" required placeholder="Registe o motivo da substituição (5–255 caracteres)."></textarea>
+            </div>
+
+            <div class="groups-pane" data-pane="3">
+              <p class="groups-pane-title">Confirmação final</p>
+              <div class="groups-confirm-card">
+                <div class="groups-confirm-row">
+                  <span class="label">Grupo</span>
+                  <span class="value" id="confirm-leader-group">—</span>
+                </div>
+                <div class="groups-confirm-row">
+                  <span class="label">Novo líder (UUID)</span>
+                  <span class="value" id="confirm-leader-id" style="font-family:ui-monospace,monospace;">—</span>
+                </div>
+                <div class="groups-confirm-row">
+                  <span class="label">Fundamentação</span>
+                  <span class="value" id="confirm-leader-reason">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="groups-wizard-footer">
+            <span class="groups-wizard-progress">Etapa <strong id="leader-step-current">1</strong> de 3</span>
+            <div class="groups-wizard-actions">
+              <button type="button" class="ok-btn-apple secondary" id="leader-prev-btn" disabled>
+                <i class="bi bi-chevron-left" aria-hidden="true"></i> Anterior
+              </button>
+              <button type="button" class="ok-btn-apple primary" id="leader-next-btn">
+                Próximo <i class="bi bi-chevron-right" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="ok-btn-apple secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="ok-btn-apple primary d-none" id="force-leader-submit">
+                <i class="bi bi-check2" aria-hidden="true"></i> Submeter substituição
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <%- include('../partials/sweet-alert') %>
+  <!-- Bootstrap bundle precisa de ser carregado ANTES do api-client para que
+       window.bootstrap.Modal exista quando os handlers de detalhes forem chamados. -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="/js/api-client.js"></script>
+  <script>
+    (function(){
+      'use strict';
+      const page = document.body;
+      const actorRole = String(page.dataset.adminRole || '').toUpperCase();
+      const canSupervise = ['ADMIN','AUDITOR'].includes(actorRole);
+      const canChangeLeader = actorRole === 'ADMIN';
+      const e = {
+        loading: document.getElementById('groups-loading'),
+        error: document.getElementById('groups-error'),
+        card: document.getElementById('groups-table-card'),
+        body: document.getElementById('groups-table-body'),
+        form: document.getElementById('groups-filter-form'),
+        search: document.getElementById('filter-search'),
+        status: document.getElementById('filter-status'),
+        frequency: document.getElementById('filter-frequency'),
+        limit: document.getElementById('filter-limit'),
+        pagination: document.getElementById('groups-pagination'),
+        paginationInfo: document.getElementById('groups-pagination-info'),
+        totalPill: document.getElementById('groups-total-pill'),
+        alert: document.getElementById('groups-page-alert')
+      };
+      let currentPage = 1, totalPages = 1, requestSequence = 0, activeGroups = [];
+
+      function esc(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function(c) {
+          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+        });
+      }
+      function errMessage(error, fallback) {
+        return error && typeof error.message === 'string' && error.message.trim() ? error.message : fallback;
+      }
+      function alertPage(message, type) {
+        e.alert.className = 'alert alert-' + (type || 'danger') + ' mb-4';
+        e.alert.textContent = String(message || 'Ocorreu um erro inesperado.');
+        e.alert.classList.remove('d-none');
+        e.alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      function clearAlert() {
+        e.alert.classList.add('d-none');
+        e.alert.textContent = '';
+      }
+      function dateText(value) {
+        if (!value) return '—';
+        if (window.App && typeof window.App.formatDate === 'function') {
+          try { return window.App.formatDate(value, false); } catch(_) {}
+        }
+        const d = new Date(value);
+        return Number.isNaN(d.getTime()) ? '—' : new Intl.DateTimeFormat('pt-PT', { dateStyle: 'medium' }).format(d);
+      }
+      function moneyText(value, currency) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return '—';
+        const code = String(currency || 'AOA').toUpperCase();
+        try { return new Intl.NumberFormat('pt-AO', { style: 'currency', currency: code, maximumFractionDigits: 2 }).format(n); }
+        catch(_) { return new Intl.NumberFormat('pt-PT', { maximumFractionDigits: 2 }).format(n) + ' ' + code; }
+      }
+      function statusBadge(status) {
+        const value = String(status || 'UNKNOWN').toUpperCase();
+        const labels = { DRAFT: 'Rascunho', FORMATION: 'Em formação', ACTIVE: 'Ativo', PAUSED: 'Pausado', SUSPENDED: 'Suspenso', COMPLETED: 'Concluído', CANCELLED: 'Cancelado' };
+        const classes = { DRAFT: 'group-status-other', FORMATION: 'group-status-formation', ACTIVE: 'group-status-active', PAUSED: 'group-status-paused', SUSPENDED: 'group-status-suspended', COMPLETED: 'group-status-terminal', CANCELLED: 'group-status-terminal' };
+        return '<span class="group-badge ' + (classes[value] || 'group-status-other') + '" title="' + esc(value) + '">' + esc(labels[value] || value) + '</span>';
+      }
+      function frequencyLabel(value) {
+        const labels = { DAILY: 'Diária', WEEKLY: 'Semanal', BIWEEKLY: 'Quinzenal', MONTHLY: 'Mensal' };
+        return labels[String(value || '').toUpperCase()] || String(value || '—');
+      }
+
+      function updateSummary(groups, pagination) {
+        const total = Number(pagination && (pagination.totalItems ?? pagination.totalCount));
+        document.getElementById('stat-total').textContent = Number.isFinite(total) ? String(total) : String(groups.length);
+        document.getElementById('stat-active').textContent = String(groups.filter(g => g.status === 'ACTIVE').length);
+        document.getElementById('stat-paused').textContent = String(groups.filter(g => g.status === 'PAUSED').length);
+        document.getElementById('stat-suspended').textContent = String(groups.filter(g => g.status === 'SUSPENDED').length);
+        e.totalPill.textContent = (Number.isFinite(total) ? total : groups.length) + ' resultado(s)';
+        const vaultPage = document.getElementById('vault-page-info');
+        if (vaultPage) {
+          const cur = Number(pagination && (pagination.currentPage ?? pagination.page));
+          const tp = Number(pagination && (pagination.totalPages ?? pagination.total_pages));
+          if (Number.isFinite(cur) && Number.isFinite(tp)) vaultPage.textContent = 'Página ' + cur + ' / ' + tp;
+          else vaultPage.textContent = '—';
+        }
+      }
+
+      function renderGroups(groups) {
+        if (!Array.isArray(groups) || groups.length === 0) {
+          e.body.innerHTML = '<tr><td colspan="8"><div class="groups-state-box m-3"><i class="bi bi-diagram-3" aria-hidden="true"></i><strong class="d-block mb-1" style="color:var(--ok-text-primary);">Nenhum grupo encontrado</strong><span>Altere os filtros ou limpe a pesquisa para tentar novamente.</span></div></td></tr>';
+          return;
+        }
+        e.body.innerHTML = groups.map(function(g) {
+          const id = String(g.id || ''),
+                name = String(g.name || 'Grupo sem nome'),
+                slug = String(g.slug || ''),
+                leader = String(g.leader_name || 'Liderança não definida'),
+                members = Number(g.active_members_count || 0),
+                min = Number(g.min_members || 0),
+                max = Number(g.max_members || 0),
+                terminal = ['COMPLETED','CANCELLED'].includes(String(g.status || '').toUpperCase());
+          let actions = '<button type="button" class="btn btn-sm btn-outline-info" data-action="details" data-group-id="' + esc(id) + '" aria-label="Ver detalhes de ' + esc(name) + '" title="Ficha operacional"><i class="bi bi-eye" aria-hidden="true"></i></button>';
+          if (canSupervise && !terminal) actions += '<button type="button" class="btn btn-sm btn-outline-warning" data-action="status" data-group-id="' + esc(id) + '" data-group-status="' + esc(g.status || 'ACTIVE') + '" aria-label="Alterar estado de ' + esc(name) + '" title="Intervir no estado"><i class="bi bi-shield-exclamation" aria-hidden="true"></i></button>';
+          if (canChangeLeader && !terminal) actions += '<button type="button" class="btn btn-sm btn-outline-primary" data-action="leader" data-group-id="' + esc(id) + '" aria-label="Substituir liderança de ' + esc(name) + '" title="Substituir liderança"><i class="bi bi-person-gear" aria-hidden="true"></i></button>';
+          return '<tr>' +
+            '<td class="ps-4"><div class="d-flex align-items-center gap-3"><span class="group-avatar" aria-hidden="true">' + esc(name.trim().charAt(0).toUpperCase() || 'G') + '</span><div><div class="group-name">' + esc(name) + '</div><div class="group-subtext">' + (slug ? '@' + esc(slug) : 'ID ' + esc(id)) + '</div></div></div></td>' +
+            '<td><div class="group-name">' + esc(leader) + '</div><div class="group-subtext">' + esc(g.leader_email || '') + '</div></td>' +
+            '<td><span class="fw-semibold" style="color:var(--ok-text-primary);">' + (Number.isFinite(members) ? members : 0) + '</span><span class="group-subtext d-block">' + (min || '—') + '–' + (max || '—') + ' membros</span></td>' +
+            '<td><span class="small" style="color:var(--ok-text-primary);">' + esc(moneyText(g.contribution_amount, g.currency)) + '</span></td>' +
+            '<td><span class="small">' + esc(frequencyLabel(g.frequency)) + '</span></td>' +
+            '<td>' + statusBadge(g.status) + '</td>' +
+            '<td><span class="small text-muted">' + esc(dateText(g.created_at)) + '</span></td>' +
+            '<td class="text-end pe-4"><div class="groups-actions">' + actions + '</div></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      function renderPagination(pagination) {
+        const p = Number(pagination && (pagination.currentPage ?? pagination.page));
+        const pages = Number(pagination && (pagination.totalPages ?? pagination.total_pages));
+        if (Number.isFinite(p) && p > 0) currentPage = p;
+        totalPages = Number.isFinite(pages) && pages > 0 ? pages : 1;
+        const total = Number(pagination && (pagination.totalItems ?? pagination.totalCount));
+        const limit = Number(e.limit.value) || 15;
+        const first = total > 0 ? (currentPage - 1) * limit + 1 : 0,
+              last = total > 0 ? Math.min(currentPage * limit, total) : 0;
+        e.paginationInfo.textContent = totalPages > 1
+          ? 'A mostrar ' + first + '–' + last + ' de ' + total + ' · Página ' + currentPage + ' de ' + totalPages
+          : (total > 0 ? 'A mostrar ' + first + '–' + last + ' de ' + total + ' grupo(s)' : 'Sem resultados');
+        const pagesList = Array.from(new Set([1, totalPages, currentPage-1, currentPage, currentPage+1].filter(n => n>=1 && n<=totalPages))).sort((a,b)=>a-b);
+        let html = '<li><button type="button" data-page="' + (currentPage-1) + '" ' + (currentPage<=1?'disabled':'') + ' aria-label="Página anterior"><i class="bi bi-chevron-left" aria-hidden="true"></i></button></li>', prev = 0;
+        pagesList.forEach(n => {
+          if (prev && n - prev > 1) html += '<li class="text-muted px-1 align-self-center" aria-hidden="true">…</li>';
+          html += '<li><button type="button" data-page="' + n + '" class="' + (n===currentPage?'is-current':'') + '" ' + (n===currentPage?'aria-current="page"':'') + '>' + n + '</button></li>';
+          prev = n;
+        });
+        html += '<li><button type="button" data-page="' + (currentPage+1) + '" ' + (currentPage>=totalPages?'disabled':'') + ' aria-label="Página seguinte"><i class="bi bi-chevron-right" aria-hidden="true"></i></button></li>';
+        e.pagination.innerHTML = html;
+      }
+
+      async function loadGroups(pageNumber) {
+        if (!window.apiClient || typeof window.apiClient.get !== 'function') {
+          e.loading.classList.add('d-none');
+          e.card.classList.add('d-none');
+          e.error.innerHTML = '<i class="bi bi-plug" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Cliente da API indisponível</strong><span>Não é seguro carregar nem intervir em grupos sem o cliente da API. Recarregue a página; se o problema persistir, contacte o suporte técnico.</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="groups-retry-btn"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          e.error.classList.remove('d-none');
+          return;
+        }
+        const seq = ++requestSequence;
+        currentPage = pageNumber || 1;
+        clearAlert();
+        e.error.classList.add('d-none');
+        e.card.classList.add('d-none');
+        e.loading.classList.remove('d-none');
+        e.loading.innerHTML = '<span class="spinner-border spinner-border-sm me-2" style="color:var(--ok-purple-vibrant);" aria-hidden="true"></span>A carregar esteira de grupos…';
+        const params = new URLSearchParams({ page: String(currentPage), limit: String(Number(e.limit.value) || 15) });
+        const search = e.search.value.trim();
+        if (search) params.set('search', search);
+        if (e.status.value) params.set('status', e.status.value);
+        if (e.frequency.value) params.set('frequency', e.frequency.value);
+        try {
+          const response = await window.apiClient.get('/admin/groups?' + params.toString());
+          if (seq !== requestSequence) return;
+          if (!response || response.success === false || !Array.isArray(response.data)) throw new Error('A resposta da API não contém uma lista válida de grupos.');
+          activeGroups = response.data;
+          renderGroups(activeGroups);
+          renderPagination(response.pagination || {});
+          updateSummary(activeGroups, response.pagination || {});
+          e.loading.classList.add('d-none');
+          e.card.classList.remove('d-none');
+        } catch (error) {
+          if (seq !== requestSequence) return;
+          e.loading.classList.add('d-none');
+          e.card.classList.add('d-none');
+          e.error.innerHTML = '<i class="bi bi-exclamation-triangle" aria-hidden="true"></i><strong class="d-block mb-2" style="color:var(--ok-text-primary);">Não foi possível carregar os grupos</strong><span>' + esc(errMessage(error, 'Falha de comunicação com o servidor.')) + '</span><div class="mt-3"><button type="button" class="btn btn-sm btn-ghost-ok" id="groups-retry-btn"><i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Tentar novamente</button></div>';
+          e.error.classList.remove('d-none');
+        }
+      }
+
+      function modal(id) {
+        if (!window.bootstrap || !window.bootstrap.Modal) {
+          alertPage('Os componentes de interface não foram inicializados. Recarregue antes de continuar.', 'warning');
+          return null;
+        }
+        return window.bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+      }
+      function fieldItem(label, value, opts) {
+        const o = opts || {};
+        return '<div class="group-detail-box"><span class="group-detail-label">' + esc(label) + '</span><span class="group-detail-value' + (o.mono ? ' mono' : '') + '">' + esc(value==null||value===''?'—':value) + '</span></div>';
+      }
+
+      // ============ WIZARDS ============
+      let detailStep = 1; const detailStepCount = 4;
+      function setDetailStep(step) {
+        detailStep = Math.max(1, Math.min(detailStepCount, step));
+        document.querySelectorAll('#modal-group-details .groups-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === detailStep);
+        });
+        const timeline = document.getElementById('details-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.groups-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === detailStep);
+            el.classList.toggle('done', n < detailStep);
+          });
+          timeline.querySelectorAll('.groups-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < detailStep);
+          });
+        }
+        const cur = document.getElementById('details-step-current');
+        if (cur) cur.textContent = String(detailStep);
+        const prev = document.getElementById('details-prev-btn');
+        const next = document.getElementById('details-next-btn');
+        if (prev) prev.disabled = detailStep <= 1;
+        if (next) next.classList.toggle('d-none', detailStep >= detailStepCount);
+      }
+
+      let statusStep = 1; const statusStepCount = 3;
+      function setStatusStep(step) {
+        statusStep = Math.max(1, Math.min(statusStepCount, step));
+        document.querySelectorAll('#modal-change-group-status .groups-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === statusStep);
+        });
+        const timeline = document.getElementById('status-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.groups-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === statusStep);
+            el.classList.toggle('done', n < statusStep);
+          });
+          timeline.querySelectorAll('.groups-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < statusStep);
+          });
+        }
+        const cur = document.getElementById('status-step-current');
+        if (cur) cur.textContent = String(statusStep);
+        const prev = document.getElementById('status-prev-btn');
+        const next = document.getElementById('status-next-btn');
+        const submit = document.getElementById('group-status-submit');
+        if (prev) prev.disabled = statusStep <= 1;
+        if (next) next.classList.toggle('d-none', statusStep >= statusStepCount);
+        if (submit) submit.classList.toggle('d-none', statusStep < statusStepCount);
+        if (statusStep === statusStepCount) buildStatusConfirm();
+      }
+
+      let leaderStep = 1; const leaderStepCount = 3;
+      function setLeaderStep(step) {
+        leaderStep = Math.max(1, Math.min(leaderStepCount, step));
+        document.querySelectorAll('#modal-force-leader .groups-pane').forEach(p => {
+          p.classList.toggle('active', Number(p.dataset.pane) === leaderStep);
+        });
+        const timeline = document.getElementById('leader-timeline');
+        if (timeline) {
+          timeline.querySelectorAll('.groups-step').forEach(el => {
+            const n = Number(el.dataset.step);
+            el.classList.toggle('active', n === leaderStep);
+            el.classList.toggle('done', n < leaderStep);
+          });
+          timeline.querySelectorAll('.groups-step-sep').forEach(el => {
+            const n = Number(el.dataset.sep);
+            el.classList.toggle('done', n < leaderStep);
+          });
+        }
+        const cur = document.getElementById('leader-step-current');
+        if (cur) cur.textContent = String(leaderStep);
+        const prev = document.getElementById('leader-prev-btn');
+        const next = document.getElementById('leader-next-btn');
+        const submit = document.getElementById('force-leader-submit');
+        if (prev) prev.disabled = leaderStep <= 1;
+        if (next) next.classList.toggle('d-none', leaderStep >= leaderStepCount);
+        if (submit) submit.classList.toggle('d-none', leaderStep < leaderStepCount);
+        if (leaderStep === leaderStepCount) buildLeaderConfirm();
+      }
+
+      function buildStatusConfirm() {
+        const id = document.getElementById('status-target-group-id').value;
+        const g = activeGroups.find(x => String(x.id) === String(id));
+        const newStatus = document.getElementById('group-status-select').value;
+        document.getElementById('confirm-status-group').textContent = g ? g.name : id;
+        document.getElementById('confirm-status-from').textContent = g ? g.status : '—';
+        document.getElementById('confirm-status-to').textContent = newStatus;
+        document.getElementById('confirm-status-reason').textContent = document.getElementById('group-status-reason').value.trim() || '—';
+      }
+
+      function buildLeaderConfirm() {
+        const id = document.getElementById('leader-target-group-id').value;
+        const g = activeGroups.find(x => String(x.id) === String(id));
+        document.getElementById('confirm-leader-group').textContent = g ? g.name : id;
+        document.getElementById('confirm-leader-id').textContent = document.getElementById('new-leader-id').value.trim() || '—';
+        document.getElementById('confirm-leader-reason').textContent = document.getElementById('force-leader-reason').value.trim() || '—';
+      }
+
+      // ============ SHOW GROUP DETAILS (dados reais do backend) ============
+      async function showGroupDetails(id) {
+        const m = modal('modal-group-details'), body = document.getElementById('modal-group-details-body');
+        if (!m || !window.apiClient || typeof window.apiClient.get !== 'function') return;
+        setDetailStep(1);
+        body.innerHTML = '<div class="groups-state-box"><span class="spinner-border spinner-border-sm" role="status" aria-label="A carregar"></span><span class="ms-2">A consultar ficha operacional…</span></div>';
+        m.show();
+        try {
+          const response = await window.apiClient.get('/admin/groups/' + encodeURIComponent(id));
+          const g = response && response.data ? (response.data.group || response.data) : null;
+          if (!g || typeof g !== 'object') throw new Error('A API não devolveu uma ficha de grupo válida.');
+          const name = g.name || 'Grupo';
+
+          const pane1 = '<div class="groups-header-summary"><div class="avatar">' + esc(String(name).trim().charAt(0).toUpperCase() || 'G') + '</div><div class="info"><p class="name">' + esc(name) + '</p><p class="sub">' + esc(g.slug ? '@' + g.slug : (g.id || '—')) + '</p><div class="badges">' + statusBadge(g.status) + '<span class="group-badge group-status-other">' + esc(frequencyLabel(g.frequency)) + '</span></div></div></div>' +
+            '<p class="groups-pane-title">Identificação</p>' +
+            '<div class="groups-field-grid">' +
+              fieldItem('Descrição', g.description) +
+              fieldItem('Identificador / slug', g.slug, { mono: true }) +
+              fieldItem('Líder', g.leader_name) +
+              fieldItem('E-mail do líder', g.leader_email) +
+              fieldItem('Contacto do líder', g.leader_phone) +
+              fieldItem('Localização', [(g.neighborhood||''),(g.municipality||''),(g.province||'')].filter(Boolean).join(', ')) +
+            '</div>';
+
+          const pane2 = '<p class="groups-pane-title">Operação</p>' +
+            '<div class="groups-field-grid">' +
+              fieldItem('Membros ativos', g.active_members_count) +
+              fieldItem('Limites de membros', String(g.min_members ?? '—') + '–' + String(g.max_members ?? '—')) +
+              fieldItem('Contribuição', moneyText(g.contribution_amount, g.currency)) +
+              fieldItem('Ciclo atual', String(g.current_cycle ?? '—') + ' / ' + String(g.total_cycles ?? '—')) +
+              fieldItem('Rotação', g.rotation_type) +
+              fieldItem('Período de tolerância (dias)', g.grace_period_days) +
+              fieldItem('Contribuições confirmadas', moneyText(g.total_contributions_collected, g.currency)) +
+              fieldItem('Início', dateText(g.start_date)) +
+              fieldItem('Fim', dateText(g.end_date)) +
+            '</div>';
+
+          const pane3 = '<p class="groups-pane-title">Regras</p>' +
+            '<div class="groups-field-grid">' +
+              fieldItem('Regra de multa', g.late_fee_type ? String(g.late_fee_type) + ' · ' + String(g.late_fee_value ?? '—') : '—') +
+              fieldItem('Verificação de identidade obrigatória', g.require_identity_verification ? 'Sim' : 'Não') +
+              fieldItem('Débito automático permitido', g.allow_auto_debit ? 'Sim' : 'Não') +
+              fieldItem('Grupo privado', g.is_private ? 'Sim' : 'Não') +
+              fieldItem('Visível publicamente', g.is_publicly_discoverable ? 'Sim' : 'Não') +
+            '</div>';
+
+          const pane4 = '<p class="groups-pane-title">Auditoria</p>' +
+            '<div class="groups-field-grid">' +
+              fieldItem('ID do grupo', g.id, { mono: true }) +
+              fieldItem('Criado em', dateText(g.created_at)) +
+              fieldItem('Atualizado em', dateText(g.updated_at)) +
+              fieldItem('Estado', g.status) +
+            '</div>' +
+            '<div class="groups-note mt-3"><i class="bi bi-shield-check me-2" aria-hidden="true"></i>A ficha é fornecida pelo endpoint administrativo e está limitada às funções autorizadas no servidor.</div>';
+
+          body.innerHTML =
+            '<div class="groups-pane active" data-pane="1">' + pane1 + '</div>' +
+            '<div class="groups-pane" data-pane="2">' + pane2 + '</div>' +
+            '<div class="groups-pane" data-pane="3">' + pane3 + '</div>' +
+            '<div class="groups-pane" data-pane="4">' + pane4 + '</div>';
+
+          setDetailStep(1);
+        } catch (error) {
+          body.innerHTML = '<div class="alert alert-danger mb-0" role="alert">' + esc(errMessage(error, 'Falha ao consultar os detalhes do grupo.')) + '</div>';
+        }
+      }
+
+      // ============ OPEN STATUS ============
+      function openStatus(id, status) {
+        if (!canSupervise) return alertPage('A supervisão de grupos exige privilégios de ADMIN ou AUDITOR.', 'warning');
+        if (['COMPLETED','CANCELLED'].includes(String(status).toUpperCase())) return alertPage('Grupos concluídos ou cancelados não podem sofrer intervenções operacionais.', 'warning');
+        document.getElementById('status-target-group-id').value = id;
+        document.getElementById('group-status-select').value = ['ACTIVE','PAUSED','SUSPENDED'].includes(status) ? status : 'ACTIVE';
+        document.getElementById('group-status-reason').value = '';
+        const g = activeGroups.find(x => String(x.id) === String(id));
+        const currentFields = document.getElementById('status-current-fields');
+        if (currentFields) {
+          currentFields.innerHTML = g ? [
+            fieldItem('Grupo', g.name),
+            fieldItem('Estado atual', g.status),
+            fieldItem('Líder', g.leader_name),
+            fieldItem('Membros ativos', String(g.active_members_count || 0))
+          ].join('') : '<div class="group-detail-box"><span class="group-detail-label">Grupo</span><span class="group-detail-value">' + esc(id) + '</span></div>';
+        }
+        setStatusStep(1);
+        const m = modal('modal-change-group-status');
+        if (m) m.show();
+      }
+
+      function openLeader(id) {
+        if (!canChangeLeader) return alertPage('A substituição compulsória da liderança é reservada a ADMIN.', 'warning');
+        document.getElementById('leader-target-group-id').value = id;
+        document.getElementById('new-leader-id').value = '';
+        document.getElementById('force-leader-reason').value = '';
+        setLeaderStep(1);
+        const m = modal('modal-force-leader');
+        if (m) m.show();
+      }
+
+      function setBusy(b) {
+        document.querySelectorAll('#form-change-group-status button[type="submit"],#form-force-leader button[type="submit"],#groups-refresh-btn,#groups-filter-form button[type="submit"]').forEach(x => x.disabled = Boolean(b));
+      }
+      function success(message) {
+        if (window.Alerts && typeof window.Alerts.toast === 'function') window.Alerts.toast(message, 'success');
+        else if (window.Swal && typeof window.Swal.fire === 'function') window.Swal.fire({ icon: 'success', title: 'Concluído', text: message, timer: 2200, showConfirmButton: false });
+        else alertPage(message, 'success');
+      }
+      function failure(message) {
+        if (window.Alerts && typeof window.Alerts.error === 'function') window.Alerts.error(message);
+        else if (window.Swal && typeof window.Swal.fire === 'function') window.Swal.fire({ icon: 'error', title: 'Não foi possível concluir', text: message });
+        else alertPage(message, 'danger');
+      }
+      async function confirmAction(options) {
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          const result = await window.Swal.fire(options);
+          return Boolean(result.isConfirmed);
+        }
+        return window.confirm(options.text || options.title || 'Confirmar ação?');
+      }
+
+      // ============ EVENTOS ============
+      document.getElementById('groups-filter-form').addEventListener('submit', function(ev) { ev.preventDefault(); loadGroups(1); });
+      document.getElementById('groups-filter-form').addEventListener('reset', function() { window.setTimeout(() => loadGroups(1), 0); });
+      document.getElementById('groups-refresh-btn').addEventListener('click', () => loadGroups(currentPage));
+      const refreshVault = document.getElementById('groups-refresh-vault');
+      if (refreshVault) refreshVault.addEventListener('click', () => loadGroups(currentPage));
+      e.pagination.addEventListener('click', function(ev) {
+        const b = ev.target.closest('button[data-page]');
+        if (!b || b.disabled) return;
+        const p = Number(b.dataset.page);
+        if (Number.isInteger(p) && p >= 1 && p <= totalPages) loadGroups(p);
+      });
+      e.body.addEventListener('click', function(ev) {
+        const b = ev.target.closest('button[data-action]');
+        if (!b) return;
+        const id = b.dataset.groupId, g = activeGroups.find(x => String(x.id) === String(id));
+        if (!id || !g) return;
+        if (b.dataset.action === 'details') showGroupDetails(id);
+        else if (b.dataset.action === 'status') openStatus(id, b.dataset.groupStatus);
+        else if (b.dataset.action === 'leader') openLeader(id);
+      });
+      e.error.addEventListener('click', ev => { if (ev.target.closest('#groups-retry-btn')) loadGroups(currentPage); });
+
+      document.getElementById('details-prev-btn').addEventListener('click', () => setDetailStep(detailStep - 1));
+      document.getElementById('details-next-btn').addEventListener('click', () => setDetailStep(detailStep + 1));
+
+      document.getElementById('status-prev-btn').addEventListener('click', () => setStatusStep(statusStep - 1));
+      document.getElementById('status-next-btn').addEventListener('click', () => {
+        if (statusStep === 1) {
+          const s = document.getElementById('group-status-select').value;
+          if (!s) { alertPage('Selecione um novo estado antes de avançar.', 'warning'); return; }
+        }
+        if (statusStep === 2) {
+          const r = document.getElementById('group-status-reason').value.trim();
+          if (r.length < 5 || r.length > 255) { alertPage('Indique uma justificação entre 5 e 255 caracteres.', 'warning'); return; }
+        }
+        setStatusStep(statusStep + 1);
+      });
+      document.getElementById('group-status-reason').addEventListener('input', () => { if (statusStep === 3) buildStatusConfirm(); });
+      document.getElementById('group-status-select').addEventListener('change', () => { if (statusStep === 3) buildStatusConfirm(); });
+
+      document.getElementById('leader-prev-btn').addEventListener('click', () => setLeaderStep(leaderStep - 1));
+      document.getElementById('leader-next-btn').addEventListener('click', () => {
+        if (leaderStep === 1) {
+          const v = document.getElementById('new-leader-id').value.trim();
+          if (!v) { alertPage('Indique o UUID do novo líder antes de avançar.', 'warning'); return; }
+        }
+        if (leaderStep === 2) {
+          const r = document.getElementById('force-leader-reason').value.trim();
+          if (r.length < 5 || r.length > 255) { alertPage('Indique uma justificação entre 5 e 255 caracteres.', 'warning'); return; }
+        }
+        setLeaderStep(leaderStep + 1);
+      });
+      document.getElementById('new-leader-id').addEventListener('input', () => { if (leaderStep === 3) buildLeaderConfirm(); });
+      document.getElementById('force-leader-reason').addEventListener('input', () => { if (leaderStep === 3) buildLeaderConfirm(); });
+
+      document.getElementById('form-change-group-status').addEventListener('submit', async function(ev) {
+        ev.preventDefault();
+        if (!canSupervise || !window.apiClient || typeof window.apiClient.patch !== 'function') return alertPage('A API ou as permissões necessárias não estão disponíveis. Ação cancelada.', 'danger');
+        const id = document.getElementById('status-target-group-id').value,
+              status = document.getElementById('group-status-select').value,
+              reason = document.getElementById('group-status-reason').value.trim();
+        if (!id || reason.length < 5 || reason.length > 255) return alertPage('Indique uma justificação entre 5 e 255 caracteres.', 'warning');
+        if (!await confirmAction({ icon: 'warning', title: 'Confirmar intervenção?', text: 'O estado do grupo será alterado e a ação registada na auditoria.', showCancelButton: true, confirmButtonText: 'Confirmar', cancelButtonText: 'Cancelar', confirmButtonColor: '#7c3aed' })) return;
+        setBusy(true);
+        try {
+          const result = await window.apiClient.patch('/admin/groups/' + encodeURIComponent(id) + '/status', { status, reason });
+          if (result && result.success === false) throw new Error(result.message || 'A API recusou a alteração.');
+          const m = window.bootstrap.Modal.getInstance(document.getElementById('modal-change-group-status'));
+          if (m) m.hide();
+          success('Estado do grupo atualizado com sucesso.');
+          await loadGroups(currentPage);
+        } catch (error) {
+          failure(errMessage(error, 'Falha ao atualizar o estado do grupo.'));
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      document.getElementById('form-force-leader').addEventListener('submit', async function(ev) {
+        ev.preventDefault();
+        if (!canChangeLeader || !window.apiClient || typeof window.apiClient.post !== 'function') return alertPage('A API ou a autorização ADMIN não está disponível. Ação cancelada.', 'danger');
+        const id = document.getElementById('leader-target-group-id').value,
+              newLeaderId = document.getElementById('new-leader-id').value.trim(),
+              reason = document.getElementById('force-leader-reason').value.trim();
+        if (!id || !newLeaderId || reason.length < 5 || reason.length > 255) return alertPage('Indique o UUID do novo líder e uma justificação entre 5 e 255 caracteres.', 'warning');
+        if (!await confirmAction({ icon: 'warning', title: 'Substituir liderança?', text: 'A ação é administrativa, será auditada e só será aceite se o utilizador for membro ativo do grupo.', showCancelButton: true, confirmButtonText: 'Submeter intervenção', cancelButtonText: 'Cancelar', confirmButtonColor: '#7c3aed' })) return;
+        setBusy(true);
+        try {
+          const result = await window.apiClient.post('/admin/groups/' + encodeURIComponent(id) + '/force-leader', { newLeaderId, reason });
+          if (result && result.success === false) throw new Error(result.message || 'A API recusou a substituição.');
+          const m = window.bootstrap.Modal.getInstance(document.getElementById('modal-force-leader'));
+          if (m) m.hide();
+          success('Substituição de liderança concluída.');
+          await loadGroups(currentPage);
+        } catch (error) {
+          failure(errMessage(error, 'Falha ao substituir a liderança.'));
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      document.getElementById('modal-change-group-status').addEventListener('hidden.bs.modal', () => { document.getElementById('form-change-group-status').reset(); setStatusStep(1); });
+      document.getElementById('modal-force-leader').addEventListener('hidden.bs.modal', () => { document.getElementById('form-force-leader').reset(); setLeaderStep(1); });
+      document.getElementById('modal-group-details').addEventListener('hidden.bs.modal', () => setDetailStep(1));
+
+      // ===== Theme toggle =====
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        themeBtn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+
+      // ===== Sidebar mobile toggle =====
+      const toggleBtn = document.getElementById('sidebar-toggle-btn');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          document.body.classList.toggle('mobile-nav-active');
+        });
+      }
+
+      // ===== Mirror badges admin → rail =====
+      function mirrorBadges() {
+        ['kyc','disputes','withdrawals'].forEach((key) => {
+          const original = document.getElementById('sidebar-badge-' + key);
+          const mirror = document.getElementById('rail-badge-' + key);
+          if (!original || !mirror) return;
+          const hidden = original.classList.contains('d-none');
+          mirror.classList.toggle('d-none', hidden);
+          if (!hidden) {
+            const txt = (original.textContent || '').trim();
+            if (txt) mirror.textContent = txt;
+          }
+        });
+      }
+      mirrorBadges();
+      const badgeObserver = new MutationObserver(mirrorBadges);
+      ['kyc','disputes','withdrawals'].forEach((key) => {
+        const elBadge = document.getElementById('sidebar-badge-' + key);
+        if (elBadge) badgeObserver.observe(elBadge, { attributes: true, childList: true, characterData: true, subtree: true });
+      });
+
+      // ===== Ctrl+K foca pesquisa =====
+      document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+          const input = document.getElementById('global-admin-search');
+          if (input) { e.preventDefault(); input.focus(); }
+        }
+      });
+
+      function updateClock() {
+        const clock = document.getElementById('admin-utc-clock');
+        if (clock) clock.textContent = new Intl.DateTimeFormat('pt-AO', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date()) + ' UTC';
+      }
+      updateClock();
+      window.setInterval(updateClock, 1000);
+
+      loadGroups(1);
+    })();
+  </script>
+</body>
+</html>

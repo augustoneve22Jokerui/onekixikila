@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= typeof title !== 'undefined' ? title : 'Convites & QR Code — OneKixikila' %></title>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+  <% } %>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       SISTEMA DE DESIGN — ONEKIXIKILA (TEMA ESCURO PADRÃO + TEMA CLARO)
+       Sidebar + Top Bar: arredondados. Cards centrais: quadrados.
+       Cores 100% roxo.
+       Escala MAIOR (igual ao Perfil / Carteira ampliada)
+       ========================================================================= */
+    :root,
+    html[data-theme="dark"] {
+      --ok-bg-canvas: #050508;
+      --ok-bg-surface: #0a0a10;
+      --ok-bg-elevated: #111118;
+
+      --ok-purple-primary: #7c3aed;
+      --ok-purple-vibrant: #8b5cf6;
+      --ok-purple-soft: rgba(139, 92, 246, 0.12);
+      --ok-purple-border: rgba(139, 92, 246, 0.3);
+
+      --ok-text-primary: #ffffff;
+      --ok-text-secondary: #cbd5e1;
+      --ok-text-muted: #94a3b8;
+
+      --ok-border-subtle: rgba(255, 255, 255, 0.08);
+      --ok-input-bg: rgba(255, 255, 255, 0.04);
+      --ok-pill-bg: rgba(255, 255, 255, 0.05);
+      --ok-pill-bg-hover: rgba(139, 92, 246, 0.12);
+      --ok-meter-bg: rgba(255, 255, 255, 0.05);
+      --ok-stream-hover: var(--ok-purple-soft);
+      --ok-shadow-card: rgba(0, 0, 0, 0.75);
+      --ok-shadow-sidebar: rgba(0, 0, 0, 0.6);
+
+      --ok-radius-pill: 9999px;
+      --ok-sidebar-width: 96px;
+      --ok-navbar-height: 92px;
+      --ok-content-max-width: 1280px;
+    }
+
+    html[data-theme="light"] {
+      --ok-bg-canvas: #f4f5f9;
+      --ok-bg-surface: #ffffff;
+      --ok-bg-elevated: #ffffff;
+
+      --ok-purple-primary: #6d28d9;
+      --ok-purple-vibrant: #7c3aed;
+      --ok-purple-soft: rgba(124, 58, 237, 0.08);
+      --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+      --ok-text-primary: #0f172a;
+      --ok-text-secondary: #334155;
+      --ok-text-muted: #64748b;
+
+      --ok-border-subtle: rgba(15, 23, 42, 0.10);
+      --ok-input-bg: #ffffff;
+      --ok-pill-bg: rgba(15, 23, 42, 0.04);
+      --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+      --ok-meter-bg: rgba(15, 23, 42, 0.06);
+      --ok-stream-hover: rgba(124, 58, 237, 0.08);
+      --ok-shadow-card: rgba(15, 23, 42, 0.10);
+      --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+    }
+
+    @media (prefers-color-scheme: light) {
+      html:not([data-theme]) {
+        --ok-bg-canvas: #f4f5f9;
+        --ok-bg-surface: #ffffff;
+        --ok-bg-elevated: #ffffff;
+
+        --ok-purple-primary: #6d28d9;
+        --ok-purple-vibrant: #7c3aed;
+        --ok-purple-soft: rgba(124, 58, 237, 0.08);
+        --ok-purple-border: rgba(124, 58, 237, 0.25);
+
+        --ok-text-primary: #0f172a;
+        --ok-text-secondary: #334155;
+        --ok-text-muted: #64748b;
+
+        --ok-border-subtle: rgba(15, 23, 42, 0.10);
+        --ok-input-bg: #ffffff;
+        --ok-pill-bg: rgba(15, 23, 42, 0.04);
+        --ok-pill-bg-hover: rgba(124, 58, 237, 0.10);
+        --ok-meter-bg: rgba(15, 23, 42, 0.06);
+        --ok-stream-hover: rgba(124, 58, 237, 0.08);
+        --ok-shadow-card: rgba(15, 23, 42, 0.10);
+        --ok-shadow-sidebar: rgba(15, 23, 42, 0.08);
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--ok-bg-canvas);
+      color: var(--ok-text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    .ok-ambient-glow-core {
+      position: fixed;
+      top: -140px; left: 20%;
+      width: 650px; height: 650px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.16) 0%, rgba(5, 5, 8, 0) 70%);
+      pointer-events: none; z-index: 0; filter: blur(100px);
+    }
+    html[data-theme="light"] .ok-ambient-glow-core {
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.12) 0%, rgba(244, 245, 249, 0) 70%);
+    }
+
+    /* =========================================================================
+       BARRA LATERAL — ARREDONDADA
+       ========================================================================= */
+    .ok-rail-sidebar {
+      position: fixed;
+      top: 24px; left: 24px; bottom: 24px;
+      width: var(--ok-sidebar-width);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 24px;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 26px 0;
+      z-index: 1040;
+      box-shadow: 0 12px 36px var(--ok-shadow-sidebar);
+      backdrop-filter: blur(24px);
+      transition: all 0.3s ease;
+    }
+
+    .ok-brand-emblem {
+      width: 56px; height: 56px; border-radius: 18px;
+      background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 26px rgba(124, 58, 237, 0.45);
+      text-decoration: none;
+    }
+    .ok-brand-emblem svg { width: 28px; height: 28px; }
+
+    .ok-rail-nav {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 16px; width: 100%;
+    }
+
+    .ok-rail-link {
+      width: 52px; height: 52px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-muted); text-decoration: none;
+      transition: all 0.2s ease; background: transparent;
+      position: relative;
+    }
+    .ok-rail-link svg { width: 22px; height: 22px; }
+    .ok-rail-link:hover {
+      color: var(--ok-purple-vibrant);
+      background-color: var(--ok-purple-soft);
+      transform: translateY(-2px);
+    }
+    .ok-rail-link.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 24px rgba(139, 92, 246, 0.5);
+    }
+    .ok-badge-dot {
+      position: absolute; top: 10px; right: 10px;
+      width: 9px; height: 9px; border-radius: 50%;
+      background-color: #ef4444;
+      border: 2px solid var(--ok-bg-surface);
+    }
+
+    .ok-rail-footer {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+
+    /* =========================================================================
+       VIEWPORT SHELL
+       ========================================================================= */
+    .ok-viewport-shell {
+      margin-left: calc(var(--ok-sidebar-width) + 44px);
+      padding: 24px 40px 60px 0;
+      position: relative; z-index: 1;
+    }
+
+    /* =========================================================================
+       TOP BAR — ARREDONDADA — CENTRALIZADA AO CONTEÚDO
+       ========================================================================= */
+    .ok-top-nav {
+      height: var(--ok-navbar-height);
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 0 auto 26px auto;
+      max-width: var(--ok-content-max-width);
+      width: 100%;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .ok-search-capsule {
+      position: relative;
+      width: 500px; max-width: 100%;
+      flex-shrink: 1;
+    }
+    .ok-search-capsule input {
+      width: 100%; height: 54px;
+      border-radius: var(--ok-radius-pill);
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 90px 0 52px;
+      font-size: 0.96rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.25s ease;
+    }
+    .ok-search-capsule input::placeholder { color: var(--ok-text-muted); }
+    .ok-search-capsule input:focus {
+      border-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-search-capsule .search-icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--ok-text-muted);
+    }
+    .ok-search-capsule .search-icon svg { width: 18px; height: 18px; }
+    .ok-search-capsule .shortcut-hint {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 8px;
+      padding: 4px 9px;
+      font-size: 0.74rem;
+      color: var(--ok-text-muted);
+      font-weight: 600;
+    }
+
+    .ok-nav-actions { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    .ok-action-circle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    .ok-action-circle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+
+    .ok-profile-pill {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 20px 6px 6px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      text-decoration: none; cursor: pointer;
+    }
+    .ok-profile-avatar-nav {
+      width: 44px; height: 44px;
+      border-radius: 50%; object-fit: cover;
+      background: var(--ok-purple-soft);
+      border: 2px solid var(--ok-purple-border);
+    }
+
+    .ok-theme-toggle {
+      width: 52px; height: 52px; border-radius: 16px;
+      background-color: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--ok-text-primary); cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-theme-toggle:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      transform: translateY(-2px);
+    }
+    .ok-theme-toggle svg { width: 20px; height: 20px; }
+
+    /* =========================================================================
+       HERO — ARREDONDADO
+       ========================================================================= */
+    .ok-canvas-hero-title {
+      max-width: var(--ok-content-max-width);
+      margin: 0 auto 30px auto;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      flex-wrap: wrap; gap: 20px;
+    }
+
+    .ok-breadcrumb-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      font-size: 0.86rem; font-weight: 700;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .ok-breadcrumb-btn:hover {
+      background: var(--ok-pill-bg-hover);
+      color: var(--ok-purple-vibrant);
+      border-color: var(--ok-purple-border);
+      transform: translateX(-2px);
+    }
+
+    .ok-page-title-main {
+      font-size: 2.15rem; font-weight: 800;
+      letter-spacing: -0.03em; line-height: 1.15;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .ok-live-beacon {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 0.76rem; font-weight: 800;
+      padding: 5px 13px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-purple-soft);
+      border: 1px solid var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .ok-pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background-color: var(--ok-purple-vibrant);
+      box-shadow: 0 0 10px var(--ok-purple-vibrant);
+    }
+
+    .ok-canvas-sub {
+      color: var(--ok-text-muted);
+      font-size: 0.96rem; margin-top: 8px; line-height: 1.5;
+    }
+
+    .ok-btn-confirm-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff; border: none;
+      font-size: 0.86rem; font-weight: 800;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-confirm-pill:hover { transform: translateY(-2px); color: #ffffff; }
+
+    .ok-btn-ghost-pill {
+      height: 48px; padding: 0 22px;
+      border-radius: var(--ok-radius-pill);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.86rem; font-weight: 700;
+      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .ok-btn-ghost-pill:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+      transform: translateY(-2px);
+    }
+
+    /* Nav pills internas do grupo */
+    .ok-group-nav-pills {
+      display: flex; gap: 8px;
+      padding: 8px;
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: var(--ok-radius-pill);
+      overflow-x: auto;
+      margin-bottom: 30px;
+      max-width: var(--ok-content-max-width);
+      margin-left: auto; margin-right: auto;
+      scrollbar-width: none;
+    }
+    .ok-group-nav-pills::-webkit-scrollbar { display: none; }
+    .ok-group-nav-pill {
+      padding: 10px 20px;
+      border-radius: var(--ok-radius-pill);
+      font-size: 0.84rem; font-weight: 700;
+      color: var(--ok-text-muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .ok-group-nav-pill:hover {
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-pill-bg-hover);
+    }
+    .ok-group-nav-pill.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+    }
+
+    /* =========================================================================
+       CARDS CENTRAIS — QUADRADOS
+       ========================================================================= */
+    .ok-invitations-layout {
+      max-width: var(--ok-content-max-width);
+      margin: 0 auto;
+    }
+
+    .ok-invitation-card {
+      background: var(--ok-bg-surface);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      padding: 0;
+      box-shadow: 0 8px 32px var(--ok-shadow-card);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .ok-invitation-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .ok-invitation-card-header h5 {
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--ok-text-primary);
+      margin: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .ok-invitation-card-body { padding: 1.5rem; }
+
+    /* Form/input square */
+    .ok-input-square {
+      width: 100%;
+      height: 48px;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1px solid var(--ok-border-subtle);
+      padding: 0 18px;
+      font-size: 0.9rem;
+      color: var(--ok-text-primary);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .ok-input-square:focus {
+      border-color: var(--ok-purple-vibrant);
+      background: var(--ok-bg-surface);
+      box-shadow: 0 0 0 4px var(--ok-purple-soft);
+    }
+    .ok-input-square::placeholder { color: var(--ok-text-muted); }
+    .ok-input-square[readonly] { cursor: pointer; }
+
+    /* QR Box — quadrado */
+    .ok-qr-box-square {
+      padding: 14px;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      border-radius: 0;
+      display: inline-block;
+      max-width: 240px;
+    }
+
+    /* Tabela */
+    .ok-invitations-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ok-invitations-table thead {
+      background: var(--ok-pill-bg);
+    }
+    .ok-invitations-table thead th {
+      padding: 14px 16px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ok-text-muted);
+      text-align: left;
+      border-bottom: 1px solid var(--ok-border-subtle);
+      white-space: nowrap;
+    }
+    .ok-invitations-table tbody tr {
+      border-bottom: 1px solid var(--ok-border-subtle);
+      transition: background 0.2s ease;
+    }
+    .ok-invitations-table tbody tr:hover {
+      background: var(--ok-stream-hover);
+    }
+    .ok-invitations-table tbody tr:last-child { border-bottom: none; }
+    .ok-invitations-table tbody td {
+      padding: 14px 16px;
+      font-size: 0.86rem;
+      color: var(--ok-text-primary);
+      vertical-align: middle;
+    }
+
+    /* Badges */
+    .ok-badge-purple {
+      display: inline-flex; align-items: center;
+      padding: 4px 10px;
+      border-radius: 0;
+      font-size: 0.72rem; font-weight: 800;
+      background: var(--ok-purple-soft);
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-badge-soft {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px;
+      border-radius: 0;
+      font-size: 0.72rem; font-weight: 700;
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-muted);
+      border: 1px solid var(--ok-border-subtle);
+    }
+
+    /* Botão de ação em linha */
+    .ok-row-action-btn {
+      width: 34px; height: 34px; border-radius: 0;
+      background: var(--ok-pill-bg);
+      border: 1px solid var(--ok-border-subtle);
+      color: var(--ok-text-primary);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 4px;
+    }
+    .ok-row-action-btn:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-purple-soft);
+    }
+    .ok-row-action-btn.danger {
+      color: #f43f5e;
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+    .ok-row-action-btn.danger:hover {
+      background: #f43f5e;
+      color: #ffffff;
+      border-color: #f43f5e;
+    }
+
+    /* Social share buttons */
+    .ok-social-btn {
+      height: 40px; padding: 0 16px;
+      border-radius: 0;
+      font-size: 0.82rem; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid var(--ok-border-subtle);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-social-btn:hover {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+      background: var(--ok-purple-soft);
+    }
+
+    /* Filters */
+    .ok-filter-select {
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 0;
+      background: var(--ok-input-bg);
+      border: 1px solid var(--ok-border-subtle);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+    .ok-filter-select option { color: #0f172a; }
+
+    /* Pagination */
+    .ok-pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      margin-top: 10px;
+      border-top: 1px solid var(--ok-border-subtle);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .ok-page-btn {
+      min-width: 36px; height: 36px;
+      padding: 0 12px;
+      border-radius: 0;
+      border: 1px solid var(--ok-border-subtle);
+      background: var(--ok-pill-bg);
+      color: var(--ok-text-primary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ok-page-btn:hover:not(:disabled) {
+      border-color: var(--ok-purple-border);
+      color: var(--ok-purple-vibrant);
+    }
+    .ok-page-btn.active {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      color: #ffffff;
+      border-color: transparent;
+    }
+    .ok-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Empty state */
+    .ok-empty-state {
+      text-align: center; padding: 3rem 1.5rem;
+      color: var(--ok-text-muted);
+    }
+    .ok-empty-state svg {
+      opacity: 0.4; margin-bottom: 1rem;
+      display: block; margin-inline: auto;
+    }
+    .ok-empty-state h6 {
+      font-weight: 700;
+      color: var(--ok-text-primary);
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    /* Modais quadrados */
+    .modal-content {
+      background: var(--ok-bg-surface) !important;
+      border: 1px solid var(--ok-border-subtle) !important;
+      border-radius: 0 !important;
+      color: var(--ok-text-primary) !important;
+    }
+    .modal-header, .modal-footer { border-color: var(--ok-border-subtle) !important; }
+    .modal-title { color: var(--ok-text-primary) !important; }
+    .form-label { color: var(--ok-text-primary); font-size: 0.86rem; font-weight: 700; }
+    .form-control, .form-select {
+      background: var(--ok-input-bg) !important;
+      border: 1px solid var(--ok-border-subtle) !important;
+      color: var(--ok-text-primary) !important;
+      border-radius: 0 !important;
+      height: 48px;
+      font-size: 0.9rem;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--ok-purple-vibrant) !important;
+      box-shadow: 0 0 0 4px var(--ok-purple-soft) !important;
+      background: var(--ok-bg-surface) !important;
+    }
+    .form-control::placeholder { color: var(--ok-text-muted) !important; }
+    .form-select option { color: #0f172a; }
+    .input-group-text {
+      background: var(--ok-pill-bg) !important;
+      border: 1px solid var(--ok-border-subtle) !important;
+      color: var(--ok-text-primary) !important;
+      border-radius: 0 !important;
+    }
+    .btn-close { filter: invert(1); }
+    html[data-theme="light"] .btn-close { filter: none; }
+
+    /* Responsividade */
+    @media (max-width: 991px) {
+      .ok-rail-sidebar { transform: translateX(-140%); }
+      .ok-viewport-shell { margin-left: 0; padding: 20px; }
+      body.mobile-nav-active .ok-rail-sidebar { transform: translateX(0); }
+      .ok-page-title-main { font-size: 1.7rem; }
+      .ok-invitations-table { font-size: 0.78rem; }
+      .ok-invitations-table thead th,
+      .ok-invitations-table tbody td { padding: 10px 8px; }
+      .ok-search-capsule { width: 100%; }
+      .ok-top-nav { gap: 10px; }
+    }
+    @media (max-width: 600px) {
+      .ok-top-nav { flex-wrap: wrap; height: auto; padding: 10px 0; }
+      .ok-nav-actions { margin-left: auto; }
+    }
+  </style>
+</head>
+<body data-user-role="<%= typeof user !== 'undefined' && user && user.role ? user.role : '' %>" data-user-id="<%= typeof user !== 'undefined' && user && user.id ? user.id : '' %>">
+
+  <div class="ok-ambient-glow-core"></div>
+
+  <!-- ======================================================================
+       BARRA LATERAL SLIM TECH
+       ====================================================================== -->
+  <aside class="ok-rail-sidebar" id="app-rail-sidebar" aria-label="Navegação Principal">
+    <a href="/dashboard" class="ok-brand-emblem" title="OneKixikila Core">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+        <polyline points="2 17 12 22 22 17"></polyline>
+        <polyline points="2 12 12 17 22 12"></polyline>
+      </svg>
+    </a>
+
+    <nav class="ok-rail-nav">
+      <a href="/dashboard" class="ok-rail-link" title="Painel Geral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </a>
+
+      <a href="/wallet" class="ok-rail-link" title="Carteira">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path></svg>
+      </a>
+
+      <a href="/groups" class="ok-rail-link active" title="Grupos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      </a>
+
+      <a href="/wallet/transfer" class="ok-rail-link" title="Transferências">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </a>
+
+      <a href="/wallet/deposit" class="ok-rail-link" title="Depósitos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      </a>
+
+      <a href="/wallet/statement" class="ok-rail-link" title="Extrato">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </a>
+
+      <a href="/notifications" class="ok-rail-link" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </a>
+    </nav>
+
+    <div class="ok-rail-footer">
+      <a href="/profile" class="ok-rail-link" title="Perfil">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </a>
+      <button type="button" class="ok-rail-link border-0 text-danger" data-action="logout" title="Terminar Sessão">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       CONTEÚDO PRINCIPAL
+       ====================================================================== -->
+  <div class="ok-viewport-shell">
+
+    <!-- Top Bar — Centralizada ao conteúdo -->
+    <header class="ok-top-nav">
+      <div class="ok-search-capsule">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="search" placeholder="Pesquisar convites, códigos..." autocomplete="off">
+        <kbd class="shortcut-hint">Ctrl K</kbd>
+      </div>
+
+      <div class="ok-nav-actions">
+        <button type="button" id="sidebar-toggle-btn" class="ok-action-circle d-lg-none" aria-label="Abrir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+
+        <button type="button" id="theme-toggle-btn" class="ok-theme-toggle" title="Alternar tema claro/escuro" aria-label="Alternar tema">
+          <svg id="theme-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </button>
+
+        <a href="/notifications" class="ok-action-circle" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </a>
+
+        <a href="/profile" class="ok-profile-pill">
+          <img 
+            id="ok-nav-avatar"
+            src="<%= typeof user !== 'undefined' && user && (user.avatarUrl || user.avatar_url || user.avatar) ? (user.avatarUrl || user.avatar_url || user.avatar) : '/assets/images/avatar-default.png' %>" 
+            data-fallback='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%237c3aed%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%23ffffff%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%23ffffff%22/%3E%3C/svg%3E'
+            alt="Avatar" 
+            class="ok-profile-avatar-nav"
+          >
+          <div class="d-flex flex-column text-start">
+            <span class="fw-bold" style="font-size: 0.92rem; line-height: 1.15;" id="ok-nav-fullname"><%= typeof user !== 'undefined' && user && (user.fullName || user.full_name) ? (user.fullName || user.full_name).split(' ')[0] : 'Membro' %></span>
+            <span class="text-muted" style="font-size: 0.76rem;" id="ok-nav-role"><%= typeof user !== 'undefined' && user && user.role ? user.role : 'Utilizador' %></span>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="ok-canvas-hero-title">
+      <div>
+        <a href="/groups/<%= groupId %>" class="ok-breadcrumb-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          Voltar ao Grupo
+        </a>
+        <h1 class="ok-page-title-main">
+          Convites & Códigos QR
+          <span class="ok-live-beacon">
+            <span class="ok-pulse-dot"></span>
+            Adesão Digital
+          </span>
+        </h1>
+        <p class="ok-canvas-sub">
+          <span id="group-name-badge">Grupo</span> &bull; Emissão de convites nominais e links seguros para novos membros
+        </p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="ok-btn-confirm-pill" data-bs-toggle="modal" data-bs-target="#modal-create-invitation">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+          Novo Convite
+        </button>
+      </div>
+    </section>
+
+    <!-- Nav pills internas -->
+    <div class="ok-group-nav-pills">
+      <a href="/groups/<%= groupId %>" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Visão Geral
+      </a>
+      <a href="/groups/<%= groupId %>/members" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+        Membros
+      </a>
+      <a href="/groups/<%= groupId %>/schedule" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="4" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        Calendário
+      </a>
+      <a href="/groups/<%= groupId %>/rules" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Regras
+      </a>
+      <a href="/groups/<%= groupId %>/invitations" class="ok-group-nav-pill active">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        Convites
+      </a>
+      <a href="/groups/<%= groupId %>/chat" class="ok-group-nav-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        Chat
+      </a>
+    </div>
+
+    <!-- Loading state -->
+    <div id="invitations-loading-state" class="ok-empty-state" style="max-width:var(--ok-content-max-width);margin:0 auto;">
+      <div class="spinner-border mb-3" role="status" style="color: var(--ok-purple-vibrant); width: 3rem; height: 3rem;"></div>
+      <h6>A carregar gestão de convites e Códigos QR...</h6>
+      <p class="small">A consultar chaves ativas, cotas de uso e validade temporal no sistema.</p>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <div id="invitations-content-wrapper" class="d-none ok-invitations-layout" data-group-id="<%= groupId %>">
+
+      <!-- Banner principal com QR -->
+      <div class="row g-3 mb-4">
+        <div class="col-lg-8">
+          <div class="ok-invitation-card h-100">
+            <div class="ok-invitation-card-body d-flex flex-column justify-content-between h-100">
+              <div>
+                <span class="ok-badge-purple mb-3" style="display: inline-flex;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Adesão Digital Segura
+                </span>
+                <h4 class="fw-bold mb-2" style="color: var(--ok-text-primary); font-size: 1.35rem;">Partilhe esta Kixikila com Novos Membros</h4>
+                <p class="mb-4" style="color: var(--ok-text-muted); font-size: 0.9rem;">
+                  Envie o link seguro ou mostre o Código QR presencialmente. O convidado será encaminhado diretamente para a confirmação de adesão.
+                </p>
+
+                <div class="mb-3">
+                  <label class="form-label">Link Permanente de Convite</label>
+                  <div class="d-flex gap-2">
+                    <input type="text" class="ok-input-square" id="share-link-input" readonly value="Nenhum convite ativo. Gere um novo convite." disabled style="flex: 1;">
+                    <button class="ok-btn-confirm-pill" type="button" id="btn-copy-share-link" style="height: 48px;" disabled>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                      Copiar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center gap-2 flex-wrap pt-3" style="border-top: 1px solid var(--ok-border-subtle);">
+                <span style="font-size: 0.82rem; font-weight: 700; color: var(--ok-text-muted); margin-right: 4px;">Partilhar:</span>
+                <a href="#" target="_blank" class="ok-social-btn" id="btn-share-whatsapp">
+                  WhatsApp
+                </a>
+                <a href="#" target="_blank" class="ok-social-btn" id="btn-share-sms">
+                  SMS
+                </a>
+                <button type="button" class="ok-social-btn" id="btn-native-share">
+                  Outros Canais
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="col-lg-4">
+          <div class="ok-invitation-card h-100">
+            <div class="ok-invitation-card-body d-flex flex-column align-items-center justify-content-center text-center h-100">
+              <div class="ok-qr-box-square mb-3">
+                <img src="" id="main-qr-image" alt="Código QR do Grupo" class="img-fluid d-none" style="width: 200px; height: 200px;">
+                <div id="main-qr-placeholder" class="py-5 text-muted small">
+                  <div class="spinner-border spinner-border-sm mb-2" role="status" style="color: var(--ok-purple-vibrant);"></div>
+                  <div>Gere um convite para criar um QR válido.</div>
+                </div>
+              </div>
+              <h6 class="fw-bold mb-1" style="color: var(--ok-text-primary);">Escanear para Aderir</h6>
+              <p class="mb-0" style="color: var(--ok-text-muted); font-size: 0.82rem;">Aponte a câmara do telemóvel para ingressar de imediato.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="invitation-history-restricted" class="ok-invitation-card d-none mb-3" role="status">
+        <div class="ok-invitation-card-body">
+          <strong class="d-block mb-1">Histórico reservado à liderança</strong>
+          <span style="color: var(--ok-text-muted); font-size: 0.86rem;">Pode emitir e partilhar convites autorizados, mas a consulta integral do histórico está disponível apenas para o líder titular ou administradores.</span>
+        </div>
+      </div>
+
+      <!-- Card do histórico de convites -->
+      <div class="ok-invitation-card" id="invitation-history-card">
+        <div class="ok-invitation-card-header">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ok-purple-vibrant)" stroke-width="2.2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            Histórico de Convites Emitidos
+            <span class="ok-badge-soft" id="total-invitations-count">0 convites</span>
+          </h5>
+
+          <select class="ok-filter-select" id="filter-invitation-status">
+            <option value="">Todos os Estados</option>
+            <option value="PENDING" selected>Pendentes / Ativos</option>
+            <option value="ACCEPTED">Esgotados / Aceites</option>
+            <option value="EXPIRED">Expirados</option>
+            <option value="REVOKED">Revogados</option>
+          </select>
+        </div>
+
+        <div class="table-responsive">
+          <table class="ok-invitations-table">
+            <thead>
+              <tr>
+                <th>Código / Identificador</th>
+                <th>Canal</th>
+                <th>Destinatário</th>
+                <th>Utilização</th>
+                <th>Validade</th>
+                <th>Estado</th>
+                <th class="text-end">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="invitations-table-body"></tbody>
+          </table>
+        </div>
+
+        <div id="invitations-empty-state" class="ok-empty-state d-none">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 4h16v16H4z" rx="2"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          <h6>Nenhum convite emitido</h6>
+          <p class="small mb-3">Gere convites nominais ou crie links públicos para trazer novos membros.</p>
+          <button type="button" class="ok-btn-confirm-pill" data-bs-toggle="modal" data-bs-target="#modal-create-invitation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            Emitir Primeiro Convite
+          </button>
+        </div>
+
+        <!-- Paginação -->
+        <div class="ok-invitation-card-body" id="invitations-pagination-wrapper" style="padding-top: 0;">
+          <div class="ok-pagination-bar">
+            <span style="font-size: 0.82rem; color: var(--ok-text-muted);" id="pagination-info">Página 1</span>
+            <div class="d-flex gap-1 flex-wrap" id="invitations-pagination"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================================
+       MODAL: EMITIR NOVO CONVITE
+       ====================================================================== -->
+  <div class="modal fade" id="modal-create-invitation" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">Emitir Novo Convite</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <form id="create-invitation-form" data-group-id="<%= groupId %>">
+          <div class="modal-body py-4">
+            <div class="mb-3">
+              <label class="form-label">Canal de Envio / Tipo de Convite</label>
+              <select class="form-select" name="channel" id="invitation-channel-select" required>
+                <option value="DIRECT_LINK" selected>Ligação Direta (Link para partilha)</option>
+                <option value="QR_CODE">Código QR Dinâmico</option>
+                <option value="SMS">Mensagem SMS Nominal</option>
+                <option value="EMAIL">Correio Eletrónico (E-mail)</option>
+              </select>
+            </div>
+
+            <div class="mb-3 d-none" id="channel-field-phone">
+              <label class="form-label">Número de Telemóvel Angolano (+244)</label>
+              <div class="d-flex gap-2">
+                <span class="input-group-text">+244</span>
+                <input type="tel" class="form-control" name="invitedPhone" placeholder="923 000 000" maxlength="12" style="flex: 1;">
+              </div>
+              <div class="form-text small" style="color: var(--ok-text-muted);">Será enviada uma notificação SMS institucional com o código e link direto.</div>
+            </div>
+
+            <div class="mb-3 d-none" id="channel-field-email">
+              <label class="form-label">Endereço de E-mail</label>
+              <input type="email" class="form-control" name="invitedEmail" placeholder="membro@exemplo.ao">
+              <div class="form-text small" style="color: var(--ok-text-muted);">O destinatário receberá um e-mail com o botão de aceitação.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Número Máximo de Utilizações</label>
+              <input type="number" class="form-control" name="maxUses" value="1" min="1" max="50" required>
+              <div class="form-text small" style="color: var(--ok-text-muted);">Para convites nominais, mantenha 1 utilização. Para links públicos, defina até 50.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Validade do Convite</label>
+              <select class="form-select" name="expiresInDays">
+                <option value="1">1 dia (24 horas)</option>
+                <option value="3">3 dias</option>
+                <option value="7" selected>7 dias (Recomendado)</option>
+                <option value="15">15 dias</option>
+                <option value="30">30 dias</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="ok-btn-confirm-pill" id="btn-submit-invitation" style="height: 46px; font-size: 0.86rem;">
+              Gerar Convite
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL: VER QR INDIVIDUAL
+       ====================================================================== -->
+  <div class="modal fade" id="modal-view-qr" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content text-center">
+        <div class="modal-header border-0 pb-0">
+          <h6 class="modal-title fw-bold w-100">Código QR do Convite</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body py-4">
+          <div class="ok-qr-box-square mb-3 mx-auto" style="background: #ffffff;">
+            <img src="" id="modal-qr-image" alt="Código QR em alta resolução" style="width: 200px; height: 200px; display: block;">
+          </div>
+          <div style="font-size: 0.82rem; color: var(--ok-text-muted); margin-bottom: 8px;">Código: <strong style="color: var(--ok-text-primary);" id="modal-qr-code-text">—</strong></div>
+          <p style="font-size: 0.82rem; color: var(--ok-text-muted); margin: 0;">Apresente este código para que o convidado escaneie.</p>
+        </div>
+        <div class="modal-footer border-0 pt-0 justify-content-center">
+          <button type="button" class="ok-btn-ghost-pill" id="btn-copy-modal-qr-link" style="height: 42px; font-size: 0.84rem;">
+            Copiar Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="/js/sweet-alert.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ====================================================================
+         TEMA CLARO/ESCURO
+         ==================================================================== */
+      const THEME_KEY = 'ok-theme';
+      function applyTheme(theme) {
+        const html = document.documentElement;
+        if (theme === 'light' || theme === 'dark') html.setAttribute('data-theme', theme);
+        else html.removeAttribute('data-theme');
+        const icon = document.getElementById('theme-toggle-icon');
+        if (icon) {
+          const isLight = theme === 'light' ||
+            (theme !== 'dark' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          icon.innerHTML = isLight
+            ? '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>'
+            : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+      }
+      function getStoredTheme() { try { return localStorage.getItem(THEME_KEY); } catch (e) { return null; } }
+      function setStoredTheme(t) { try { t ? localStorage.setItem(THEME_KEY, t) : localStorage.removeItem(THEME_KEY); } catch (e) {} }
+      function initThemeToggle() {
+        const btn = document.getElementById('theme-toggle-btn');
+        if (!btn) return;
+        const stored = getStoredTheme();
+        if (stored) applyTheme(stored);
+        btn.addEventListener('click', () => {
+          const cur = document.documentElement.getAttribute('data-theme');
+          let next;
+          if (cur === 'light') next = 'dark';
+          else if (cur === 'dark') next = 'light';
+          else next = window.matchMedia('(prefers-color-scheme: light)').matches ? 'dark' : 'light';
+          applyTheme(next); setStoredTheme(next);
+        });
+      }
+      function initAvatarFallback() {
+        const img = document.getElementById('ok-nav-avatar');
+        if (!img) return;
+        img.addEventListener('error', function onErr() {
+          img.removeEventListener('error', onErr);
+          const fb = img.getAttribute('data-fallback');
+          if (fb && img.src !== fb) img.src = fb;
+        });
+      }
+
+      function setupGlobalActions() {
+        const toggleBtn = document.getElementById('sidebar-toggle-btn');
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('mobile-nav-active');
+          });
+        }
+        document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+          btn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            try {
+              await window.apiClient.post('/auth/logout', {});
+              if (window.apiClient) window.apiClient.clearSession();
+            } catch (err) {}
+            window.location.href = '/login';
+          });
+        });
+      }
+
+      /* ====================================================================
+         LÓGICA DOS CONVITES — PRESERVADA INTEGRALMENTE
+         ==================================================================== */
+      const groupId = '<%= groupId %>';
+      let currentInvitations = [];
+      let currentPage = 1;
+      let totalPages = 1;
+      let activeGroup = null;
+      let activeMembership = null;
+      let activeInvitation = null;
+      let canCreateInvitations = false;
+      let canListInvitations = false;
+      let isAdmin = false;
+
+      const loadingEl = document.getElementById('invitations-loading-state');
+      const contentEl = document.getElementById('invitations-content-wrapper');
+      const tableBody = document.getElementById('invitations-table-body');
+      const emptyState = document.getElementById('invitations-empty-state');
+      const totalCountBadge = document.getElementById('total-invitations-count');
+      const statusFilterSelect = document.getElementById('filter-invitation-status');
+      const shareLinkInput = document.getElementById('share-link-input');
+      const mainQrImage = document.getElementById('main-qr-image');
+      const mainQrPlaceholder = document.getElementById('main-qr-placeholder');
+
+      async function initializePage() {
+        try {
+          if (!window.apiClient || !groupId) throw new Error('Grupo ou sessão não identificados.');
+
+          const role = String(document.body.dataset.userRole || '').toUpperCase();
+          isAdmin = role === 'ADMIN';
+          const membershipsRes = await window.apiClient.get('/groups/my-memberships');
+          const membershipsPayload = membershipsRes && membershipsRes.data;
+          const memberships = membershipsPayload && (membershipsPayload.memberships || membershipsPayload.data);
+          if (!Array.isArray(memberships)) throw new Error('Não foi possível confirmar a sua filiação.');
+
+          activeMembership = memberships.find((membership) =>
+            String(membership.group_id || membership.groupId || '') === String(groupId) &&
+            String(membership.membership_status || membership.status || '').toUpperCase() === 'ACTIVE'
+          ) || null;
+          if (!activeMembership && !isAdmin) {
+            const pending = memberships.some((membership) =>
+              String(membership.group_id || membership.groupId || '') === String(groupId) &&
+              ['PENDING', 'PENDING_APPROVAL'].includes(String(membership.membership_status || membership.status || '').toUpperCase())
+            );
+            if (pending) {
+              throw new Error('O seu pedido de adesão ainda está pendente. Só participantes ativos podem aceder à gestão de convites.');
+            }
+          }
+
+          const groupRes = await window.apiClient.get(`/groups/${encodeURIComponent(groupId)}`);
+          const groupPayload = groupRes && groupRes.data;
+          activeGroup = groupPayload && (groupPayload.group || groupPayload.data || groupPayload);
+          if (!activeGroup || String(activeGroup.id || activeGroup.group_id || '') !== String(groupId)) {
+            throw new Error('Não foi possível confirmar os dados do grupo solicitado.');
+          }
+
+          const memberRole = String(activeMembership && activeMembership.role || '').toUpperCase();
+          const currentUserId = String(document.body.dataset.userId || '');
+          const isGroupLeader = currentUserId && String(activeGroup.leader_id || activeGroup.leaderId || '') === currentUserId;
+          if (!activeMembership && !isAdmin && !isGroupLeader) {
+            throw new Error('A gestão de convites está disponível apenas para membros ativos ou para a liderança autorizada.');
+          }
+          const isLeader = Boolean(isGroupLeader || activeMembership && (
+            activeMembership.is_leader === true || activeMembership.is_leader === 'true' ||
+            ['PRIMARY_LEADER', 'LEADER'].includes(memberRole)
+          ));
+          const isViceLeader = memberRole === 'VICE_LEADER';
+          const privateValue = activeGroup.is_private !== undefined ? activeGroup.is_private : activeGroup.isPrivate;
+          const isPrivateGroup = privateValue === true || privateValue === 1 || ['true', '1', 'yes'].includes(String(privateValue || '').toLowerCase());
+          const isTerminalGroup = ['COMPLETED', 'CANCELLED'].includes(String(activeGroup.status || '').toUpperCase());
+
+          // O serviço permite emissão a membros ativos de grupos públicos; grupos privados limitam-na à liderança.
+          canCreateInvitations = !isTerminalGroup && (
+            isAdmin || isLeader || Boolean(activeMembership && (!isPrivateGroup || isViceLeader))
+          );
+          // A API de auditoria do histórico autoriza apenas líder titular e administradores.
+          canListInvitations = isAdmin || isLeader;
+          if (!canCreateInvitations && !canListInvitations) {
+            throw new Error(isPrivateGroup
+              ? 'Neste grupo privado, a emissão de convites está reservada à liderança autorizada.'
+              : 'Não tem permissões para gerir convites neste grupo.');
+          }
+
+          document.getElementById('group-name-badge').textContent = activeGroup.name || 'Grupo';
+          const newInvitationButtons = document.querySelectorAll('[data-bs-target="#modal-create-invitation"]');
+          newInvitationButtons.forEach((button) => {
+            button.disabled = !canCreateInvitations;
+            button.classList.toggle('d-none', !canCreateInvitations);
+          });
+
+          if (!canListInvitations) {
+            document.getElementById('invitation-history-card').classList.add('d-none');
+            document.getElementById('invitation-history-restricted').classList.remove('d-none');
+          } else {
+            const listLoaded = await fetchInvitations(1);
+            if (!listLoaded) {
+              canListInvitations = false;
+              document.getElementById('invitation-history-card').classList.add('d-none');
+              document.getElementById('invitation-history-restricted').classList.remove('d-none');
+            }
+          }
+
+          setupDefaultInvitationLink();
+          loadingEl.classList.add('d-none');
+          contentEl.classList.remove('d-none');
+        } catch (err) {
+          const errorMessage = err && err.message ? err.message : 'Falha ao consultar a gestão de convites.';
+          loadingEl.innerHTML = '';
+          const wrapper = document.createElement('div');
+          wrapper.className = 'ok-empty-state';
+          const heading = document.createElement('h6');
+          heading.textContent = 'Acesso à Gestão de Convites Indisponível';
+          const message = document.createElement('p');
+          message.className = 'small mb-3';
+          message.textContent = errorMessage;
+          const back = document.createElement('a');
+          back.href = `/groups/${encodeURIComponent(groupId)}`;
+          back.className = 'ok-btn-ghost-pill';
+          back.style.cssText = 'height: 40px; padding: 0 16px; font-size: 0.82rem; text-decoration: none;';
+          back.textContent = 'Voltar ao Grupo';
+          wrapper.append(heading, message, back);
+          loadingEl.appendChild(wrapper);
+        }
+      }
+
+      async function fetchInvitations(page = 1) {
+        if (!canListInvitations) return false;
+        currentPage = Number.isInteger(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+        const status = statusFilterSelect.value;
+        const params = new URLSearchParams({ page: String(currentPage), limit: '15' });
+        if (status) params.set('status', status);
+
+        try {
+          const res = await window.apiClient.get(`/groups/${encodeURIComponent(groupId)}/invitations?${params.toString()}`);
+          currentInvitations = Array.isArray(res && res.data) ? res.data : [];
+          const pagination = res && res.pagination || {};
+          totalPages = Math.max(1, Number(pagination.totalPages) || 1);
+          renderTable(currentInvitations);
+          renderPagination(pagination);
+          if (!activeInvitation) {
+            activeInvitation = findUsableInvitation(currentInvitations);
+          }
+          return true;
+        } catch (error) {
+          if (tableBody) {
+            tableBody.textContent = '';
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.colSpan = 7;
+            cell.className = 'text-center py-4';
+            cell.style.color = '#f43f5e';
+            cell.textContent = error && error.message ? error.message : 'Não foi possível carregar os convites da tabela.';
+            row.appendChild(cell);
+            tableBody.appendChild(row);
+          }
+          return false;
+        }
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+
+      function buildInvitationLink(code) {
+        if (!/^[A-Za-z0-9_-]{6,64}$/.test(String(code || ''))) return '';
+        const url = new URL('/groups/join', window.location.origin);
+        url.searchParams.set('code', String(code));
+        return url.toString();
+      }
+
+      function findUsableInvitation(invitations) {
+        const now = Date.now();
+        return (Array.isArray(invitations) ? invitations : []).find((invitation) => {
+          const expiresAt = invitation.expires_at ? Date.parse(invitation.expires_at) : NaN;
+          const used = Number(invitation.used_count) || 0;
+          const max = Number(invitation.max_uses) || 0;
+          return invitation.status === 'PENDING' && used < max && Number.isFinite(expiresAt) && expiresAt > now && buildInvitationLink(invitation.invite_code);
+        }) || null;
+      }
+
+      function renderTable(invitations) {
+        const rows = Array.isArray(invitations) ? invitations : [];
+        totalCountBadge.textContent = `${rows.length} registo(s)`;
+
+        if (rows.length === 0) {
+          tableBody.innerHTML = '';
+          emptyState.classList.remove('d-none');
+          document.getElementById('invitations-pagination-wrapper').classList.add('d-none');
+          return;
+        }
+
+        emptyState.classList.add('d-none');
+        document.getElementById('invitations-pagination-wrapper').classList.remove('d-none');
+        tableBody.innerHTML = rows.map((invitation) => {
+          const code = String(invitation.invite_code || '');
+          const link = buildInvitationLink(code);
+          const isPending = invitation.status === 'PENDING';
+          const statusBadge = getStatusBadge(invitation.status);
+          const channelBadge = getChannelBadge(invitation.channel);
+          const rawRecipient = invitation.invited_phone || invitation.invited_email || '';
+          const recipient = rawRecipient
+            ? escapeHtml(rawRecipient)
+            : '<span style="color: var(--ok-text-muted); font-style: italic;">Qualquer pessoa</span>';
+          const validDate = window.App && typeof window.App.formatDate === 'function'
+            ? window.App.formatDate(invitation.expires_at, true)
+            : invitation.expires_at || '—';
+          const used = Math.max(0, Number(invitation.used_count) || 0);
+          const maximum = Math.max(0, Number(invitation.max_uses) || 0);
+          const escapedCode = escapeHtml(code);
+          const escapedLink = escapeHtml(link);
+          const escapedId = escapeHtml(invitation.id || '');
+          const showQr = Boolean(link) && (invitation.channel === 'QR_CODE' || isPending);
+          return `
+            <tr>
+              <td><div class="d-flex align-items-center gap-2">
+                <span style="font-family: monospace; font-weight: 800; color: var(--ok-text-primary);">${escapedCode}</span>
+                ${link ? `<button type="button" class="ok-row-action-btn" data-copy-text="${escapedLink}" title="Copiar link" aria-label="Copiar link do convite">${copyIconSvg()}</button>` : ''}
+              </div></td>
+              <td>${channelBadge}</td>
+              <td style="font-size: 0.82rem; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${recipient}</td>
+              <td><span style="font-weight: 700; color: var(--ok-text-primary);">${used}</span><span style="color: var(--ok-text-muted); font-size: 0.82rem;"> / ${maximum}</span></td>
+              <td style="font-size: 0.82rem; color: var(--ok-text-muted);">${escapeHtml(validDate)}</td>
+              <td>${statusBadge}</td>
+              <td class="text-end"><div class="d-inline-flex gap-1">
+                ${showQr ? `<button type="button" class="ok-row-action-btn" data-invitation-action="qr" data-invite-code="${escapedCode}" data-invite-link="${escapedLink}" title="Ver Código QR" aria-label="Ver QR do convite">${qrIconSvg()}</button>` : ''}
+                ${isPending && canListInvitations && escapedId ? `<button type="button" class="ok-row-action-btn danger" data-invitation-action="revoke" data-invitation-id="${escapedId}" title="Revogar Convite" aria-label="Revogar convite">${revokeIconSvg()}</button>` : ''}
+              </div></td>
+            </tr>`;
+        }).join('');
+      }
+
+      function copyIconSvg() {
+        return '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>';
+      }
+      function qrIconSvg() {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="5" height="5" x="3" y="3"></rect><rect width="5" height="5" x="16" y="3"></rect><rect width="5" height="5" x="3" y="16"></rect><path d="M21 16h-3a2 2 0 0 0-2 2v3M12 7v3a2 2 0 0 1-2 2H7M12 16v.01M16 12h1M21 12v.01"></path></svg>';
+      }
+      function revokeIconSvg() {
+        return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>';
+      }
+
+      function getStatusBadge(status) {
+        switch (status) {
+          case 'PENDING':
+            return '<span class="ok-badge-purple">Ativo</span>';
+          case 'ACCEPTED':
+            return '<span class="ok-badge-soft">Esgotado</span>';
+          case 'EXPIRED':
+            return '<span class="ok-badge-soft">Expirado</span>';
+          case 'REVOKED':
+            return '<span class="ok-badge-soft" style="color: #f43f5e;">Revogado</span>';
+          default:
+            return '<span class="ok-badge-soft">' + escapeHtml(status) + '</span>';
+        }
+      }
+
+      function getChannelBadge(channel) {
+        switch (channel) {
+          case 'QR_CODE':
+            return '<span class="ok-badge-soft">QR Code</span>';
+          case 'SMS':
+            return '<span class="ok-badge-soft">SMS</span>';
+          case 'EMAIL':
+            return '<span class="ok-badge-soft">E-mail</span>';
+          default:
+            return '<span class="ok-badge-soft">Link</span>';
+        }
+      }
+
+      function setupDefaultInvitationLink(invitation = null) {
+        if (invitation) activeInvitation = invitation;
+        if (!activeInvitation || !buildInvitationLink(activeInvitation.invite_code)) {
+          activeInvitation = findUsableInvitation(currentInvitations);
+        }
+        const copyButton = document.getElementById('btn-copy-share-link');
+        const shareButtons = ['btn-share-whatsapp', 'btn-share-sms', 'btn-native-share'];
+        if (!activeInvitation) {
+          shareLinkInput.value = '';
+          shareLinkInput.placeholder = 'Nenhum convite ativo. Gere um novo convite.';
+          shareLinkInput.disabled = true;
+          if (copyButton) copyButton.disabled = true;
+          shareButtons.forEach((id) => {
+            const button = document.getElementById(id);
+            if (button) {
+              button.setAttribute('aria-disabled', 'true');
+              if (button.tagName === 'A') button.href = '#';
+              else button.disabled = true;
+            }
+          });
+          mainQrImage.classList.add('d-none');
+          mainQrPlaceholder.classList.remove('d-none');
+          mainQrPlaceholder.textContent = canCreateInvitations
+            ? 'Gere um convite para criar um QR válido.'
+            : 'Não existe um convite ativo para partilhar.';
+          return;
+        }
+
+        const link = activeInvitation.inviteLink || buildInvitationLink(activeInvitation.invite_code);
+        if (!link) return;
+        shareLinkInput.value = link;
+        shareLinkInput.placeholder = '';
+        shareLinkInput.disabled = false;
+        if (copyButton) copyButton.disabled = false;
+        shareButtons.forEach((id) => {
+          const button = document.getElementById(id);
+          if (button) {
+            button.removeAttribute('aria-disabled');
+            if (button.tagName !== 'A') button.disabled = false;
+          }
+        });
+        const shareText = encodeURIComponent(`Olá! Junte-se ao grupo de Kixikila "${activeGroup ? activeGroup.name : 'OneKixikila'}" através desta ligação: ${link}`);
+        const whatsapp = document.getElementById('btn-share-whatsapp');
+        const sms = document.getElementById('btn-share-sms');
+        if (whatsapp) whatsapp.href = `https://api.whatsapp.com/send?text=${shareText}`;
+        if (sms) sms.href = `sms:?body=${shareText}`;
+        const invitationQr = activeInvitation.qrCodeDataUrl;
+        if (invitationQr && /^data:image\/png;base64,/.test(invitationQr)) {
+          mainQrImage.src = invitationQr;
+          mainQrImage.classList.remove('d-none');
+          mainQrPlaceholder.classList.add('d-none');
+        } else {
+          generateBannerQr(link);
+        }
+      }
+
+      async function generateBannerQr(text) {
+        try {
+          const dataUrl = await createQrDataUrl(text);
+          mainQrImage.src = dataUrl;
+          mainQrPlaceholder.classList.add('d-none');
+          mainQrImage.classList.remove('d-none');
+        } catch (e) {
+          mainQrPlaceholder.textContent = 'Não foi possível gerar o QR Code neste dispositivo.';
+        }
+      }
+
+      function createQrDataUrl(text) {
+        if (!window.QRCode || typeof window.QRCode.toDataURL !== 'function') {
+          return Promise.reject(new Error('A biblioteca local de QR Code não está disponível.'));
+        }
+        return window.QRCode.toDataURL(text, { width: 260, margin: 2, errorCorrectionLevel: 'M' });
+      }
+
+      async function copyToClipboard(text) {
+        if (!text) return;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            shareLinkInput.value = text;
+            shareLinkInput.focus();
+            shareLinkInput.select();
+            if (!document.execCommand('copy')) throw new Error('Copiar não está disponível neste navegador.');
+          }
+          if (window.Alerts) window.Alerts.toast('Ligação copiada!', 'success');
+        } catch (error) {
+          if (window.Alerts) window.Alerts.error(error.message || 'Não foi possível copiar a ligação.');
+        }
+      }
+
+      const channelSelect = document.getElementById('invitation-channel-select');
+      const phoneField = document.getElementById('channel-field-phone');
+      const emailField = document.getElementById('channel-field-email');
+
+      function updateChannelFields() {
+        const channel = channelSelect.value;
+        const phoneInput = phoneField.querySelector('input');
+        const emailInput = emailField.querySelector('input');
+        const isSms = channel === 'SMS';
+        const isEmail = channel === 'EMAIL';
+        phoneField.classList.toggle('d-none', !isSms);
+        emailField.classList.toggle('d-none', !isEmail);
+        phoneInput.required = isSms;
+        emailInput.required = isEmail;
+        const maxUsesInput = document.querySelector('#create-invitation-form [name="maxUses"]');
+        if (maxUsesInput) {
+          if (isSms || isEmail) maxUsesInput.value = '1';
+          maxUsesInput.disabled = isSms || isEmail;
+        }
+      }
+
+      async function handleCreateInvitation(event) {
+        event.preventDefault();
+        if (!canCreateInvitations) {
+          if (window.Alerts) window.Alerts.error('Permissão necessária', 'Não tem autorização para emitir convites neste grupo.');
+          return;
+        }
+
+        const form = event.currentTarget;
+        const submitButton = document.getElementById('btn-submit-invitation');
+        const originalHtml = submitButton.innerHTML;
+        const formData = new FormData(form);
+        const channel = String(formData.get('channel') || 'DIRECT_LINK');
+        const nominal = channel === 'SMS' || channel === 'EMAIL';
+        const maxUses = nominal ? 1 : Number(formData.get('maxUses'));
+        const expiresInDays = Number(formData.get('expiresInDays'));
+        const payload = { channel, maxUses, expiresInDays, invitedPhone: null, invitedEmail: null };
+
+        if (!Number.isInteger(maxUses) || maxUses < 1 || maxUses > 50 || !Number.isInteger(expiresInDays) || expiresInDays < 1 || expiresInDays > 30) {
+          if (window.Alerts) window.Alerts.warning('Verifique o limite de utilizações e o prazo de validade.');
+          return;
+        }
+        if (channel === 'SMS') {
+          const rawPhone = String(formData.get('invitedPhone') || '').trim();
+          const digits = rawPhone.replace(/\D/g, '');
+          const normalizedPhone = digits.startsWith('244') ? `+${digits}` : `+244${digits}`;
+          if (!/^\+2449\d{8}$/.test(normalizedPhone)) {
+            if (window.Alerts) window.Alerts.warning('Insira um número angolano válido com 9 dígitos, por exemplo 923 000 000.');
+            return;
+          }
+          payload.invitedPhone = normalizedPhone;
+        }
+        if (channel === 'EMAIL') {
+          const email = String(formData.get('invitedEmail') || '').trim();
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            if (window.Alerts) window.Alerts.warning('Insira um endereço de e-mail válido.');
+            return;
+          }
+          payload.invitedEmail = email;
+        }
+
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>A gerar convite…';
+        try {
+          const response = await window.apiClient.post(`/groups/${encodeURIComponent(groupId)}/invitations`, payload);
+          const result = response && response.data;
+          const inviteCode = String(result && result.inviteCode || '');
+          if (!/^[A-Za-z0-9_-]{6,64}$/.test(inviteCode)) {
+            throw new Error('O servidor não devolveu um código de convite válido.');
+          }
+          const defaultLink = buildInvitationLink(inviteCode);
+          let inviteLink = result.inviteLink || defaultLink;
+          try {
+            const parsed = new URL(inviteLink, window.location.origin);
+            if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.pathname.endsWith('/groups/join') || parsed.searchParams.get('code') !== inviteCode) {
+              inviteLink = defaultLink;
+            } else {
+              inviteLink = parsed.toString();
+            }
+          } catch (_) { inviteLink = defaultLink; }
+
+          activeInvitation = {
+            id: result.invitationId || '',
+            invite_code: inviteCode,
+            inviteLink,
+            channel: result.channel || channel,
+            used_count: 0,
+            max_uses: Number(result.maxUses) || maxUses,
+            expires_at: result.expiresAt || null,
+            status: 'PENDING',
+            invited_phone: payload.invitedPhone,
+            invited_email: payload.invitedEmail,
+            qrCodeDataUrl: result.qrCodeDataUrl || null
+          };
+          currentInvitations = [activeInvitation, ...currentInvitations.filter((item) => item.invite_code !== inviteCode)];
+          setupDefaultInvitationLink(activeInvitation);
+          if (canListInvitations) {
+            const refreshed = await fetchInvitations(1);
+            if (!refreshed) {
+              currentInvitations = [activeInvitation, ...currentInvitations.filter((item) => item.invite_code !== inviteCode)];
+              renderTable(currentInvitations);
+            }
+            setupDefaultInvitationLink(activeInvitation);
+          }
+
+          const modalElement = document.getElementById('modal-create-invitation');
+          if (window.bootstrap && modalElement) bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+          form.reset();
+          updateChannelFields();
+          if (window.Alerts) await window.Alerts.success('Convite emitido', 'O código foi criado. A ligação de adesão já está pronta para copiar e partilhar.');
+          if (activeInvitation.channel === 'QR_CODE') {
+            try { await window.viewQrModal(inviteCode, inviteLink); } catch (qrError) {
+              if (window.Alerts) window.Alerts.warning('Convite criado, mas não foi possível apresentar o QR neste dispositivo.');
+            }
+          }
+        } catch (error) {
+          if (window.Alerts) window.Alerts.error('Falha ao emitir convite', error.message || 'Não foi possível criar o convite.');
+        } finally {
+          submitButton.disabled = !canCreateInvitations;
+          submitButton.innerHTML = originalHtml;
+        }
+      }
+
+      if (channelSelect) {
+        channelSelect.addEventListener('change', updateChannelFields);
+        updateChannelFields();
+      }
+      document.getElementById('create-invitation-form').addEventListener('submit', handleCreateInvitation);
+
+      function renderPagination(pagination) {
+        const wrapper = document.getElementById('invitations-pagination');
+        totalPages = Math.max(1, Math.floor(Number(pagination.totalPages) || 1));
+        currentPage = Math.min(Math.max(1, Math.floor(Number(pagination.page) || currentPage)), totalPages);
+        document.getElementById('pagination-info').textContent = `Página ${currentPage} de ${totalPages}`;
+
+        if (totalPages <= 1) {
+          wrapper.innerHTML = '';
+          return;
+        }
+
+        let html = `
+          <button class="ok-page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="window.changeInvitationPage(${currentPage - 1})">Anterior</button>
+        `;
+
+        for (let p = 1; p <= totalPages; p++) {
+          html += `
+            <button class="ok-page-btn ${p === currentPage ? 'active' : ''}" onclick="window.changeInvitationPage(${p})">${p}</button>
+          `;
+        }
+
+        html += `
+          <button class="ok-page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="window.changeInvitationPage(${currentPage + 1})">Seguinte</button>
+        `;
+
+        wrapper.innerHTML = html;
+      }
+
+      window.changeInvitationPage = function (page) {
+        if (page >= 1 && page <= totalPages) {
+          fetchInvitations(page);
+        }
+      };
+
+      window.viewQrModal = async function (code, link) {
+        const safeCode = String(code || '');
+        const safeLink = buildInvitationLink(safeCode);
+        if (!safeLink || !canListInvitations && !canCreateInvitations) return;
+        document.getElementById('modal-qr-code-text').textContent = safeCode;
+        const modalImg = document.getElementById('modal-qr-image');
+        try {
+          const serverQr = activeInvitation && activeInvitation.invite_code === safeCode
+            ? activeInvitation.qrCodeDataUrl
+            : null;
+          modalImg.src = serverQr && /^data:image\/png;base64,/.test(serverQr)
+            ? serverQr
+            : await createQrDataUrl(link || safeLink);
+        } catch (error) {
+          if (window.Alerts) window.Alerts.error(error.message || 'Não foi possível gerar o QR Code.');
+          return;
+        }
+        document.getElementById('btn-copy-modal-qr-link').onclick = () => copyToClipboard(link || safeLink);
+        const modalEl = document.getElementById('modal-view-qr');
+        if (window.bootstrap && modalEl) bootstrap.Modal.getOrCreateInstance(modalEl).show();
+      };
+
+      window.revokeInvitationAction = async function (invitationId) {
+        if (!canListInvitations || !/^[0-9a-f-]{36}$/i.test(String(invitationId || ''))) {
+          if (window.Alerts) window.Alerts.error('Ação não autorizada', 'Não pode revogar este convite.');
+          return;
+        }
+        if (window.Alerts) {
+          const confirm = await window.Alerts.confirm({
+            title: 'Revogar Convite?',
+            text: 'O código de convite deixará de funcionar imediatamente.',
+            confirmButtonText: 'Sim, revogar',
+            isDangerous: true
+          });
+          if (!confirm) return;
+        }
+
+        try {
+          if (window.Alerts) window.Alerts.showLoading('A revogar...', 'Cancelando validade do convite.');
+          await window.apiClient.delete(`/groups/invitations/${encodeURIComponent(invitationId)}`);
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.toast('Convite revogado com sucesso.', 'info');
+          }
+          if (activeInvitation && activeInvitation.id === invitationId) activeInvitation = null;
+          await fetchInvitations(currentPage);
+          setupDefaultInvitationLink();
+        } catch (err) {
+          if (window.Alerts) {
+            window.Alerts.closeLoading();
+            window.Alerts.error(err.message || 'Falha ao revogar convite.');
+          }
+        }
+      };
+
+      statusFilterSelect.addEventListener('change', () => {
+        if (canListInvitations) fetchInvitations(1);
+      });
+
+      tableBody.addEventListener('click', (event) => {
+        const copyButton = event.target.closest('[data-copy-text]');
+        if (copyButton) { copyToClipboard(copyButton.getAttribute('data-copy-text')); return; }
+        const qrButton = event.target.closest('[data-invitation-action="qr"]');
+        if (qrButton) { window.viewQrModal(qrButton.dataset.inviteCode, qrButton.dataset.inviteLink); return; }
+        const revokeButton = event.target.closest('[data-invitation-action="revoke"]');
+        if (revokeButton) window.revokeInvitationAction(revokeButton.dataset.invitationId);
+      });
+
+      document.getElementById('btn-copy-share-link').addEventListener('click', () => {
+        if (activeInvitation) copyToClipboard(shareLinkInput.value);
+      });
+      document.getElementById('btn-native-share').addEventListener('click', async () => {
+        if (!activeInvitation) return;
+        const link = shareLinkInput.value;
+        if (navigator.share) {
+          try { await navigator.share({ title: activeGroup && activeGroup.name || 'Kixikila', text: 'Convite para participar na Kixikila', url: link }); }
+          catch (_) {}
+        } else { await copyToClipboard(link); }
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        initThemeToggle();
+        initAvatarFallback();
+        setupGlobalActions();
+        initializePage();
+      });
+    })();
+  </script>
+</body>
+</html>

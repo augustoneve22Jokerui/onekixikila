@@ -1,0 +1,423 @@
+<header class="ok-navbar" role="banner">
+  <div class="ok-navbar-inner">
+
+    <!-- Lado Esquerdo: Toggle Sidebar Mobile + Barra de Pesquisa -->
+    <div class="ok-navbar-left">
+      <button 
+        type="button" 
+        class="btn-ok-icon d-lg-none me-2" 
+        id="sidebar-toggle-btn" 
+        aria-label="Abrir menu de navegação"
+        aria-controls="app-sidebar"
+        aria-expanded="false"
+      >
+        <i class="bi bi-list fs-5"></i>
+      </button>
+
+      <div class="ok-search-wrapper d-none d-md-flex">
+        <i class="bi bi-search ok-search-icon" aria-hidden="true"></i>
+        <input 
+          type="search" 
+          id="global-search-input" 
+          class="ok-search-input" 
+          placeholder="Pesquisar pessoas, grupos, transações..." 
+          aria-label="Pesquisa global"
+          autocomplete="off"
+        >
+        <kbd class="ok-search-kbd">Ctrl K</kbd>
+      </div>
+    </div>
+
+    <!-- Lado Direito: Notificações + Perfil -->
+    <div class="ok-navbar-right">
+
+      <!-- Botão de Notificações -->
+      <a href="/notifications" class="ok-icon-btn position-relative" aria-label="Notificações" title="Notificações">
+        <i class="bi bi-bell fs-5"></i>
+        <span id="notification-badge" class="ok-notification-badge d-none">0</span>
+      </a>
+
+      <!-- Menu do Utilizador -->
+      <div class="dropdown">
+        <button 
+          class="ok-user-menu dropdown-toggle" 
+          type="button" 
+          id="user-menu-toggle" 
+          data-bs-toggle="dropdown" 
+          aria-expanded="false"
+        >
+          <img 
+            src="<%= typeof user !== 'undefined' && user && user.avatarUrl ? user.avatarUrl : '/assets/images/avatar-default.png' %>" 
+            alt="Foto de perfil" 
+            class="ok-avatar"
+            onerror="this.onerror=null;this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 fill=%22%23e2e8f0%22/%3E%3Ccircle cx=%2232%22 cy=%2224%22 r=%2212%22 fill=%22%2394a3b8%22/%3E%3Cpath d=%22M8 64c0-13.255 10.745-24 24-24s24 10.745 24 24%22 fill=%22%2394a3b8%22/%3E%3C/svg%3E';"
+          >
+          <div class="ok-user-info d-none d-sm-block">
+            <span class="ok-user-name">
+              <%= typeof user !== 'undefined' && user && user.fullName ? user.fullName.split(' ')[0] : 'Utilizador' %>
+            </span>
+            <span class="ok-user-role">
+              <%= typeof user !== 'undefined' && user && user.role ? user.role : 'Membro' %>
+            </span>
+          </div>
+          <i class="bi bi-chevron-down ok-user-chevron d-none d-sm-block"></i>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end ok-dropdown-menu" aria-labelledby="user-menu-toggle">
+          <li class="ok-dropdown-header">
+            <span class="fw-600 text-ok-main fs-7">
+              <%= typeof user !== 'undefined' && user && user.fullName ? user.fullName : 'Utilizador' %>
+            </span>
+            <span class="text-ok-muted fs-8 d-block">
+              <%= typeof user !== 'undefined' && user && user.email ? user.email : 'membro@onekixikila.ao' %>
+            </span>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item ok-dropdown-item" href="/profile">
+              <i class="bi bi-person-circle me-2"></i> O Meu Perfil
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item ok-dropdown-item" href="/dashboard">
+              <i class="bi bi-speedometer2 me-2"></i> Painel Principal
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item ok-dropdown-item" href="/wallet">
+              <i class="bi bi-wallet2 me-2"></i> A Minha Carteira
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item ok-dropdown-item" href="/sessions">
+              <i class="bi bi-shield-lock me-2"></i> Segurança e Sessões
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item ok-dropdown-item" href="/notifications">
+              <i class="bi bi-bell me-2"></i> Notificações
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <button type="button" class="dropdown-item ok-dropdown-item text-danger" data-action="logout">
+              <i class="bi bi-box-arrow-right me-2"></i> Terminar Sessão
+            </button>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<style>
+  .ok-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--ok-border-color);
+    height: 72px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ok-navbar {
+      background-color: rgba(21, 30, 46, 0.85);
+    }
+  }
+
+  .ok-navbar-inner {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .ok-navbar-left,
+  .ok-navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* Barra de Pesquisa */
+  .ok-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 380px;
+    max-width: 100%;
+  }
+
+  .ok-search-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--ok-text-muted);
+    font-size: 0.95rem;
+    pointer-events: none;
+  }
+
+  .ok-search-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 60px 0 44px;
+    font-size: 0.88rem;
+    background-color: var(--ok-bg-body);
+    border: 1px solid var(--ok-border-color);
+    border-radius: var(--ok-border-radius-pill);
+    color: var(--ok-text-main);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .ok-search-input::placeholder {
+    color: var(--ok-text-muted);
+    opacity: 0.8;
+  }
+
+  .ok-search-input:focus {
+    background-color: var(--ok-bg-card);
+    border-color: var(--ok-text-muted);
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ok-search-input:focus {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  .ok-search-kbd {
+    position: absolute;
+    right: 12px;
+    font-size: 0.7rem;
+    background-color: var(--ok-bg-card);
+    color: var(--ok-text-muted);
+    border: 1px solid var(--ok-border-color);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-family: inherit;
+    pointer-events: none;
+  }
+
+  /* Ícone de Notificações */
+  .ok-icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--ok-border-radius-pill);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ok-text-main);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    border: 1px solid transparent;
+  }
+
+  .ok-icon-btn:hover {
+    background-color: var(--ok-bg-body);
+    border-color: var(--ok-border-color);
+    color: var(--ok-text-main);
+  }
+
+  .ok-notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background-color: #ef4444;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: var(--ok-border-radius-pill);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--ok-bg-card);
+  }
+
+  /* Menu do Utilizador */
+  .ok-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 12px 4px 4px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--ok-border-radius-pill);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .ok-user-menu:hover,
+  .ok-user-menu[aria-expanded="true"] {
+    background-color: var(--ok-bg-body);
+    border-color: var(--ok-border-color);
+  }
+
+  .ok-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--ok-bg-card);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .ok-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.15;
+  }
+
+  .ok-user-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ok-text-main);
+  }
+
+  .ok-user-role {
+    font-size: 0.72rem;
+    color: var(--ok-text-muted);
+    font-weight: 400;
+  }
+
+  .ok-user-chevron {
+    font-size: 0.75rem;
+    color: var(--ok-text-muted);
+    margin-left: 4px;
+  }
+
+  /* Dropdown Customizado */
+  .ok-dropdown-menu {
+    border: 1px solid var(--ok-border-color);
+    border-radius: var(--ok-border-radius-md);
+    box-shadow: var(--ok-shadow-lg);
+    padding: 8px;
+    min-width: 240px;
+    margin-top: 8px !important;
+    background-color: var(--ok-bg-card);
+  }
+
+  .ok-dropdown-header {
+    padding: 8px 12px;
+    line-height: 1.3;
+  }
+
+  .ok-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 9px 12px;
+    border-radius: var(--ok-border-radius-sm);
+    font-size: 0.88rem;
+    color: var(--ok-text-main);
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+  }
+
+  .ok-dropdown-item:hover,
+  .ok-dropdown-item:focus {
+    background-color: var(--ok-bg-body);
+    color: var(--ok-text-main);
+  }
+
+  .ok-dropdown-item.text-danger:hover {
+    background-color: var(--ok-icon-bg-red);
+    color: var(--ok-icon-text-red) !important;
+  }
+
+  .ok-dropdown-item i {
+    font-size: 1rem;
+    color: var(--ok-text-muted);
+  }
+
+  .ok-dropdown-item.text-danger i {
+    color: currentColor;
+  }
+
+  /* Responsividade */
+  @media (max-width: 991.98px) {
+    .ok-navbar-inner {
+      padding: 0 16px;
+    }
+    .ok-search-wrapper {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .ok-navbar {
+      height: 64px;
+    }
+    .ok-navbar-inner {
+      padding: 0 12px;
+      gap: 8px;
+    }
+    .ok-avatar {
+      width: 34px;
+      height: 34px;
+    }
+    .ok-icon-btn {
+      width: 38px;
+      height: 38px;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    'use strict';
+
+    // Atalho de teclado Ctrl+K / Cmd+K para focar a pesquisa global
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        const searchInput = document.getElementById('global-search-input');
+        if (searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.select();
+        }
+      }
+    });
+
+    // Toggle da sidebar em ecrãs móveis
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggleBtn = document.getElementById('sidebar-toggle-btn');
+      if (!toggleBtn) return;
+
+      toggleBtn.addEventListener('click', function () {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', String(!expanded));
+        document.body.classList.toggle('sidebar-mobile-open', !expanded);
+      });
+    });
+
+    // Submissão da pesquisa global via Enter
+    document.addEventListener('DOMContentLoaded', function () {
+      const searchInput = document.getElementById('global-search-input');
+      if (!searchInput) return;
+
+      searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          const query = searchInput.value.trim();
+          if (query.length >= 2) {
+            window.location.href = '/groups?search=' + encodeURIComponent(query);
+          }
+        }
+      });
+    });
+  })();
+</script>

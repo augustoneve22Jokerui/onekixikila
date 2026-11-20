@@ -1,0 +1,246 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title><%= typeof title !== 'undefined' ? title : 'OneKixikila' %></title>
+
+<% if (typeof csrfToken !== 'undefined') { %>
+  <meta name="csrf-token" content="<%= csrfToken %>">
+<% } %>
+
+<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+<!-- Google Fonts: Inter para tipografia moderna e limpa -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+  :root {
+    /* Paleta de Cores Baseada na Imagem */
+    --ok-bg-body: #f8fafc;
+    --ok-bg-sidebar: #ffffff;
+    --ok-bg-card: #ffffff;
+    --ok-bg-main-balance: #0f3b3a; /* Verde escuro profundo do cartão principal */
+    --ok-accent-green: #a3e635; /* Verde limão dos botões e badges */
+    --ok-accent-green-hover: #84cc16;
+    --ok-accent-green-light: #f0fdf4;
+    
+    --ok-text-main: #0f172a;
+    --ok-text-muted: #64748b;
+    --ok-text-light: #f8fafc;
+    
+    --ok-border-color: #e2e8f0;
+    --ok-border-radius-sm: 10px;
+    --ok-border-radius-md: 16px;
+    --ok-border-radius-lg: 24px;
+    --ok-border-radius-pill: 9999px;
+    
+    --ok-shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --ok-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    --ok-shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0,0,0,0.025);
+
+    /* Ícones e Cores Auxiliares dos Cards */
+    --ok-icon-bg-green: #ecfdf5;
+    --ok-icon-text-green: #10b981;
+    --ok-icon-bg-blue: #eff6ff;
+    --ok-icon-text-blue: #3b82f6;
+    --ok-icon-bg-purple: #faf5ff;
+    --ok-icon-text-purple: #a855f7;
+    --ok-icon-bg-yellow: #fefce8;
+    --ok-icon-text-yellow: #eab308;
+    --ok-icon-bg-red: #fef2f2;
+    --ok-icon-text-red: #ef4444;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ok-bg-body: #0b0f19;
+      --ok-bg-sidebar: #151e2e;
+      --ok-bg-card: #151e2e;
+      --ok-bg-main-balance: #064e3b;
+      
+      --ok-text-main: #f8fafc;
+      --ok-text-muted: #94a3b8;
+      
+      --ok-border-color: #1e293b;
+      
+      --ok-shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --ok-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+      --ok-shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.5);
+
+      --ok-icon-bg-green: rgba(16, 185, 129, 0.15);
+      --ok-icon-bg-blue: rgba(59, 130, 246, 0.15);
+      --ok-icon-bg-purple: rgba(168, 85, 247, 0.15);
+      --ok-icon-bg-yellow: rgba(234, 179, 8, 0.15);
+      --ok-icon-bg-red: rgba(239, 68, 68, 0.15);
+    }
+  }
+
+  /* Reset e Estilos Globais */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--ok-bg-body);
+    color: var(--ok-text-main);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+  }
+
+  /* Utilitários de Arredondamento (Design Moderno) */
+  .rounded-ok-sm { border-radius: var(--ok-border-radius-sm) !important; }
+  .rounded-ok-md { border-radius: var(--ok-border-radius-md) !important; }
+  .rounded-ok-lg { border-radius: var(--ok-border-radius-lg) !important; }
+  .rounded-ok-pill { border-radius: var(--ok-border-radius-pill) !important; }
+
+  /* Botões Customizados (Cantos Arredondados) */
+  .btn-ok-primary {
+    background-color: var(--ok-text-main);
+    color: var(--ok-bg-card);
+    border: none;
+    border-radius: var(--ok-border-radius-pill);
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .btn-ok-primary:hover {
+    background-color: var(--ok-text-muted);
+    color: var(--ok-bg-card);
+  }
+
+  .btn-ok-accent {
+    background-color: var(--ok-accent-green);
+    color: #14532d; /* Texto escuro para contraste no botão verde limão */
+    border: none;
+    border-radius: var(--ok-border-radius-pill);
+    padding: 0.6rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .btn-ok-accent:hover {
+    background-color: var(--ok-accent-green-hover);
+    color: #14532d;
+    transform: translateY(-1px);
+  }
+
+  .btn-ok-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 1px solid var(--ok-border-color);
+    color: var(--ok-text-main);
+    transition: all 0.2s ease;
+  }
+  .btn-ok-icon:hover {
+    background-color: var(--ok-border-color);
+  }
+
+  /* Cards do Dashboard */
+  .ok-card {
+    background-color: var(--ok-bg-card);
+    border-radius: var(--ok-border-radius-md);
+    border: 1px solid var(--ok-border-color);
+    box-shadow: var(--ok-shadow-sm);
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .ok-card:hover {
+    box-shadow: var(--ok-shadow-md);
+  }
+
+  /* Ícones de Fundo dos Cards */
+  .ok-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+  .ok-icon-green { background-color: var(--ok-icon-bg-green); color: var(--ok-icon-text-green); }
+  .ok-icon-blue { background-color: var(--ok-icon-bg-blue); color: var(--ok-icon-text-blue); }
+  .ok-icon-purple { background-color: var(--ok-icon-bg-purple); color: var(--ok-icon-text-purple); }
+  .ok-icon-yellow { background-color: var(--ok-icon-bg-yellow); color: var(--ok-icon-text-yellow); }
+  .ok-icon-red { background-color: var(--ok-icon-bg-red); color: var(--ok-icon-text-red); }
+
+  /* Textos Utilitários */
+  .text-ok-muted { color: var(--ok-text-muted) !important; }
+  .text-ok-main { color: var(--ok-text-main) !important; }
+  .fw-600 { font-weight: 600 !important; }
+  .fw-700 { font-weight: 700 !important; }
+  .fs-7 { font-size: 0.875rem !important; }
+  .fs-8 { font-size: 0.75rem !important; }
+
+  /* Badges de Status */
+  .badge-ok-success {
+    background-color: #dcfce7;
+    color: #166534;
+    border-radius: var(--ok-border-radius-pill);
+    padding: 0.25rem 0.75rem;
+    font-weight: 500;
+    font-size: 0.75rem;
+  }
+  .badge-ok-warning {
+    background-color: #fef9c3;
+    color: #854d0e;
+    border-radius: var(--ok-border-radius-pill);
+    padding: 0.25rem 0.75rem;
+    font-weight: 500;
+    font-size: 0.75rem;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .badge-ok-success { background-color: rgba(22, 101, 52, 0.3); color: #86efac; }
+    .badge-ok-warning { background-color: rgba(133, 77, 14, 0.3); color: #fde047; }
+  }
+
+  /* Scrollbar Personalizada */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--ok-border-color);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ok-text-muted);
+  }
+
+  /* Animações Suaves */
+  .fade-in { animation: fadeIn 0.4s ease-in-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>

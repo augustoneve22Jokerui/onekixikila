@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'Acesso Negado — OneKixikila' %></title>
+  <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg-fallback: #f1f4f9;
+      --btn-purple: #7c3aed;
+      --btn-purple-hover: #6d28d9;
+      --btn-purple-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+    }
+    @media (prefers-color-scheme: dark) { :root { --bg-fallback: #0b0f19; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-fallback);
+      background-image: url('/assets/images/fundo.png');
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      text-align: center;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.65) 0%, rgba(15, 23, 42, 0.45) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .error-content { position: relative; z-index: 1; max-width: 500px; }
+    .error-code {
+      font-size: clamp(5rem, 18vw, 9rem);
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      text-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+      margin-bottom: 12px;
+    }
+    .error-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    }
+    .error-message {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.55;
+      margin-bottom: 28px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+    }
+    .btn-error-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.75rem 1.6rem;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--btn-purple) 0%, var(--btn-purple-hover) 100%);
+      color: #ffffff;
+      box-shadow: var(--btn-purple-shadow);
+      transition: all 0.2s ease;
+    }
+    .btn-error-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(124, 58, 237, 0.5);
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-content">
+    <div class="error-code">403</div>
+    <h1 class="error-title">Acesso Negado</h1>
+    <p class="error-message">
+      <%= typeof message !== 'undefined' ? message : 'Não possui permissões suficientes para aceder a este recurso. Contacte o suporte se acredita ser um erro.' %>
+    </p>
+    <a href="/dashboard" class="btn-error-primary">
+      <i class="bi bi-house-door"></i>Voltar ao Painel
+    </a>
+  </div>
+</body>
+</html>
